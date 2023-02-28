@@ -10,7 +10,6 @@ setTimeout(function () {
   let panY = 0;
 
 
-
   // Helper Functions
   function getHoveredElementWorkAround(event) {
     const [targetElement] = event.composedPath().filter(element => !element.shadowRoot);
@@ -27,8 +26,11 @@ setTimeout(function () {
 
     // Loop through the options and create a menu item for each one
     options.forEach((option) => {
-      const menuItem = document.createElement("div");
+      const menuItem = document.createElement("button");
       menuItem.innerText = option.label;
+      menuItem.style.background = "#ffffff";
+      menuItem.style.width = "100%"
+
       menuItem.addEventListener("click", () => {
         option.callback(event);
         menu.remove();
@@ -41,6 +43,11 @@ setTimeout(function () {
     menu.style.left = `${event.pageX}px`;
     menu.style.top = `${event.pageY}px`;
     menu.style.position = "absolute";
+    menu.style.minWidth = "33vw";
+    menu.style.width = "auto";
+    menu.style.height = "auto";
+    menu.style.background = "#000000";
+    menu.style.zIndex = "400"
 
     // Listen for clicks outside the menu and close it if necessary
     const closeMenu = () => {
@@ -119,6 +126,7 @@ setTimeout(function () {
                 console.error('Failed to copy to clipboard:', error);
               });
           },
+
         }
       ],
       INPUT: [
@@ -137,18 +145,23 @@ setTimeout(function () {
         }
       ],
     };
-    const defaultOptions = [
+    const defaultOptions1 = [
       {
-        label: "Copy",
+        label: "Option 1",
         callback: () => {
-          // Code to copy the text
+          // Code to handle Option 1
+        },
+      },
+      {
+        label: "Option 2",
+        callback: () => {
+          // Code to handle Option 2
         },
       },
     ];
-
-
-
-    let options = defaultOptions;
+    
+    // use concat if u want to append more default options before checking elements
+    let options = defaultOptions1;
     classNames.forEach((name) => {
       if (optionsByClass[name]) {
         options = options.concat(optionsByClass[name]);
@@ -162,7 +175,24 @@ setTimeout(function () {
     }
     return options;
   }
+  function handleMouseUp() {
+    // Create and cache a new mouse event
+    const event = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
 
+    // Dispatch the click event using the cached button element
+    button.dispatchEvent(event);
+
+    // Set pointer events back to their original value
+    element.style.pointerEvents = "auto";
+
+    // Remove event listeners for mousemove and mouseup
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  }
 
   // Main listeners
   element.addEventListener("wheel", (e) => {
@@ -216,25 +246,7 @@ setTimeout(function () {
         element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
         element.style.pointerEvents = "none";
       }
-
-      function handleMouseUp() {
-        // Create and cache a new mouse event
-        const event = new MouseEvent('click', {
-          view: window,
-          bubbles: true,
-          cancelable: true
-        });
-
-        // Dispatch the click event using the cached button element
-        button.dispatchEvent(event);
-
-        // Set pointer events back to their original value
-        element.style.pointerEvents = "auto";
-
-        // Remove event listeners for mousemove and mouseup
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      }
+      handleMouseUp()
     }
   });
   document.querySelector("body > gradio-app").shadowRoot.addEventListener("contextmenu", (event) => {
@@ -243,7 +255,4 @@ setTimeout(function () {
     const options = getContextMenuOptions(hoveredElement);
     createContextMenu(options, event, getHoveredElementWorkAround(event));
   });
-
-
-
 }, 3000);
