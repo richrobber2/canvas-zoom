@@ -52,20 +52,18 @@ setTimeout(function () {
 
   // Add event listener for keydown
   document.addEventListener("keydown", (e) => {
-    // Check if Shift key is held down
-    if (e.shiftKey) {
-      // Check if R key is pressed
-      if (e.key === "r") {
-        // Reset zoom level and panning
-        zoomLevel = 1;
-        panX = 0;
-        panY = 0;
+    // Check if Shift key is held down and R key is pressed
+    if (e.shiftKey && e.key === "r") {
+      // Reset zoom level and panning
+      zoomLevel = 1;
+      panX = 0;
+      panY = 0;
 
-        // Update element style with new zoom level and panning
-        element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
-      }
+      // Update element style with new zoom level and panning
+      element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
     }
   });
+
 
   // Add event listener for mousedown
   element.addEventListener("mousedown", (e) => {
