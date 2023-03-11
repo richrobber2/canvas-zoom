@@ -4,10 +4,6 @@ setTimeout(function () {
   // Select the element
   const element = document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg");
 
-  // Set initial values for zoom level and panning
-  let zoomLevel = 1;
-  let panX = 0;
-  let panY = 0;
 
   // Add event listener for mousewheel
   element.addEventListener("wheel", (e) => {
@@ -64,6 +60,47 @@ setTimeout(function () {
     }
   });
 
+  // Set initial values for zoom level and panning
+  let zoomLevel = 1;
+  let panX = 0;
+  let panY = 0;
+
+  // Cache the document object and the button element
+  const doc = document;
+  const button = doc.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg > div.h-60.bg-gray-200 > div > div.z-50.top-2.right-2.justify-end.flex.gap-1.absolute > button:nth-child(1)");
+
+  // Define function for handling mousemove
+  function handleMouseMove(e) {
+    // Calculate new panning values
+    const deltaX = e.clientX - startX;
+    const deltaY = e.clientY - startY;
+    panX = startPanX + deltaX;
+    panY = startPanY + deltaY;
+
+    // Update element style with new panning values and disable pointer events
+    element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+    element.style.pointerEvents = "none";
+  }
+
+  // Define function for handling mouseup
+  function handleMouseUp() {
+    // Create and cache a new mouse event
+    const event = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+
+    // Dispatch the click event using the cached button element
+    button.dispatchEvent(event);
+
+    // Set pointer events back to their original value
+    element.style.pointerEvents = "auto";
+
+    // Remove event listeners for mousemove and mouseup
+    doc.removeEventListener("mousemove", handleMouseMove);
+    doc.removeEventListener("mouseup", handleMouseUp);
+  }
 
   // Add event listener for mousedown
   element.addEventListener("mousedown", (e) => {
@@ -76,50 +113,13 @@ setTimeout(function () {
       const startPanY = panY;
 
       // Add event listener for mousemove
-      document.addEventListener("mousemove", handleMouseMove);
+      doc.addEventListener("mousemove", handleMouseMove);
 
       // Add event listener for mouseup
-      document.addEventListener("mouseup", handleMouseUp);
+      doc.addEventListener("mouseup", handleMouseUp);
 
       // Prevent default dragging behavior
       e.preventDefault();
-
-      // Define function for handling mousemove
-      function handleMouseMove(e) {
-        // Calculate new panning values
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-        panX = startPanX + deltaX;
-        panY = startPanY + deltaY;
-
-        // Update element style with new panning values and disable pointer events
-        element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
-        element.style.pointerEvents = "none";
-      }
-
-      // Get the button element and store it in a variable
-      const button = document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg > div.h-60.bg-gray-200 > div > div.z-50.top-2.right-2.justify-end.flex.gap-1.absolute > button:nth-child(1)");
-
-      // Define function for handling mouseup
-      function handleMouseUp() {
-        // Create and cache a new mouse event
-        const event = new MouseEvent('click', {
-          view: window,
-          bubbles: true,
-          cancelable: true
-        });
-
-        // Dispatch the click event using the cached button element
-        button.dispatchEvent(event);
-
-        // Set pointer events back to their original value
-        element.style.pointerEvents = "auto";
-
-        // Remove event listeners for mousemove and mouseup
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      }
-
     }
   });
 }, 3000);
