@@ -1,3 +1,5 @@
+An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
+
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
 Shortcuts:
