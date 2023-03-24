@@ -1,63 +1,128 @@
-// uses timeout because it does not load when it does not have this and i cant seem to use onload events probably because most things seem to be handled by javascript
 setTimeout(function () {
-  const element = document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg");
-  let [zoomLevel, panX, panY] = [1, 0, 0];
-  element.addEventListener("wheel", (e) => {
-    if (e.shiftKey) {
-      e.preventDefault();
+  const sketchID = "#img2img_sketch";
+  const inpaintID = "#img2maskimg";
+  const inpaintSketchID = "#inpaint_sketch";
 
-      // handle zooming here panning will be handled by the mousemove event
-      const startZoomLevel = zoomLevel;
+  const sketchEl = document
+    .querySelector("body > gradio-app")
+    .shadowRoot.querySelector(sketchID);
 
-      // Calculate new zoom level + or - 0.1 based on direction of scroll amount should change based on zoom level if above 5 then 0.5 if below 5 then 0.1
-      const delta = zoomLevel > 3 ? 0.5 : 0.1;
-      zoomLevel = e.deltaY > 0 ? startZoomLevel - delta : startZoomLevel + delta;
+  const inpaintEl = document
+    .querySelector("body > gradio-app")
+    .shadowRoot.querySelector(inpaintID);
 
-      // max and min zoom level using clamp min is 0.5 and max is 10
-      zoomLevel = Math.min(Math.max(0.5, zoomLevel), 10);
+  const inpaintSketchEl = document
+    .querySelector("body > gradio-app")
+    .shadowRoot.querySelector(inpaintSketchID);
 
-      // update the zoom level
-      element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+  function applyZoomAndPan(targetElement, elemId) {
+    let [zoomLevel, panX, panY] = [1, 0, 0];
+
+    // Reset zoom to Default
+    function resetZoom() {
+      zoomLevel = 1;
+      panX = 0;
+      panY = 0;
+      targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
     }
-    if (e.ctrlKey) {
-      e.preventDefault();
 
-      const input = document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg > div.h-60.bg-gray-200 > div > div.z-50.top-10.right-2.justify-end.flex.gap-1.absolute > span > input")
-      if (input == null) {
-        document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg > div.h-60.bg-gray-200 > div > div.z-50.top-10.right-2.justify-end.flex.gap-1.absolute > span > button").click();
+    // Overlap all elemnts
+    function toggleOverlap() {
+      const zIndex1 = "0";
+      const zIndex2 = "99999";
+
+      targetElement.style.zIndex =
+        targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "r" || e.key === "R" || e.key === "к" || e.key === "К") {
+        resetZoom();
       }
-      let value = parseFloat(input.value);
-      value += e.deltaY > 0 ? -3 : 3;
-      input.value = value;
-      const changeEvent = new Event('change');
-      input.dispatchEvent(changeEvent);
-    }
-  });
+      if (e.key === "o" || e.key === "O" || e.key === "щ" || e.key === "Щ") {
+        toggleOverlap();
+      }
+    });
 
-  function handleMove(e) {
-    e.preventDefault();
-    panX += e.movementX;
-    panY += e.movementY;
-    element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
-    element.style.pointerEvents = "none";
-  }
+    targetElement.addEventListener("wheel", (e) => {
+      if (e.shiftKey) {
+        e.preventDefault();
 
-  function handleEnd() {
-    document.removeEventListener("mousemove", handleMove);
-    document.removeEventListener("mouseup", handleEnd);
-    element.style.pointerEvents = "auto";
-    element.addEventListener("mouseleave", handleundo);
-  }
-  function handleundo() {
-    document.removeEventListener("mouseleave", handleundo);
-    document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg > div.h-60.bg-gray-200 > div > div.z-50.top-2.right-2.justify-end.flex.gap-1.absolute > button:nth-child(1)").click();
-  }
+        // handle zooming here panning will be handled by the mousemove event
+        const startZoomLevel = zoomLevel;
 
-  element.addEventListener("mousedown", (e) => {
-    if (e.shiftKey) {
+        // Calculate new zoom level + or - 0.1 based on direction of scroll amount should change based on zoom level if above 5 then 0.5 if below 5 then 0.1
+        const delta = zoomLevel > 3 ? 0.5 : 0.1;
+        zoomLevel =
+          e.deltaY > 0 ? startZoomLevel - delta : startZoomLevel + delta;
+
+        // max and min zoom level using clamp min is 0.5 and max is 10
+        zoomLevel = Math.min(Math.max(0.5, zoomLevel), 10);
+
+        // update the zoom level
+        targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+      }
+      if (e.ctrlKey) {
+        e.preventDefault();
+
+        const input = document
+          .querySelector("body > gradio-app")
+          .shadowRoot.querySelector(
+            `${elemId} > div.h-60.bg-gray-200 > div > div.z-50.top-10.right-2.justify-end.flex.gap-1.absolute > span > input`
+          );
+
+        if (input == null) {
+          document
+            .querySelector("body > gradio-app")
+            .shadowRoot.querySelector(
+              `${elemId} > div.h-60.bg-gray-200 > div > div.z-50.top-10.right-2.justify-end.flex.gap-1.absolute > span > button`
+            )
+            .click();
+        }
+
+        let value = parseFloat(input.value);
+        value += e.deltaY > 0 ? -3 : 3;
+        input.value = value;
+        const changeEvent = new Event("change");
+        input.dispatchEvent(changeEvent);
+      }
+    });
+
+    function handleMove(e) {
       e.preventDefault();
-      document.addEventListener("mousemove", handleMove);
-      document.addEventListener("mouseup", handleEnd);
+      panX += e.movementX;
+      panY += e.movementY;
+      targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+      targetElement.style.pointerEvents = "none";
     }
-  });
+
+    function handleEnd() {
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mouseup", handleEnd);
+      targetElement.style.pointerEvents = "auto";
+      targetElement.addEventListener("mouseleave", handleundo);
+    }
+
+    function handleundo() {
+      document.removeEventListener("mouseleave", handleundo);
+      document
+        .querySelector("body > gradio-app")
+        .shadowRoot.querySelector(
+          `${elemId} > div.h-60.bg-gray-200 > div > div.z-50.top-2.right-2.justify-end.flex.gap-1.absolute > button:nth-child(1)`
+        )
+        .click();
+    }
+
+    targetElement.addEventListener("mousedown", (e) => {
+      if (e.shiftKey) {
+        e.preventDefault();
+        document.addEventListener("mousemove", handleMove);
+        document.addEventListener("mouseup", handleEnd);
+      }
+    });
+  }
+
+  applyZoomAndPan(sketchEl, sketchID);
+  applyZoomAndPan(inpaintEl, inpaintID);
+  applyZoomAndPan(inpaintSketchEl, inpaintSketchID);
 }, 3000);
