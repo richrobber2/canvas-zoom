@@ -45,7 +45,8 @@ setTimeout(function () {
   function handleEnd() {
     document.removeEventListener("mousemove", handleMove);
     document.removeEventListener("mouseup", handleEnd);
-    element.style.pointerEvents = "auto"; 
+    element.style.pointerEvents = "auto";
+    element.addEventListener("mouseleave", handleundo);
   }
   function handleundo() {
     document.removeEventListener("mouseleave", handleundo);
@@ -57,7 +58,6 @@ setTimeout(function () {
       e.preventDefault();
       document.addEventListener("mousemove", handleMove);
       document.addEventListener("mouseup", handleEnd);
-      element.addEventListener("mouseleave", handleundo);
     }
   });
 }, 3000);
