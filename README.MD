@@ -12,6 +12,8 @@ Shortcuts:
 
 **R** - Reset Zoom.
 
+**Q** - Open/Close color panel
+
 **O** - Overlap all elements and back
 
 **Ctr-Z** - Undo last action
