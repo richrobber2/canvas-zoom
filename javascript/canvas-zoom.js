@@ -2,18 +2,12 @@ setTimeout(function () {
   const sketchID = "#img2img_sketch";
   const inpaintID = "#img2maskimg";
   const inpaintSketchID = "#inpaint_sketch";
+  const img2imgTabsID = "#mode_img2img .tab-nav";
 
-  const sketchEl = document
-    .querySelector("body > gradio-app")
-    .shadowRoot.querySelector(sketchID);
-
-  const inpaintEl = document
-    .querySelector("body > gradio-app")
-    .shadowRoot.querySelector(inpaintID);
-
-  const inpaintSketchEl = document
-    .querySelector("body > gradio-app")
-    .shadowRoot.querySelector(inpaintSketchID);
+  const sketchEl = document.querySelector(sketchID);
+  const inpaintEl = document.querySelector(inpaintID);
+  const inpaintSketchEl = document.querySelector(inpaintSketchID);
+  const img2imgTabs = document.querySelector(img2imgTabsID);
 
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
@@ -27,13 +21,20 @@ setTimeout(function () {
     }
 
     // Overlap all elemnts
-    function toggleOverlap() {
+    function toggleOverlap(overlap = true) {
       const zIndex1 = "0";
       const zIndex2 = "99999";
+
+      if (overlap === false) {
+        targetElement.style.zIndex = zIndex1;
+        return;
+      }
 
       targetElement.style.zIndex =
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
     }
+
+    // Reset when close img
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "r" || e.key === "R" || e.key === "к" || e.key === "К") {
@@ -41,6 +42,14 @@ setTimeout(function () {
       }
       if (e.key === "o" || e.key === "O" || e.key === "щ" || e.key === "Щ") {
         toggleOverlap();
+      }
+    });
+
+    // Reset zoom when click on another tab
+    img2imgTabs.addEventListener("click", (e) => {
+      if (e.target.classList.contains("svelte-1g805jl")) {
+        toggleOverlap(false);
+        resetZoom();
       }
     });
 
@@ -65,18 +74,13 @@ setTimeout(function () {
       if (e.ctrlKey) {
         e.preventDefault();
 
-        const input = document
-          .querySelector("body > gradio-app")
-          .shadowRoot.querySelector(
-            `${elemId} > div.h-60.bg-gray-200 > div > div.z-50.top-10.right-2.justify-end.flex.gap-1.absolute > span > input`
-          );
+        const input = document.querySelector(
+          `${elemId} input[aria-label='Brush radius']`
+        );
 
         if (input == null) {
           document
-            .querySelector("body > gradio-app")
-            .shadowRoot.querySelector(
-              `${elemId} > div.h-60.bg-gray-200 > div > div.z-50.top-10.right-2.justify-end.flex.gap-1.absolute > span > button`
-            )
+            .querySelector(`${elemId} button[aria-label="Use brush"]`)
             .click();
         }
 
@@ -106,10 +110,7 @@ setTimeout(function () {
     function handleundo() {
       document.removeEventListener("mouseleave", handleundo);
       document
-        .querySelector("body > gradio-app")
-        .shadowRoot.querySelector(
-          `${elemId} > div.h-60.bg-gray-200 > div > div.z-50.top-2.right-2.justify-end.flex.gap-1.absolute > button:nth-child(1)`
-        )
+        .querySelector(`${elemId} .svelte-s6ybro button:nth-child(1)`)
         .click();
     }
 
