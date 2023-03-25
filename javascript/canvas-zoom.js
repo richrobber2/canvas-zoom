@@ -137,15 +137,15 @@ setTimeout(function () {
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseup", handleEnd);
       targetElement.style.pointerEvents = "auto";
-      targetElement.addEventListener("mouseleave", handleundo);
+      // targetElement.addEventListener("mouseleave", handleundo);
     }
 
-    function handleundo() {
-      document.removeEventListener("mouseleave", handleundo);
-      document
-        .querySelector(`${elemId} .svelte-s6ybro button:nth-child(1)`)
-        .click();
-    }
+    // function handleundo() {
+    //   document.removeEventListener("mouseleave", handleundo);
+    //   document
+    //     .querySelector(`${elemId} .svelte-s6ybro button:nth-child(1)`)
+    //     .click();
+    // }
 
     targetElement.addEventListener("mousedown", (e) => {
       if (e.shiftKey) {
