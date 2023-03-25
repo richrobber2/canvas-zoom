@@ -13,3 +13,7 @@ Shortcuts:
 **R** - Reset Zoom.
 
 **O** - Overlap all elements and back
+
+Known bugs:
+
+If you click on the cross and delete the picture in zoom mode, there is a chance that the picture will be cropped. It is necessary to click on the cross and load the picture again without zooming, then everything will work as it should.
