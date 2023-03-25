@@ -51,15 +51,30 @@ setTimeout(function () {
     }
 
     // Reset when close img
-
     undoActiveTab(elemId);
 
+    // Reset zoom by press R and overlap elements by O
     document.addEventListener("keydown", (e) => {
       if (e.key === "r" || e.key === "R" || e.key === "к" || e.key === "К") {
         resetZoom();
       }
       if (e.key === "o" || e.key === "O" || e.key === "щ" || e.key === "Щ") {
         toggleOverlap();
+      }
+    });
+
+    // open brush colors
+    document.addEventListener("keypress", (e) => {
+      if (e.key == "Q" || e.key == "q" || e.key == "й" || e.key == "Й") {
+        const colorBtn = document.querySelector(
+          `${elemId} button[aria-label="Select brush color"]`
+        );
+
+        if (!colorBtn) {
+          return;
+        } else {
+          colorBtn.click();
+        }
       }
     });
 
