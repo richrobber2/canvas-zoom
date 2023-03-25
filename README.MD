@@ -14,9 +14,10 @@ Shortcuts:
 
 **O** - Overlap all elements and back
 
-
-When you move the mouse beyond the picture boundary, the last action is canceled
+**Ctr-Z** - Undo last action
 
 **Known bugs:**
 
-If you click on the cross and delete the picture in zoom mode, there is a chance that the picture will be cropped. It is necessary to click on the cross and load the picture again without zooming, then everything will work as it should.
+1. If you click on the cross and delete the picture in zoom mode, there is a chance that the picture will be cropped. It is necessary to click on the cross and load the picture again without zooming, then everything will work as it should.
+
+2. Not my bug, the problem is with automatic1111. If you make something in sketch, then send it to inpaint or inpaint sketch , it breaks undo via shortcut and button. You need to delete the picture and load it back into the window, then everything will work

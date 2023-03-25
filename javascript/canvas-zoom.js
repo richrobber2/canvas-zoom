@@ -9,6 +9,22 @@ setTimeout(function () {
   const inpaintSketchEl = document.querySelector(inpaintSketchID);
   const img2imgTabs = document.querySelector(img2imgTabsID);
 
+  // undo by Ctr-Z
+  function undoActiveTab(elemId) {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "z" || e.key === "Z" || e.key === "я" || e.key === "Я") {
+        if (e.ctrlKey) {
+          const undoBtn = document.querySelector(
+            `${elemId} button[aria-label="Undo"]`
+          );
+          if (undoBtn) {
+            undoBtn.click();
+          }
+        }
+      }
+    });
+  }
+
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
@@ -35,6 +51,8 @@ setTimeout(function () {
     }
 
     // Reset when close img
+
+    undoActiveTab(elemId);
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "r" || e.key === "R" || e.key === "к" || e.key === "К") {
