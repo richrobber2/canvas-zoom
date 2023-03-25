@@ -14,6 +14,9 @@ Shortcuts:
 
 **O** - Overlap all elements and back
 
-Known bugs:
+
+When you move the mouse beyond the picture boundary, the last action is canceled
+
+**Known bugs:**
 
 If you click on the cross and delete the picture in zoom mode, there is a chance that the picture will be cropped. It is necessary to click on the cross and load the picture again without zooming, then everything will work as it should.
