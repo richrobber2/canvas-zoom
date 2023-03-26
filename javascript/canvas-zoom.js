@@ -23,7 +23,6 @@
   }
   let hotkeysConfig;
   const configFromLocalStorage = getConfigFromLocalStorage();
-  console.log(configFromLocalStorage);
 
   if (configFromLocalStorage == null) {
     hotkeysConfig = {
@@ -125,7 +124,6 @@
       }
     },
     openBrushSetting: () => {
-      console.log("HI");
       const hotkey = askForHotkey();
       if (hotkey !== null) {
         // Update the hotkey in the config
