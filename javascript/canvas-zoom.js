@@ -15,7 +15,7 @@
     return JSON.parse(configString);
   }
 
-  // Update the config, redraw the object, and save it to localStorage
+  // Update the config, and save it to localStorage
   function updateConfigAndSave(key, value) {
     const config = getConfigFromLocalStorage();
     config[key] = value;
@@ -191,6 +191,7 @@
     const menu = document.createElement("div");
     menu.style.listStyleType = "None";
     menu.className = "context-menu";
+    menu.style.zIndex = "99999";
     document.body.appendChild(menu);
     return menu;
   })();
@@ -216,9 +217,9 @@
       e.preventDefault();
       menuItems = [
         {
-          action: "settings", // The action to perform when the item is clicked
+          action: "Change hotkeys", // The action to perform when the item is clicked
           hotkey: "⚙", // The hotkey to display next to the item in this case. It's the gear icon
-          label: "Settings", // The text to display for the item
+          label: "Change hotkeys", // The text to display for the item
         },
         // handle undo hotkey
         {
@@ -272,6 +273,20 @@
     contextMenu.style.display = "none";
   });
 
+  // Hide the context menu on left-click
+  let timeoutId;
+  contextMenu.addEventListener("mouseleave", () => {
+    // Set the timer for 1 second, after which the item will disappear
+    timeoutId = setTimeout(() => {
+      contextMenu.style.display = "none";
+    }, 200);
+  });
+
+  contextMenu.addEventListener("mouseenter", () => {
+    // If the mouse returns to an item before the timer has expired, cancel it
+    clearTimeout(timeoutId);
+  });
+
   /**
    * Trigger undo action on the active tab when Ctrl + Z is pressed.
    * @param {string} elemId - The ID of the element to target.
@@ -309,10 +324,50 @@
      * Toggle Brush Panel
      */
     function toogleBrushPanel() {
+      let colorId;
+
+      // Get active tab to avoid some bug
+      function getActiveTab() {
+        const tabs = img2imgTabs.querySelectorAll("button");
+
+        for (let tab of tabs) {
+          if (tab.classList.contains("selected")) {
+            return tab;
+          }
+        }
+      }
+
+      //
+      const activeTab = getActiveTab();
+
+      // Select current color panel
+      if (activeTab.innerText === "Sketch") {
+        colorId = sketchID;
+      } else if (activeTab.innerText === "Inpaint sketch") {
+        colorId = inpaintSketchID;
+      } else {
+        return;
+      }
+
       const colorBtn = document.querySelector(
-        `${elemId} button[aria-label="Select brush color"]`
+        `${colorId} button[aria-label="Select brush color"]`
       );
-      colorBtn ? colorBtn.click() : null;
+
+      const colorInput = document.querySelector(
+        `${colorId} input[aria-label="Brush color"]`
+      );
+
+      if (!colorInput) {
+        colorBtn ? colorBtn.click() : null;
+      }
+
+      // Open color menu
+      setTimeout(() => {
+        const colorInput = document.querySelector(
+          `${colorId} input[aria-label="Brush color"]`
+        );
+        colorInput ? colorInput.click() : colorBtn;
+      }, 0);
     }
     /**
      * Reset zoom and pan to default values.
@@ -328,7 +383,6 @@
      * Toggle element overlap.
      */
     function toggleOverlap() {
-      console.log("toggle overlap has been called");
       const zIndex1 = "0";
       const zIndex2 = "99999";
 
@@ -359,13 +413,21 @@
       input.dispatchEvent(changeEvent);
     }
 
+    //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
+    fileInput = document.querySelector(
+      `${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`
+    );
+    fileInput.addEventListener("click", function () {
+      resetZoom();
+    });
+
     /**
      * Disable overlap when open context menu open
      **/
-    document.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      targetElement.style.zIndex = 0;
-    });
+    // targetElement.addEventListener("contextmenu", (e) => {
+    //   e.preventDefault();
+    //   targetElement.style.zIndex = 0;
+    // });
 
     undoActiveTab(elemId);
 
@@ -387,28 +449,9 @@
       }
       if (
         e.key.toLocaleLowerCase() === hotkeysConfig.openBrushSetting ||
-        e.key === hotkeysConfig.overlap
+        e.key === hotkeysConfig.openBrushSetting
       ) {
         toogleBrushPanel();
-      }
-    });
-
-    // Open brush colors
-    document.addEventListener("keypress", (e) => {
-      // use hotkeys config upper and lower case
-      if (
-        e.key === hotkeysConfig.brushColors ||
-        e.key === hotkeysConfig.brushColors
-      ) {
-        const colorBtn = document.querySelector(
-          `${elemId} button[aria-label="Select brush color"]`
-        );
-
-        if (!colorBtn) {
-          return;
-        } else {
-          colorBtn.click();
-        }
       }
     });
 
