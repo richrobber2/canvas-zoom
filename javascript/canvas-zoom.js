@@ -257,22 +257,16 @@ function applyZoomAndPan(targetElement, elemId) {
     targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
   }
 
-  /**
-   * Toggle element overlap.
-   * @param {boolean} [overlap=true] - Whether to overlap elements or not.
-   */
-  function toggleOverlap(overlap = true) {
-    const zIndex1 = "0";
-    const zIndex2 = "99999";
+/**
+ * Toggle element overlap.
+ */
+function toggleOverlap() {
+  console.log("toggle overlap has been called");
+  const zIndex1 = "0";
+  const zIndex2 = "99999";
 
-    if (overlap === false) {
-      targetElement.style.zIndex = zIndex1;
-      return;
-    }
-
-    targetElement.style.zIndex =
-      targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
-  }
+  targetElement.style.zIndex = targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
+}
 
   /**
    * Adjust brush size.
@@ -298,18 +292,19 @@ function applyZoomAndPan(targetElement, elemId) {
   // Reset zoom when pressing R key and toggle overlap when pressing O key
   document.addEventListener("keydown", (e) => {
     // use hotkeys config upper and lower case
-    if (e.key === hotkeysConfig.resetZoom || e.key === hotkeysConfig.resetZoom.toUpperCase()) {
+    if (e.key === hotkeysConfig.resetZoom || e.key === hotkeysConfig.resetZoom) {
       resetZoom();
     }
-    if (e.key === hotkeysConfig.toggleOverlap || e.key === hotkeysConfig.toggleOverlap.toUpperCase()) {
+    if (e.key === hotkeysConfig.overlap || e.key === hotkeysConfig.overlap) {
       toggleOverlap();
     }
+    
   });
 
   // Open brush colors
   document.addEventListener("keypress", (e) => {
     // use hotkeys config upper and lower case
-    if (e.key === hotkeysConfig.brushColors || e.key === hotkeysConfig.brushColors.toUpperCase()) {
+    if (e.key === hotkeysConfig.brushColors || e.key === hotkeysConfig.brushColors) {
       const colorBtn = document.querySelector(
         `${elemId} button[aria-label="Select brush color"]`
       );
