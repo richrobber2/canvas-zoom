@@ -1,6 +1,6 @@
-This version of canvas-zoom only works with the March 25th and later versions of the WebUI.
+**This version of canvas-zoom only works with the March 25th and later versions of the WebUI.**
 
-If you haven't updated, you can install from this commit https://github.com/richrobber2/canvas-zoom/tree/33b690c2ccec1bf436d4d37af1c6998209a860b6.
+**If you haven't updated, you can install from this commit** https://github.com/richrobber2/canvas-zoom/tree/33b690c2ccec1bf436d4d37af1c6998209a860b6.
 
 # EN
 An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
