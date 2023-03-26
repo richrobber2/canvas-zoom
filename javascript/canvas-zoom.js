@@ -362,7 +362,7 @@
     /**
      * Disable overlap when open context menu open
      **/
-    document.addEventListener("contextmenu", (e) => {
+    targetElement.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       targetElement.style.zIndex = 0;
     });
