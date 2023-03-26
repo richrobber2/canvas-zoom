@@ -1,12 +1,41 @@
 (async () => {
   // Wait for the specified delay
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  const hotkeysConfig = {
-    undo: "z",
-    resetZoom: "r",
-    overlap: "o",
-    openBrushSetting: "q",
-  };
+
+  // LocalStorage functions
+
+  // Save the config to localStorage
+  function saveConfigToLocalStorage(config) {
+    localStorage.setItem("hotkeysConfig", JSON.stringify(config));
+  }
+
+  // Retrieve the config from localStorage and return as an object
+  function getConfigFromLocalStorage() {
+    const configString = localStorage.getItem("hotkeysConfig");
+    return JSON.parse(configString);
+  }
+
+  // Update the config, redraw the object, and save it to localStorage
+  function updateConfigAndSave(key, value) {
+    const config = getConfigFromLocalStorage();
+    config[key] = value;
+    saveConfigToLocalStorage(config);
+  }
+  let hotkeysConfig;
+  const configFromLocalStorage = getConfigFromLocalStorage();
+  console.log(configFromLocalStorage);
+
+  if (configFromLocalStorage == null) {
+    hotkeysConfig = {
+      undo: "z",
+      resetZoom: "r",
+      overlap: "o",
+      openBrushSetting: "q",
+    };
+    saveConfigToLocalStorage(hotkeysConfig);
+  } else {
+    hotkeysConfig = getConfigFromLocalStorage();
+  }
 
   const sketchID = "#img2img_sketch";
   const inpaintID = "#img2maskimg";
@@ -76,6 +105,7 @@
       if (hotkey !== null) {
         // Update the hotkey in the config
         hotkeysConfig.undo = hotkey;
+        updateConfigAndSave("undo", hotkey);
       }
     },
     resetZoom: () => {
@@ -83,6 +113,7 @@
       if (hotkey !== null) {
         // Update the hotkey in the config
         hotkeysConfig.resetZoom = hotkey;
+        updateConfigAndSave("resetZoom", hotkey);
       }
     },
     overlap: () => {
@@ -90,6 +121,7 @@
       if (hotkey !== null) {
         // Update the hotkey in the config
         hotkeysConfig.overlap = hotkey;
+        updateConfigAndSave("overlap", hotkey);
       }
     },
     openBrushSetting: () => {
@@ -98,6 +130,7 @@
       if (hotkey !== null) {
         // Update the hotkey in the config
         hotkeysConfig.openBrushSetting = hotkey;
+        updateConfigAndSave("openBrushSetting", hotkey);
       }
     },
   };
