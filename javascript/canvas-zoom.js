@@ -324,21 +324,47 @@
      * Toggle Brush Panel
      */
     function toogleBrushPanel() {
+      let colorId;
+
+      // Get active tab to avoid some bug
+      function getActiveTab() {
+        const tabs = img2imgTabs.querySelectorAll("button");
+
+        for (let tab of tabs) {
+          if (tab.classList.contains("selected")) {
+            return tab;
+          }
+        }
+      }
+
+      //
+      const activeTab = getActiveTab();
+
+      // Select current color panel
+      if (activeTab.innerText === "Sketch") {
+        colorId = sketchID;
+      } else if (activeTab.innerText === "Inpaint sketch") {
+        colorId = inpaintSketchID;
+      } else {
+        return;
+      }
+
       const colorBtn = document.querySelector(
-        `${elemId} button[aria-label="Select brush color"]`
+        `${colorId} button[aria-label="Select brush color"]`
       );
 
       const colorInput = document.querySelector(
-        `${elemId} input[aria-label="Brush color"]`
+        `${colorId} input[aria-label="Brush color"]`
       );
 
       if (!colorInput) {
         colorBtn ? colorBtn.click() : null;
       }
+
       // Open color menu
       setTimeout(() => {
         const colorInput = document.querySelector(
-          `${elemId} input[aria-label="Brush color"]`
+          `${colorId} input[aria-label="Brush color"]`
         );
         colorInput ? colorInput.click() : colorBtn;
       }, 0);
@@ -393,7 +419,6 @@
     );
     fileInput.addEventListener("click", function () {
       resetZoom();
-      console.log("choosen");
     });
 
     /**
