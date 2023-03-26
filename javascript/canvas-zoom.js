@@ -393,25 +393,6 @@
       }
     });
 
-    // Open brush colors
-    document.addEventListener("keypress", (e) => {
-      // use hotkeys config upper and lower case
-      if (
-        e.key === hotkeysConfig.brushColors ||
-        e.key === hotkeysConfig.brushColors
-      ) {
-        const colorBtn = document.querySelector(
-          `${elemId} button[aria-label="Select brush color"]`
-        );
-
-        if (!colorBtn) {
-          return;
-        } else {
-          colorBtn.click();
-        }
-      }
-    });
-
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
       if (e.target.classList.contains("svelte-1g805jl")) {
