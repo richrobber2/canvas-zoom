@@ -2,9 +2,9 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
-Hotkeys :
-
 You can edit the hotkeys as you want by **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want
+
+Default hotkeys:
 
 **Shift + wheel(hold)** - Move canvas
 
