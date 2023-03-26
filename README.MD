@@ -23,14 +23,14 @@ Default hotkeys:
 
 **Known bugs:**
 
-1. If you click on the cross and delete the picture in zoom mode, there is a chance that the picture will be cropped. It is necessary to click on the cross and load the picture again without zooming, then everything will work as it should. ( Solved )
+1. If you click on the cross and delete the picture in zoom mode, there is a chance that the picture will be cropped. It is necessary to click on the cross and load the picture again without zooming, then everything will work as it should. **( Solved )**
 
 2. Not my bug, the problem is with automatic1111. If you make something in sketch, then send it to inpaint or inpaint sketch , it breaks undo via shortcut and button. You need to delete the picture and load it back into the window, then everything will work
 
 # RU
 Расширение [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
 
-Добавляет возможность зума Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
+Добавляет возможность зума в Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
 
 Вы можете редактировать горячие клавиши по своему усмотрению, **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
 
@@ -52,6 +52,8 @@ Default hotkeys:
 
 **Известные баги:**
 
-1. Если нажать на крестик и удалить картинку в режиме зума, есть вероятность, что картинка будет обрезана. Необходимо, сбросить зум, нажать на крестик и загрузить картинку, тогда все будет работать как надо. ( Решенно )
+1. Если нажать на крестик и удалить картинку в режиме зума, есть вероятность, что картинка будет обрезана. Необходимо, сбросить зум, нажать на крестик и загрузить картинку, тогда все будет работать как надо. **( Решенно )**
 
 2. Это не мой баг, проблема связана с automatic1111. Если вы делаете что-то в скетче, затем отправляете это в inpaint или inpaint sketch через кнопку( в любом порядке ), он ломает отмену через хоткей и кнопку. Вам нужно закрыть картинку и загрузить ёё обратно, тогда все будет работать.
+
+3. Хоткеи работают только на Английской раскладке
