@@ -387,6 +387,15 @@
       input.dispatchEvent(changeEvent);
     }
 
+    //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
+    fileInput = document.querySelector(
+      `${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`
+    );
+    fileInput.addEventListener("click", function () {
+      resetZoom();
+      console.log("choosen");
+    });
+
     /**
      * Disable overlap when open context menu open
      **/
