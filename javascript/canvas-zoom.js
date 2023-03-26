@@ -1,258 +1,391 @@
-// uses timeout because it other on dom events dont work (havent tested them all through)
-setTimeout(function () {
-  // Main variables
-  const element = document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg");
-  element.style.zIndex = "9999";
-  const button = document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg > div.h-60.bg-gray-200 > div > div.z-50.top-2.right-2.justify-end.flex.gap-1.absolute > button:nth-child(1)");
-  let activeMenu = null;
-  let zoomLevel = 1;
-  let panX = 0;
-  let panY = 0;
+(async () => {
+  // Wait for the specified delay
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  const hotkeysConfig = {
+    undo: "z",
+    resetZoom: "r",
+    overlap: "o",
+    openBrushSettingHotkey: "q",
+  };
 
+  const sketchID = "#img2img_sketch";
+  const inpaintID = "#img2maskimg";
+  const inpaintSketchID = "#inpaint_sketch";
+  const img2imgTabsID = "#mode_img2img .tab-nav";
 
-  // Helper Functions
-  function getHoveredElementWorkAround(event) {
-    const [targetElement] = event.composedPath().filter(element => !element.shadowRoot);
-    return targetElement;
-  }
-  function createContextMenu(options, event) {
-    // Remove the active menu if it exists
-    if (activeMenu) {
-      activeMenu.remove();
+  const [sketchEl, inpaintEl, inpaintSketchEl, img2imgTabs] = await Promise.all([
+    document.querySelector(sketchID),
+    document.querySelector(inpaintID),
+    document.querySelector(inpaintSketchID),
+    document.querySelector(img2imgTabsID),
+  ]);
+  function askForHotkey() {
+    const validKeys = /^[A-Za-z0-9]{1}$/; // A regex pattern to match a string containing a single alphanumeric character
+    const reservedKeys = [
+      hotkeysConfig.resetZoom,
+      hotkeysConfig.overlap,
+      hotkeysConfig.openBrushSettingHotkey,
+      hotkeysConfig.undo
+    ];
+  
+    let hotkey = "";
+  
+    while (!validKeys.test(hotkey)) {
+      hotkey = window.prompt("Please enter a valid hotkey:");
+  
+      if (!hotkey) {
+        // User canceled the prompt
+        return null;
+      }
+  
+      if (!validKeys.test(hotkey)) {
+        window.alert("Invalid hotkey. Please enter 1 alphanumeric character.");
+      } else if (reservedKeys.includes(hotkey)) {
+        window.alert("This hotkey is already in use. Please enter a different hotkey.");
+        hotkey = "";
+      } else if (hotkey === " ") {
+        window.alert("This hotkey is not able to be used. Please enter a different hotkey.");
+        hotkey = "";
+      }
     }
-
-    const menu = document.createElement("div");
-    menu.classList.add("context-menu");
-
-    // Loop through the options and create a menu item for each one
-    options.forEach((option) => {
-      const menuItem = document.createElement("button");
-      menuItem.innerText = option.label;
-      menuItem.style.background = "#ffffff";
-      menuItem.style.width = "100%"
-
-      menuItem.addEventListener("click", () => {
-        option.callback(event);
-        menu.remove();
-      });
-      menu.appendChild(menuItem);
-    });
-
-    // Position the menu at the mouse pointer
-    document.body.appendChild(menu);
-    menu.style.left = `${event.pageX}px`;
-    menu.style.top = `${event.pageY}px`;
-    menu.style.position = "absolute";
-    menu.style.minWidth = "33vw";
-    menu.style.width = "auto";
-    menu.style.height = "auto";
-    menu.style.background = "#000000";
-    menu.style.zIndex = "400"
-
-    // Listen for clicks outside the menu and close it if necessary
-    const closeMenu = () => {
-      menu.remove();
-      document.removeEventListener("click", closeMenu);
-    };
-    document.addEventListener("click", closeMenu);
-
-    // Set the active menu to the new menu
-    activeMenu = menu;
+  
+    return hotkey;
   }
-  function getContextMenuOptions(element) {
-    const classNames = Array.from(element.classList); // Get an array of all the class names on the element
-    const nodeName = element.nodeName || null
-    const id = element.id || null;
+  
+  // Define action functions for modal creation
+  const actions = {
+    settings: () => {
+      createModal({
+        title: "Settings",
+        content: "Settings content",
+        actions: [
+          {
+            label: "Close",
+          },
+        ],
+      });
+    },
+    undo: () => {
+      const hotkey = askForHotkey();
+      if (hotkey !== null) {
+        // Update the hotkey in the config
+        hotkeysConfig.undo = hotkey;
+      }
+    },
+    resetZoom: () => {
+      const hotkey = askForHotkey();
+      if (hotkey !== null) {
+        // Update the hotkey in the config
+        hotkeysConfig.resetZoom = hotkey;
+      }
+    },
+    overlap: () => {
+      const hotkey = askForHotkey();
+      if (hotkey !== null) {
+        // Update the hotkey in the config
+        hotkeysConfig.overlap = hotkey;
+      }
+    },
+};
+
+// create an array to hold the modal elements
+const modals = [];
+function createModal({ title = '', content = '', actions = [] }) {
+  // Close any existing modals
+  modals.forEach(modal => modal.remove());
+  // Create modal elements
+  const modal = document.createElement('div');
+  const modalOverlay = document.createElement('div');
+  const modalContainer = document.createElement('div');
+  const modalTitle = document.createElement('h3');
+  const modalContent = document.createElement('div');
+  const modalActions = document.createElement('div');
+
+  // Set class names
+  modal.className = 'modal';
+  modalOverlay.className = 'modal-overlay';
+  modalContainer.className = 'modal-container';
+  modalTitle.className = 'modal-title';
+  modalContent.className = 'modal-content';
+  modalActions.className = 'modal-actions';
+
+  // Set the title and content
+  modalTitle.textContent = title;
+  modalContent.innerHTML = content;
+
+  // Add actions
+  actions.forEach(action => {
+    const button = document.createElement('button');
+    button.textContent = action.label;
+    button.className = action.class || '';
+
+    modalActions.appendChild(button);
+    // add the modal to the modals array
+    modals.push(modal);
+  });
+
+  // Assemble the modal
+  modalContainer.appendChild(modalTitle);
+  modalContainer.appendChild(modalContent);
+  modalContainer.appendChild(modalActions);
+  modal.appendChild(modalOverlay);
+  modal.appendChild(modalContainer);
+  document.body.appendChild(modal);
+
+  // Close the modal
+  function closeModal() {
+    modal.remove();
+  }
+
+  // Close the modal when clicking outside the container
+  modalOverlay.addEventListener('click', closeModal);
+  return modal;
+}
 
 
 
-    const optionsByClass = {
-      link: [
-        {
-          label: "Open Link",
-          callback: () => {
-            // Code to open the link
-          },
-        },
-        {
-          label: "Copy Link Address",
-          callback: () => {
-            // Code to copy the link address
-          },
-        },
-      ],
-      image: [
-        {
-          label: "Save Image",
-          callback: () => {
-            // Code to save the image
-          },
-        },
-        {
-          label: "Copy Image Address",
-          callback: () => {
-            // Code to copy the image address
-          },
-        },
-      ],
-    };
-    const optionsById = {
-      txt2img_sampling: [
-        {
-          label: "this is just a test to see if this works",
-          callback: () => {
-            // Code to handle Option 1
-          },
-        },
-        {
-          label: "Option 2",
-          callback: () => {
-            // Code to handle Option 2
-          },
-        },
-      ],
-    };
-    const optionsBynodeName = {
-      SELECT: [
-        {
-          label: "copy value",
-          callback: () => {
-            const valueToCopy = element.selectedOptions[0].value;
-            navigator.clipboard.writeText(valueToCopy)
-              .then(() => {
-                console.log('Copied to clipboard:', valueToCopy);
-              })
-              .catch((error) => {
-                console.error('Failed to copy to clipboard:', error);
-              });
-          },
+const contextMenu = (() => {
+  const menu = document.createElement("div");
+  menu.className = "context-menu";
+  document.body.appendChild(menu);
+  return menu;
+})();
 
-        }
-      ],
-      INPUT: [
-        {
-          label: "copy value",
-          callback: () => {
-            const valueToCopy = element.value;
-            navigator.clipboard.writeText(valueToCopy)
-              .then(() => {
-                console.log('Copied to clipboard:', valueToCopy);
-              })
-              .catch((error) => {
-                console.error('Failed to copy to clipboard:', error);
-              });
-          },
-        }
-      ],
-    };
-    const defaultOptions1 = [
+const generateContextMenuItems = (items) =>
+  items
+    .map(
+      (item) =>
+        `<li data-action="${item.action}">
+             <span>${item.hotkey.toUpperCase()}</span>
+             ${item.label}
+           </li>`
+    )
+    .join("");
+
+document.addEventListener("contextmenu", (e) => {
+  let menuItems = [];
+  if (e.target.closest(sketchID)) {
+    e.preventDefault();
+    menuItems = [
       {
-        label: "Option 1",
-        callback: () => {
-          // Code to handle Option 1
-        },
+        action: "settings", // The action to perform when the item is clicked
+        hotkey: "⚙", // The hotkey to display next to the item in this case. It's the gear icon
+        label: "Settings", // The text to display for the item
+      },
+      // handle undo hotkey
+      {
+        action: "undo",
+        hotkey: hotkeysConfig.undo,
+        label: "Undo",
       },
       {
-        label: "Option 2",
-        callback: () => {
-          // Code to handle Option 2
-        },
+        action: "resetZoom",
+        hotkey: hotkeysConfig.resetZoom,
+        label: "Reset Zoom",
+      },
+      {
+        action: "overlap",
+        hotkey: hotkeysConfig.overlap,
+        label: "Toggle Overlap",
       },
     ];
-    
-    // use concat if u want to append more default options before checking elements
-    let options = defaultOptions1;
-    classNames.forEach((name) => {
-      if (optionsByClass[name]) {
-        options = options.concat(optionsByClass[name]);
+  } else if (e.target.closest(inpaintID) || e.target.closest(inpaintSketchID)) {
+    e.preventDefault();
+    menuItems = [];
+  } else {
+    contextMenu.style.display = "none";
+    return;
+  }
+
+
+  contextMenu.innerHTML = generateContextMenuItems(menuItems);
+  contextMenu.style.display = "block";
+  contextMenu.style.left = `${e.pageX}px`;
+  contextMenu.style.top = `${e.pageY}px`;
+});
+contextMenu.addEventListener("click", (e) => {
+  // remove the event listeners
+  const action = e.target.closest("li").dataset.action;
+  // Check if the action exists in the actions object and run the corresponding function
+  if (actions.hasOwnProperty(action)) {
+    actions[action]()
+  }
+});
+
+// Hide the context menu on left-click
+document.addEventListener("click", () => {
+  contextMenu.style.display = "none";
+});
+
+/**
+ * Trigger undo action on the active tab when Ctrl + Z is pressed.
+ * @param {string} elemId - The ID of the element to target.
+ */
+function undoActiveTab(elemId) {
+  document.addEventListener("keydown", (e) => {
+    // undo based on hotkeys config upper and lower case
+    if (e.key === hotkeysConfig.undo || e.key === hotkeysConfig.undo.toUpperCase()) {
+      if (e.ctrlKey) {
+        const undoBtn = document.querySelector(
+          `${elemId} button[aria-label="Undo"]`
+        );
+        if (undoBtn) {
+          undoBtn.click();
+        }
       }
-    });
-    if (optionsBynodeName[nodeName]) {
-      options = options.concat(optionsBynodeName[nodeName]);
     }
-    if (optionsById[id]) {
-      options = options.concat(optionsById[id]);
-    }
-    return options;
-  }
-  function handleMouseUp() {
-    // Create and cache a new mouse event
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true
-    });
+  });
+}
 
-    // Dispatch the click event using the cached button element
-    button.dispatchEvent(event);
+/**
+ * Apply zoom and pan functionality to a target element.
+ * @param {HTMLElement} targetElement - The element to apply zoom and pan functionality to.
+ * @param {string} elemId - The ID of the element to target.
+ */
+function applyZoomAndPan(targetElement, elemId) {
+  let [zoomLevel, panX, panY] = [1, 0, 0];
 
-    // Set pointer events back to their original value
-    element.style.pointerEvents = "auto";
 
-    // Remove event listeners for mousemove and mouseup
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
+  // helper functions
+  /**
+   * Reset zoom and pan to default values.
+   */
+  function resetZoom() {
+    zoomLevel = 1;
+    panX = 0;
+    panY = 0;
+    targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
   }
 
-  // Main listeners
-  element.addEventListener("wheel", (e) => {
-    if (e.shiftKey) {
-      e.preventDefault();
-      const newZoomLevel = e.deltaY > 0 ? zoomLevel * 0.9 : zoomLevel * 1.1;
-      zoomLevel = Math.max(1, Math.min(newZoomLevel, 10));
-      element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+  /**
+   * Toggle element overlap.
+   * @param {boolean} [overlap=true] - Whether to overlap elements or not.
+   */
+  function toggleOverlap(overlap = true) {
+    const zIndex1 = "0";
+    const zIndex2 = "99999";
+
+    if (overlap === false) {
+      targetElement.style.zIndex = zIndex1;
+      return;
     }
-    if (e.ctrlKey) {
 
-      // Prevent default behavior of the event if Ctrl key is held down
-      e.preventDefault();
-      // Get the input element and its value
-      const input = document.querySelector("body > gradio-app").shadowRoot.querySelector("#img2maskimg > div.h-60.bg-gray-200 > div > div.z-50.top-10.right-2.justify-end.flex.gap-1.absolute > span > input");
-      let value = parseFloat(input.value);
+    targetElement.style.zIndex =
+      targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
+  }
 
-      // Determine scroll direction and update input value accordingly
-      if (e.deltaY > 0) {
-        value -= 3;
+  /**
+   * Adjust brush size.
+   * @param {string} elemId - The ID of the element to target.
+   * @param {number} deltaY - The scroll delta.
+   */
+  function adjustBrushSize(elemId, deltaY) {
+    const input = document.querySelector(`${elemId} input[aria-label='Brush radius']`);
+
+    if (input == null) {
+      document.querySelector(`${elemId} button[aria-label="Use brush"]`).click();
+    }
+
+    let value = parseFloat(input.value);
+    value += deltaY > 0 ? -3 : 3;
+    input.value = value;
+    const changeEvent = new Event("change");
+    input.dispatchEvent(changeEvent);
+  }
+
+  undoActiveTab(elemId);
+
+  // Reset zoom when pressing R key and toggle overlap when pressing O key
+  document.addEventListener("keydown", (e) => {
+    // use hotkeys config upper and lower case
+    if (e.key === hotkeysConfig.resetZoom || e.key === hotkeysConfig.resetZoom.toUpperCase()) {
+      resetZoom();
+    }
+    if (e.key === hotkeysConfig.toggleOverlap || e.key === hotkeysConfig.toggleOverlap.toUpperCase()) {
+      toggleOverlap();
+    }
+  });
+
+  // Open brush colors
+  document.addEventListener("keypress", (e) => {
+    // use hotkeys config upper and lower case
+    if (e.key === hotkeysConfig.brushColors || e.key === hotkeysConfig.brushColors.toUpperCase()) {
+      const colorBtn = document.querySelector(
+        `${elemId} button[aria-label="Select brush color"]`
+      );
+
+      if (!colorBtn) {
+        return;
       } else {
-        value += 3;
+        colorBtn.click();
       }
-      // Set the new input value
-      input.value = value;
-      const changeEvent = new Event('change');
-      input.dispatchEvent(changeEvent);
     }
-
   });
-  element.addEventListener("mousedown", (e) => {
-    // Check if Shift key is held down
+
+  // Reset zoom when click on another tab
+  img2imgTabs.addEventListener("click", (e) => {
+    if (e.target.classList.contains("svelte-1g805jl")) {
+      toggleOverlap(false);
+      resetZoom();
+    }
+  });
+
+  targetElement.addEventListener("wheel", (e) => {
     if (e.shiftKey) {
-      // Set initial values for mouse position and panning
-      const startX = e.clientX;
-      const startY = e.clientY;
-      const startPanX = panX;
-      const startPanY = panY;
-
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
       e.preventDefault();
-      function handleMouseMove(e) {
-        // Calculate new panning values
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-        panX = startPanX + deltaX;
-        panY = startPanY + deltaY;
 
-        // Update element style with new panning values and disable pointer events
-        element.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
-        element.style.pointerEvents = "none";
-      }
-      handleMouseUp()
+      // Handle zooming with shift key pressed
+      const startZoomLevel = zoomLevel;
+
+      // Calculate new zoom level based on scroll direction and current zoom level
+      // - Add or subtract 0.1 if the zoom level is below 3
+      // - Add or subtract 0.5 if the zoom level is 3 or above
+      const delta = zoomLevel >= 3 ? 0.5 : 0.1;
+      zoomLevel = e.deltaY > 0 ? startZoomLevel - delta : startZoomLevel + delta;
+
+      // Clamp the zoom level between 0.5 and 10
+      zoomLevel = Math.max(0.5, Math.min(zoomLevel, 10));
+
+      // Update the target element's transform property to apply the new zoom level
+      targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+    } else if (e.ctrlKey) {
+      e.preventDefault();
+      // Handle brush size adjustment with ctrl key pressed
+      // Increase or decrease brush size based on scroll direction
+      adjustBrushSize(elemId, e.deltaY);
     }
   });
-  document.querySelector("body > gradio-app").shadowRoot.addEventListener("contextmenu", (event) => {
-    event.preventDefault(); // Prevent the browser's default context menu from appearing
-    const hoveredElement = getHoveredElementWorkAround(event); // Get the hovered element using the provided function
-    const options = getContextMenuOptions(hoveredElement);
-    createContextMenu(options, event, getHoveredElementWorkAround(event));
+
+  /**
+   * Handle the move event for pan functionality. Updates the panX and panY variables and applies the new transform to the target element.
+   * @param {MouseEvent} e - The mouse event.
+   */
+  function handleMove(e) {
+    e.preventDefault();
+    panX += e.movementX;
+    panY += e.movementY;
+    targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+    targetElement.style.pointerEvents = "none";
+  }
+
+  /**
+   * Handle the end event for pan functionality. Removes the event listeners. Enables pointer events.
+   */
+  function handleEnd() {
+    document.removeEventListener("mousemove", handleMove);
+    document.removeEventListener("mouseup", handleEnd);
+    targetElement.style.pointerEvents = "auto";
+  }
+  targetElement.addEventListener("mousedown", (e) => {
+    if (e.shiftKey) {
+      e.preventDefault();
+      document.addEventListener("mousemove", handleMove);
+      document.addEventListener("mouseup", handleEnd);
+    }
   });
-}, 3000);
+}
+
+applyZoomAndPan(sketchEl, sketchID);
+applyZoomAndPan(inpaintEl, inpaintID);
+applyZoomAndPan(inpaintSketchEl, inpaintSketchID);
+}) ();
