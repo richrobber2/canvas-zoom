@@ -390,6 +390,18 @@
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
     }
 
+    //Toggle overlap when click on box modal by right mouse
+    const modalBoxEl = document.querySelector("#lightboxModal");
+
+    // if (!modalBoxEl.hasAttribute("has-listener")) {
+    modalBoxEl.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      toggleOverlap();
+    });
+    // }
+
+    // modalBoxEl.setAttribute("has-listener", "true");
+
     /**
      * Adjust brush size.
      * @param {string} elemId - The ID of the element to target.
