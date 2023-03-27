@@ -86,52 +86,27 @@
     return hotkey;
   }
 
-  // Define action functions for modal creation
+  function updateHotkeyAndSave(action, hotkey) {
+    if (hotkey !== null) {
+      hotkeysConfig[action] = hotkey;
+      updateConfigAndSave(action, hotkey);
+    }
+  }
+
   const actions = {
     settings: () => {
       createModal({
         title: "Settings",
         content: "Settings content",
-        actions: [
-          {
-            label: "Close",
-          },
-        ],
+        actions: [{ label: "Close" }],
       });
     },
-    undo: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.undo = hotkey;
-        updateConfigAndSave("undo", hotkey);
-      }
-    },
-    resetZoom: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.resetZoom = hotkey;
-        updateConfigAndSave("resetZoom", hotkey);
-      }
-    },
-    overlap: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.overlap = hotkey;
-        updateConfigAndSave("overlap", hotkey);
-      }
-    },
-    openBrushSetting: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.openBrushSetting = hotkey;
-        updateConfigAndSave("openBrushSetting", hotkey);
-      }
-    },
+    undo: () => updateHotkeyAndSave("undo", askForHotkey()),
+    resetZoom: () => updateHotkeyAndSave("resetZoom", askForHotkey()),
+    overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
+    openBrushSetting: () => updateHotkeyAndSave("openBrushSetting", askForHotkey()),
   };
+
 
   // create an array to hold the modal elements
   const modals = [];
@@ -293,23 +268,19 @@
    */
   function undoActiveTab(elemId) {
     document.addEventListener("keydown", (e) => {
-      // undo based on hotkeys config upper and lower case
-      if (
-        e.key === hotkeysConfig.undo ||
-        e.key === hotkeysConfig.undo.toUpperCase()
-      ) {
-        if (e.ctrlKey) {
-          e.preventDefault();
-          const undoBtn = document.querySelector(
-            `${elemId} button[aria-label="Undo"]`
-          );
-          if (undoBtn) {
-            undoBtn.click();
-          }
+      const isUndoKey = e.key.toLowerCase() === hotkeysConfig.undo.toLowerCase();
+      const isCtrlPressed = e.ctrlKey;
+
+      if (isUndoKey && isCtrlPressed) {
+        e.preventDefault();
+        const undoBtn = document.querySelector(`${elemId} button[aria-label="Undo"]`);
+        if (undoBtn) {
+          undoBtn.click();
         }
       }
     });
   }
+
 
   /**
    * Apply zoom and pan functionality to a target element.
@@ -319,10 +290,7 @@
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
-    // helper functions
-    /**
-     * Toggle Brush Panel
-     */
+
     function toogleBrushPanel() {
       let colorId;
 
