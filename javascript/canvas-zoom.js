@@ -289,11 +289,8 @@
    */
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
-
-
     function toogleBrushPanel() {
       let colorId;
-
       // Get active tab to avoid some bug
       function getActiveTab() {
         const tabs = img2imgTabs.querySelectorAll("button");
@@ -304,10 +301,7 @@
           }
         }
       }
-
-      //
       const activeTab = getActiveTab();
-
       // Select current color panel
       if (activeTab.innerText === "Sketch") {
         colorId = sketchID;
@@ -337,9 +331,7 @@
         colorInput ? colorInput.click() : colorBtn;
       }, 0);
     }
-    /**
-     * Reset zoom and pan to default values.
-     */
+
     function resetZoom() {
       zoomLevel = 1;
       panX = 0;
@@ -347,9 +339,6 @@
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
     }
 
-    /**
-     * Toggle element overlap.
-     */
     function toggleOverlap() {
       const zIndex1 = "0";
       const zIndex2 = "99999";
@@ -358,28 +347,14 @@
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
     }
 
-    /**
-     * Adjust brush size.
-     * @param {string} elemId - The ID of the element to target.
-     * @param {number} deltaY - The scroll delta.
-     */
     function adjustBrushSize(elemId, deltaY) {
-      const input = document.querySelector(
-        `${elemId} input[aria-label='Brush radius']`
-      );
-
-      if (input == null) {
-        document
-          .querySelector(`${elemId} button[aria-label="Use brush"]`)
-          .click();
-      }
-
-      let value = parseFloat(input.value);
-      value += deltaY > 0 ? -3 : 3;
-      input.value = value;
-      const changeEvent = new Event("change");
-      input.dispatchEvent(changeEvent);
+      const input = document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
+        document.querySelector(`${elemId} button[aria-label="Use brush"]`);
+      input.click();
+      input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
+      input.dispatchEvent(new Event("change"));
     }
+
 
     //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
     fileInput = document.querySelector(
@@ -402,24 +377,16 @@
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
     document.addEventListener("keydown", (e) => {
-      // use hotkeys config upper and lower case
-      if (
-        e.key.toLocaleLowerCase() === hotkeysConfig.resetZoom ||
-        e.key === hotkeysConfig.resetZoom
-      ) {
-        resetZoom();
-      }
-      if (
-        e.key.toLocaleLowerCase() === hotkeysConfig.overlap ||
-        e.key === hotkeysConfig.overlap
-      ) {
-        toggleOverlap();
-      }
-      if (
-        e.key.toLocaleLowerCase() === hotkeysConfig.openBrushSetting ||
-        e.key === hotkeysConfig.openBrushSetting
-      ) {
-        toogleBrushPanel();
+      switch (e.key.toLowerCase()) {
+        case hotkeysConfig.resetZoom:
+          resetZoom();
+          break;
+        case hotkeysConfig.overlap:
+          toggleOverlap();
+          break;
+        case hotkeysConfig.openBrushSetting:
+          toggleBrushPanel();
+          break;
       }
     });
 
