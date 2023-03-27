@@ -34,7 +34,7 @@ Thanks XpusT for this idea.
 
 1. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
 
-2. Not my bug, the problem is with automatic1111. If you make something in sketch, then send it to inpaint or inpaint sketch , it breaks undo via shortcut and button. You need to delete the picture and load it back into the window, then everything will work
+2. This is not my bug, the problem is related to automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
 
 3.Hotkeys only work on the English keyboard layout
 
@@ -70,6 +70,6 @@ Thanks XpusT for this idea.
 
 1. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезатся. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
 
-2. Это не мой баг, проблема связана с automatic1111. Если вы делаете что-то в скетче, затем отправляете это в inpaint или inpaint sketch через кнопку( в любом порядке ), он ломает отмену через хоткей и кнопку. Вам нужно закрыть картинку и загрузить ёё обратно, тогда все будет работать.
+2. Это не мой баг, проблема связана с automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
 
 3. Хоткеи работают только на Английской раскладке
