@@ -86,51 +86,26 @@
     return hotkey;
   }
 
-  // Define action functions for modal creation
+  function updateHotkeyAndSave(action, hotkey) {
+    if (hotkey !== null) {
+      hotkeysConfig[action] = hotkey;
+      updateConfigAndSave(action, hotkey);
+    }
+  }
+
   const actions = {
     settings: () => {
       createModal({
         title: "Settings",
         content: "Settings content",
-        actions: [
-          {
-            label: "Close",
-          },
-        ],
+        actions: [{ label: "Close" }],
       });
     },
-    undo: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.undo = hotkey;
-        updateConfigAndSave("undo", hotkey);
-      }
-    },
-    resetZoom: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.resetZoom = hotkey;
-        updateConfigAndSave("resetZoom", hotkey);
-      }
-    },
-    overlap: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.overlap = hotkey;
-        updateConfigAndSave("overlap", hotkey);
-      }
-    },
-    openBrushSetting: () => {
-      const hotkey = askForHotkey();
-      if (hotkey !== null) {
-        // Update the hotkey in the config
-        hotkeysConfig.openBrushSetting = hotkey;
-        updateConfigAndSave("openBrushSetting", hotkey);
-      }
-    },
+    undo: () => updateHotkeyAndSave("undo", askForHotkey()),
+    resetZoom: () => updateHotkeyAndSave("resetZoom", askForHotkey()),
+    overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
+    openBrushSetting: () =>
+      updateHotkeyAndSave("openBrushSetting", askForHotkey()),
   };
 
   // create an array to hold the modal elements
@@ -293,19 +268,17 @@
    */
   function undoActiveTab(elemId) {
     document.addEventListener("keydown", (e) => {
-      // undo based on hotkeys config upper and lower case
-      if (
-        e.key === hotkeysConfig.undo ||
-        e.key === hotkeysConfig.undo.toUpperCase()
-      ) {
-        if (e.ctrlKey) {
-          e.preventDefault();
-          const undoBtn = document.querySelector(
-            `${elemId} button[aria-label="Undo"]`
-          );
-          if (undoBtn) {
-            undoBtn.click();
-          }
+      const isUndoKey =
+        e.key.toLowerCase() === hotkeysConfig.undo.toLowerCase();
+      const isCtrlPressed = e.ctrlKey;
+
+      if (isUndoKey && isCtrlPressed) {
+        e.preventDefault();
+        const undoBtn = document.querySelector(
+          `${elemId} button[aria-label="Undo"]`
+        );
+        if (undoBtn) {
+          undoBtn.click();
         }
       }
     });
@@ -319,13 +292,8 @@
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
-    // helper functions
-    /**
-     * Toggle Brush Panel
-     */
-    function toogleBrushPanel() {
+    function toggleBrushPanel() {
       let colorId;
-
       // Get active tab to avoid some bug
       function getActiveTab() {
         const tabs = img2imgTabs.querySelectorAll("button");
@@ -336,10 +304,7 @@
           }
         }
       }
-
-      //
       const activeTab = getActiveTab();
-
       // Select current color panel
       if (activeTab.innerText === "Sketch") {
         colorId = sketchID;
@@ -369,9 +334,7 @@
         colorInput ? colorInput.click() : colorBtn;
       }, 0);
     }
-    /**
-     * Reset zoom and pan to default values.
-     */
+
     function resetZoom() {
       zoomLevel = 1;
       panX = 0;
@@ -379,9 +342,6 @@
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
     }
 
-    /**
-     * Toggle element overlap.
-     */
     function toggleOverlap() {
       const zIndex1 = "0";
       const zIndex2 = "99999";
@@ -394,36 +354,18 @@
     // Thanks XpucT for idea
     const modalBoxEl = document.querySelector("#lightboxModal");
 
-    // if (!modalBoxEl.hasAttribute("has-listener")) {
     modalBoxEl.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       toggleOverlap();
     });
-    // }
 
-    // modalBoxEl.setAttribute("has-listener", "true");
-
-    /**
-     * Adjust brush size.
-     * @param {string} elemId - The ID of the element to target.
-     * @param {number} deltaY - The scroll delta.
-     */
     function adjustBrushSize(elemId, deltaY) {
-      const input = document.querySelector(
-        `${elemId} input[aria-label='Brush radius']`
-      );
-
-      if (input == null) {
-        document
-          .querySelector(`${elemId} button[aria-label="Use brush"]`)
-          .click();
-      }
-
-      let value = parseFloat(input.value);
-      value += deltaY > 0 ? -3 : 3;
-      input.value = value;
-      const changeEvent = new Event("change");
-      input.dispatchEvent(changeEvent);
+      const input =
+        document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
+        document.querySelector(`${elemId} button[aria-label="Use brush"]`);
+      input.click();
+      input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
+      input.dispatchEvent(new Event("change"));
     }
 
     //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
@@ -447,24 +389,16 @@
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
     document.addEventListener("keydown", (e) => {
-      // use hotkeys config upper and lower case
-      if (
-        e.key.toLocaleLowerCase() === hotkeysConfig.resetZoom ||
-        e.key === hotkeysConfig.resetZoom
-      ) {
-        resetZoom();
-      }
-      if (
-        e.key.toLocaleLowerCase() === hotkeysConfig.overlap ||
-        e.key === hotkeysConfig.overlap
-      ) {
-        toggleOverlap();
-      }
-      if (
-        e.key.toLocaleLowerCase() === hotkeysConfig.openBrushSetting ||
-        e.key === hotkeysConfig.openBrushSetting
-      ) {
-        toogleBrushPanel();
+      switch (e.key.toLowerCase()) {
+        case hotkeysConfig.resetZoom:
+          resetZoom();
+          break;
+        case hotkeysConfig.overlap:
+          toggleOverlap();
+          break;
+        case hotkeysConfig.openBrushSetting:
+          toggleBrushPanel();
+          break;
       }
     });
 
