@@ -104,9 +104,9 @@
     undo: () => updateHotkeyAndSave("undo", askForHotkey()),
     resetZoom: () => updateHotkeyAndSave("resetZoom", askForHotkey()),
     overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
-    openBrushSetting: () => updateHotkeyAndSave("openBrushSetting", askForHotkey()),
+    openBrushSetting: () =>
+      updateHotkeyAndSave("openBrushSetting", askForHotkey()),
   };
-
 
   // create an array to hold the modal elements
   const modals = [];
@@ -215,7 +215,7 @@
         {
           action: "openBrushSetting",
           hotkey: hotkeysConfig.openBrushSetting,
-          label: "Open color settings",
+          label: "Open color panel",
         },
       ];
     } else if (
@@ -268,19 +268,21 @@
    */
   function undoActiveTab(elemId) {
     document.addEventListener("keydown", (e) => {
-      const isUndoKey = e.key.toLowerCase() === hotkeysConfig.undo.toLowerCase();
+      const isUndoKey =
+        e.key.toLowerCase() === hotkeysConfig.undo.toLowerCase();
       const isCtrlPressed = e.ctrlKey;
 
       if (isUndoKey && isCtrlPressed) {
         e.preventDefault();
-        const undoBtn = document.querySelector(`${elemId} button[aria-label="Undo"]`);
+        const undoBtn = document.querySelector(
+          `${elemId} button[aria-label="Undo"]`
+        );
         if (undoBtn) {
           undoBtn.click();
         }
       }
     });
   }
-
 
   /**
    * Apply zoom and pan functionality to a target element.
@@ -289,7 +291,8 @@
    */
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
-    function toogleBrushPanel() {
+
+    function toggleBrushPanel() {
       let colorId;
       // Get active tab to avoid some bug
       function getActiveTab() {
@@ -347,14 +350,23 @@
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
     }
 
+    //Toggle overlap when click on box modal by right mouse
+    // Thanks XpucT for idea
+    const modalBoxEl = document.querySelector("#lightboxModal");
+
+    modalBoxEl.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      toggleOverlap();
+    });
+
     function adjustBrushSize(elemId, deltaY) {
-      const input = document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
+      const input =
+        document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
         document.querySelector(`${elemId} button[aria-label="Use brush"]`);
       input.click();
       input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
       input.dispatchEvent(new Event("change"));
     }
-
 
     //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
     fileInput = document.querySelector(
