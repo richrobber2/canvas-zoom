@@ -391,6 +391,7 @@
     }
 
     //Toggle overlap when click on box modal by right mouse
+    // Thanks XpusT for idea
     const modalBoxEl = document.querySelector("#lightboxModal");
 
     // if (!modalBoxEl.hasAttribute("has-listener")) {
