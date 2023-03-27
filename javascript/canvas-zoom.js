@@ -240,7 +240,7 @@
         {
           action: "openBrushSetting",
           hotkey: hotkeysConfig.openBrushSetting,
-          label: "Open color settings",
+          label: "Open color panel",
         },
       ];
     } else if (
