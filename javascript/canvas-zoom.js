@@ -12,6 +12,11 @@
   // Retrieve the config from localStorage and return as an object
   function getConfigFromLocalStorage() {
     const configString = localStorage.getItem("hotkeyConfig");
+
+    if (!configString) {
+      return false;
+    }
+
     return JSON.parse(configString);
   }
 
@@ -55,7 +60,6 @@
   let isMoving = false;
 
   checkAndSetDefaultConfig();
-
   // Load hotkeys configuration from localStorage or use default configuration
   let hotkeysConfig = getConfigFromLocalStorage() || defaultHotkeysConfig;
 
