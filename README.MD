@@ -19,7 +19,7 @@ Default hotkeys:
 
 **Ctr + wheel** - Change brush size
 
-**G** - Move canvas (Need to switch move mode)
+**F (hold)** - Move canvas (Need to switch move mode)
 
 **R** - Reset Zoom.
 
@@ -58,7 +58,7 @@ Thanks XpusT for this idea.
 
 **Ctr + колесо** - Изменить размер кисти
 
-**G** - Перемещение холста (Нужно включить другой режим перемещения)
+**F (удерживать)** - Перемещение холста (Нужно включить другой режим перемещения)
 
 **R** - Сброс зума.
 

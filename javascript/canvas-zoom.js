@@ -136,7 +136,7 @@
       hotkeysConfig.moveByKey = true;
       updateConfigAndSave("moveByKey", true);
       alert(
-        "The move method has been changed to KEY. \nClick the key. and the image will follow the mouse.."
+        "The move method has been changed to KEY. \nClick the key and hold. the image will follow the mouse as long as you hold down the button."
       );
     }
   }
