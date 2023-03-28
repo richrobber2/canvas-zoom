@@ -371,13 +371,27 @@
    * Trigger undo action on the active tab when Ctrl + Z is pressed.
    * @param {string} elemId - The ID of the element to target.
    */
+
+  // Get Active main tab to prevent "Undo" on text2img from being disabled
+  function getActiveMainTab() {
+    const selectedTab = document.querySelector(
+      "#tabs .tab-nav button.selected"
+    );
+    return selectedTab;
+  }
+
   function undoActiveTab(elemId) {
     document.addEventListener("keydown", (e) => {
       const isUndoKey = e.code === hotkeysConfig.undo;
-
       const isCtrlPressed = e.ctrlKey;
+      const activeTab = getActiveMainTab();
 
-      if (isUndoKey && isCtrlPressed) {
+      if (
+        isUndoKey &&
+        isCtrlPressed &&
+        activeTab &&
+        activeTab.textContent.trim() === "img2img"
+      ) {
         e.preventDefault();
         const undoBtn = document.querySelector(
           `${elemId} button[aria-label="Undo"]`
