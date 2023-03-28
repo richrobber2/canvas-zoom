@@ -6,12 +6,12 @@
 
   // Save the config to localStorage
   function saveConfigToLocalStorage(config) {
-    localStorage.setItem("hotkeysConfig", JSON.stringify(config));
+    localStorage.setItem("hotkeyConfig", JSON.stringify(config));
   }
 
   // Retrieve the config from localStorage and return as an object
   function getConfigFromLocalStorage() {
-    const configString = localStorage.getItem("hotkeysConfig");
+    const configString = localStorage.getItem("hotkeyConfig");
     return JSON.parse(configString);
   }
 
@@ -26,10 +26,10 @@
 
   if (configFromLocalStorage == null) {
     hotkeysConfig = {
-      undo: "z",
-      resetZoom: "r",
-      overlap: "o",
-      openBrushSetting: "q",
+      undo: "KeyZ",
+      resetZoom: "KeyR",
+      overlap: "KeyO",
+      openBrushSetting: "KeyQ",
     };
     saveConfigToLocalStorage(hotkeysConfig);
   } else {
@@ -49,8 +49,9 @@
       document.querySelector(img2imgTabsID),
     ]
   );
+
   function askForHotkey() {
-    const validKeys = /^[A-Za-z0-9]{1}$/; // A regex pattern to match a string containing a single alphanumeric character
+    const validKeys = /^[A-Za-zА]{1}$/; // A regex pattern to match a string containing 'Key' followed by a single alphabetical character
     const reservedKeys = [
       hotkeysConfig.resetZoom,
       hotkeysConfig.overlap,
@@ -59,9 +60,11 @@
     ];
 
     let hotkey = "";
+    let hotkeyCode = "";
 
     while (!validKeys.test(hotkey)) {
       hotkey = window.prompt("Please enter a valid hotkey:");
+      hotkeyCode = "Key" + hotkey.toUpperCase();
 
       if (!hotkey) {
         // User canceled the prompt
@@ -69,21 +72,23 @@
       }
 
       if (!validKeys.test(hotkey)) {
-        window.alert("Invalid hotkey. Please enter 1 alphanumeric character.");
-      } else if (reservedKeys.includes(hotkey)) {
+        window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
+      } else if (reservedKeys.includes(hotkeyCode)) {
         window.alert(
           "This hotkey is already in use. Please enter a different hotkey."
         );
         hotkey = "";
+        hotkeyCode = "";
       } else if (hotkey === " ") {
         window.alert(
           "This hotkey is not able to be used. Please enter a different hotkey."
         );
         hotkey = "";
+        hotkeyCode = "";
       }
     }
 
-    return hotkey;
+    return hotkeyCode;
   }
 
   function updateHotkeyAndSave(action, hotkey) {
@@ -171,12 +176,13 @@
     return menu;
   })();
 
+  // Get last char, "KeyZ" we get Z , "Digit1" we get 1
   const generateContextMenuItems = (items) =>
     items
       .map(
         (item) =>
           `<li data-action="${item.action}">
-             <span><b>${item.hotkey.toUpperCase()}</b></span>
+             <span><b>${item.hotkey.charAt(item.hotkey.length - 1)}</b></span> 
              ${item.label}
            </li>`
       )
@@ -193,7 +199,7 @@
       menuItems = [
         {
           action: "Change hotkeys", // The action to perform when the item is clicked
-          hotkey: "⚙", // The hotkey to display next to the item in this case. It's the gear icon
+          hotkey: "key⚙", // The hotkey to display next to the item in this case. It's the gear icon
           label: "Change hotkeys", // The text to display for the item
         },
         // handle undo hotkey
@@ -268,8 +274,9 @@
    */
   function undoActiveTab(elemId) {
     document.addEventListener("keydown", (e) => {
-      const isUndoKey =
-        e.key.toLowerCase() === hotkeysConfig.undo.toLowerCase();
+
+      const isUndoKey = e.code === hotkeysConfig.undo;
+
       const isCtrlPressed = e.ctrlKey;
 
       if (isUndoKey && isCtrlPressed) {
@@ -389,7 +396,7 @@
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
     document.addEventListener("keydown", (e) => {
-      switch (e.key.toLowerCase()) {
+      switch (e.code) {
         case hotkeysConfig.resetZoom:
           resetZoom();
           break;

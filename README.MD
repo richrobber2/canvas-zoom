@@ -36,7 +36,6 @@ Thanks XpusT for this idea.
 
 2. This is not my bug, the problem is related to automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
 
-3.Hotkeys only work on the English keyboard layout
 
 # RU
 Расширение [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
@@ -71,5 +70,3 @@ Thanks XpusT for this idea.
 1. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезатся. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
 
 2. Это не мой баг, проблема связана с automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
-
-3. Хоткеи работают только на Английской раскладке
