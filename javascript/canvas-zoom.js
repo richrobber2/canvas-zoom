@@ -21,20 +21,23 @@
     config[key] = value;
     saveConfigToLocalStorage(config);
   }
-  let hotkeysConfig;
-  const configFromLocalStorage = getConfigFromLocalStorage();
 
-  if (configFromLocalStorage == null) {
-    hotkeysConfig = {
-      undo: "KeyZ",
-      resetZoom: "KeyR",
-      overlap: "KeyO",
-      openBrushSetting: "KeyQ",
-    };
+  // Default hotkeys configuration
+  const defaultHotkeysConfig = {
+    undo: "KeyZ",
+    resetZoom: "KeyR",
+    overlap: "KeyO",
+    openBrushSetting: "KeyQ",
+  };
+
+  // Load hotkeys configuration from localStorage or use default configuration
+  let hotkeysConfig = getConfigFromLocalStorage() || defaultHotkeysConfig;
+
+  // Save the default configuration to localStorage if it's not already saved
+  if (hotkeysConfig === defaultHotkeysConfig) {
     saveConfigToLocalStorage(hotkeysConfig);
-  } else {
-    hotkeysConfig = getConfigFromLocalStorage();
   }
+
 
   const sketchID = "#img2img_sketch";
   const inpaintID = "#img2maskimg";
