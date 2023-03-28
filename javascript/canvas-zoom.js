@@ -269,7 +269,9 @@
    */
   function undoActiveTab(elemId) {
     document.addEventListener("keydown", (e) => {
+
       const isUndoKey = e.code === hotkeysConfig.undo;
+
       const isCtrlPressed = e.ctrlKey;
 
       if (isUndoKey && isCtrlPressed) {
