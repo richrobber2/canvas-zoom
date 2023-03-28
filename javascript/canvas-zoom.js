@@ -60,9 +60,11 @@
     ];
 
     let hotkey = "";
+    let hotkeyCode = "";
 
     while (!validKeys.test(hotkey)) {
       hotkey = window.prompt("Please enter a valid hotkey:");
+      hotkeyCode = "Key" + hotkey.toUpperCase();
 
       if (!hotkey) {
         // User canceled the prompt
@@ -71,20 +73,22 @@
 
       if (!validKeys.test(hotkey)) {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
-      } else if (reservedKeys.includes(hotkey)) {
+      } else if (reservedKeys.includes(hotkeyCode)) {
         window.alert(
           "This hotkey is already in use. Please enter a different hotkey."
         );
         hotkey = "";
+        hotkeyCode = "";
       } else if (hotkey === " ") {
         window.alert(
           "This hotkey is not able to be used. Please enter a different hotkey."
         );
         hotkey = "";
+        hotkeyCode = "";
       }
     }
 
-    return "Key" + hotkey.toUpperCase();
+    return hotkeyCode;
   }
 
   function updateHotkeyAndSave(action, hotkey) {
@@ -172,12 +176,13 @@
     return menu;
   })();
 
+  // Get last char, "KeyZ" we get Z , "Digit1" we get 1
   const generateContextMenuItems = (items) =>
     items
       .map(
         (item) =>
           `<li data-action="${item.action}">
-             <span><b>${item.hotkey[3]}</b></span>
+             <span><b>${item.hotkey.charAt(item.hotkey.length - 1)}</b></span> 
              ${item.label}
            </li>`
       )
@@ -270,6 +275,7 @@
   function undoActiveTab(elemId) {
     document.addEventListener("keydown", (e) => {
       const isUndoKey = e.code === hotkeysConfig.undo;
+
       const isCtrlPressed = e.ctrlKey;
 
       if (isUndoKey && isCtrlPressed) {
