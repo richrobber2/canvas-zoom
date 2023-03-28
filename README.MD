@@ -32,7 +32,7 @@ Default hotkeys:
 **Features**
 
 1) During the image preview, right-clicking on any area will trigger an Overlap
-Thanks XpusT for this idea.
+Thanks XpucT for this idea.
 
 **Known bugs:**
 
