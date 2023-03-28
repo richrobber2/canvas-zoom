@@ -49,7 +49,7 @@
     resetZoom: "KeyR",
     overlap: "KeyO",
     openBrushSetting: "KeyQ",
-    moveKey: "KeyG",
+    moveKey: "KeyF",
     moveByKey: false,
   };
   let isMoving = false;
@@ -60,9 +60,6 @@
   let hotkeysConfig = getConfigFromLocalStorage() || defaultHotkeysConfig;
 
   // Save the default configuration to localStorage if it's not already saved
-  if (hotkeysConfig === defaultHotkeysConfig) {
-    saveConfigToLocalStorage(hotkeysConfig);
-  }
 
   const sketchID = "#img2img_sketch";
   const inpaintID = "#img2maskimg";
@@ -133,13 +130,13 @@
       hotkeysConfig.moveByKey = false;
       updateConfigAndSave("moveByKey", false);
       alert(
-        "The move method has been changed to SHIFT + mouse drag.\n Hold down Shift and drag with the left, right or middle mouse button."
+        "The move method has been changed to SHIFT + mouse drag. \n Hold down Shift and drag with the left, right or middle mouse button."
       );
     } else {
       hotkeysConfig.moveByKey = true;
       updateConfigAndSave("moveByKey", true);
       alert(
-        "The move method has been changed to KEY.\nClick the key. and the image will follow the mouse.."
+        "The move method has been changed to KEY. \nClick the key. and the image will follow the mouse.."
       );
     }
   }
@@ -331,6 +328,41 @@
     clearTimeout(timeoutId);
   });
 
+  //helper functions
+  // get active tab
+  function getActiveTab() {
+    const tabs = img2imgTabs.querySelectorAll("button");
+
+    for (let tab of tabs) {
+      if (tab.classList.contains("selected")) {
+        return tab;
+      }
+    }
+  }
+
+  // Get tab ID
+  function getTabId() {
+    let tabId;
+    // Get active tab to avoid some bug
+    const activeTab = getActiveTab();
+    // Select current color panel
+    switch (activeTab.innerText) {
+      case "Sketch":
+        tabId = sketchID;
+        break;
+      case "Inpaint sketch":
+        tabId = inpaintSketchID;
+        break;
+      case "Inpaint":
+        tabId = inpaintID;
+        break;
+      default:
+        return;
+    }
+
+    return tabId;
+  }
+
   /**
    * Trigger undo action on the active tab when Ctrl + Z is pressed.
    * @param {string} elemId - The ID of the element to target.
@@ -361,34 +393,17 @@
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
+    // toggle color panel
     function toggleBrushPanel() {
-      let colorId;
-      // Get active tab to avoid some bug
-      function getActiveTab() {
-        const tabs = img2imgTabs.querySelectorAll("button");
-
-        for (let tab of tabs) {
-          if (tab.classList.contains("selected")) {
-            return tab;
-          }
-        }
-      }
-      const activeTab = getActiveTab();
-      // Select current color panel
-      if (activeTab.innerText === "Sketch") {
-        colorId = sketchID;
-      } else if (activeTab.innerText === "Inpaint sketch") {
-        colorId = inpaintSketchID;
-      } else {
-        return;
-      }
+      const colorID = getTabId();
+      console.log(colorID);
 
       const colorBtn = document.querySelector(
-        `${colorId} button[aria-label="Select brush color"]`
+        `${colorID} button[aria-label="Select brush color"]`
       );
 
       const colorInput = document.querySelector(
-        `${colorId} input[aria-label="Brush color"]`
+        `${colorID} input[aria-label="Brush color"]`
       );
 
       if (!colorInput) {
@@ -398,7 +413,7 @@
       // Open color menu
       setTimeout(() => {
         const colorInput = document.querySelector(
-          `${colorId} input[aria-label="Brush color"]`
+          `${colorID} input[aria-label="Brush color"]`
         );
         colorInput ? colorInput.click() : colorBtn;
       }, 0);
@@ -445,20 +460,13 @@
       resetZoom();
     });
 
-    /**
-     * Disable overlap when open context menu open
-     **/
-    // targetElement.addEventListener("contextmenu", (e) => {
-    //   e.preventDefault();
-    //   targetElement.style.zIndex = 0;
-    // });
-
+    //undo
     undoActiveTab(elemId);
 
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
-    document.addEventListener("keydown", (e) => {
-      switch (e.code) {
+    function handleKeyDown(event) {
+      switch (event.code) {
         case hotkeysConfig.resetZoom:
           resetZoom();
           break;
@@ -469,7 +477,20 @@
           toggleBrushPanel();
           break;
       }
-    });
+    }
+
+    //Handle events only inside the targetElement
+    function handleMouseEnter() {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    function handleMouseLeave() {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+
+    // Добавить обработчики событий мыши
+    targetElement.addEventListener("mouseenter", handleMouseEnter);
+    targetElement.addEventListener("mouseleave", handleMouseLeave);
 
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
@@ -510,13 +531,20 @@
      * Handle the move event for pan functionality. Updates the panX and panY variables and applies the new transform to the target element.
      * @param {MouseEvent} e - The mouse event.
      */
-    function toggleMove(e) {
+    function handleMoveKeyDown(e) {
       if (hotkeysConfig.moveByKey && e.code === hotkeysConfig.moveKey) {
-        isMoving = !isMoving;
+        isMoving = true;
       }
     }
 
-    document.addEventListener("keydown", (e) => toggleMove(e));
+    function handleMoveKeyUp(e) {
+      if (hotkeysConfig.moveByKey && e.code === hotkeysConfig.moveKey) {
+        isMoving = false;
+      }
+    }
+
+    document.addEventListener("keydown", handleMoveKeyDown);
+    document.addEventListener("keyup", handleMoveKeyUp);
 
     function handleMoveByKey(e) {
       if (isMoving) {
