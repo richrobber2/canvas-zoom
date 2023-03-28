@@ -7,15 +7,19 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
-You can edit the hotkeys as you want by **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want
+You can edit the hotkeys as you want, to do this, you need to get into the context menu, you need to **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want
+
+**Move mode can be switched via the context menu.**
 
 Default hotkeys:
 
-**Shift + wheel(hold)** - Move canvas
+**Shift + click or wheel (hold)** - Move canvas
 
 **Shift + wheel** - Scale canvas
 
 **Ctr + wheel** - Change brush size
+
+**G** - Move canvas (Need to switch move mode)
 
 **R** - Reset Zoom.
 
@@ -42,15 +46,19 @@ Thanks XpusT for this idea.
 
 Добавляет возможность зума в Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
 
-Вы можете редактировать горячие клавиши по своему усмотрению, **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
+Вы можете редактировать горячие клавиши по своему усмотрению, для этого нужно попасть в контекстное меню, нужно **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
+
+**Режим перемещения холста может быть изменен в контекстом меню.**
 
 Горячие клавиши по умолчанию:
 
-**Shift + колесо (удерживать)** - Переместить холст
+**Shift + левая кнопка или колесо (удерживать)** - Переместить холст
 
 **Shift + колесо** - Масштабировать холст
 
 **Ctr + колесо** - Изменить размер кисти
+
+**G** - Перемещение холста (Нужно включить другой режим перемещения)
 
 **R** - Сброс зума.
 

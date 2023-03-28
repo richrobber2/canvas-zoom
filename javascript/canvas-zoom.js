@@ -15,6 +15,27 @@
     return JSON.parse(configString);
   }
 
+  // Check all keys in LocalStorage
+  function checkAndSetDefaultConfig() {
+    const config = getConfigFromLocalStorage();
+    const defaultKeys = Object.keys(defaultHotkeysConfig);
+    const currentKeys = Object.keys(config);
+
+    if (defaultKeys.length !== currentKeys.length) {
+      saveConfigToLocalStorage(defaultHotkeysConfig);
+      return defaultHotkeysConfig;
+    }
+
+    for (const key of defaultKeys) {
+      if (!currentKeys.includes(key)) {
+        saveConfigToLocalStorage(defaultHotkeysConfig);
+        return defaultHotkeysConfig;
+      }
+    }
+
+    return config;
+  }
+
   // Update the config, and save it to localStorage
   function updateConfigAndSave(key, value) {
     const config = getConfigFromLocalStorage();
@@ -28,7 +49,12 @@
     resetZoom: "KeyR",
     overlap: "KeyO",
     openBrushSetting: "KeyQ",
+    moveKey: "KeyG",
+    moveByKey: false,
   };
+  let isMoving = false;
+
+  checkAndSetDefaultConfig();
 
   // Load hotkeys configuration from localStorage or use default configuration
   let hotkeysConfig = getConfigFromLocalStorage() || defaultHotkeysConfig;
@@ -59,6 +85,7 @@
       hotkeysConfig.overlap,
       hotkeysConfig.openBrushSetting,
       hotkeysConfig.undo,
+      hotkeysConfig.moveKey,
     ];
 
     let hotkey = "";
@@ -100,6 +127,23 @@
     }
   }
 
+  // change move mode
+  function changeMoveMode() {
+    if (hotkeysConfig.moveByKey) {
+      hotkeysConfig.moveByKey = false;
+      updateConfigAndSave("moveByKey", false);
+      alert(
+        "The move method has been changed to SHIFT + mouse drag.\n Hold down Shift and drag with the left, right or middle mouse button."
+      );
+    } else {
+      hotkeysConfig.moveByKey = true;
+      updateConfigAndSave("moveByKey", true);
+      alert(
+        "The move method has been changed to KEY.\nClick the key. and the image will follow the mouse.."
+      );
+    }
+  }
+
   const actions = {
     settings: () => {
       createModal({
@@ -113,6 +157,8 @@
     overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
     openBrushSetting: () =>
       updateHotkeyAndSave("openBrushSetting", askForHotkey()),
+    setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey()),
+    changeMoveMode: () => changeMoveMode(),
   };
 
   // create an array to hold the modal elements
@@ -181,13 +227,18 @@
   // Get last char, "KeyZ" we get Z , "Digit1" we get 1
   const generateContextMenuItems = (items) =>
     items
-      .map(
-        (item) =>
-          `<li data-action="${item.action}">
+      .map((item) => {
+        if (typeof item.hotkey === "boolean") {
+          return `<li data-action="${item.action}">
+             <span><b>${hotkeysConfig.moveByKey ? "Key" : "Shift"}</b></span> 
+             ${item.label}
+           </li>`;
+        }
+        return `<li data-action="${item.action}">
              <span><b>${item.hotkey.charAt(item.hotkey.length - 1)}</b></span> 
              ${item.label}
-           </li>`
-      )
+           </li>`;
+      })
       .join("");
 
   document.addEventListener("contextmenu", (e) => {
@@ -224,6 +275,16 @@
           action: "openBrushSetting",
           hotkey: hotkeysConfig.openBrushSetting,
           label: "Open color panel",
+        },
+        {
+          action: "changeMoveMode",
+          hotkey: hotkeysConfig.moveByKey,
+          label: "Change Move mode",
+        },
+        {
+          action: "setMoveKey",
+          hotkey: hotkeysConfig.moveKey,
+          label: "Key to move the image",
         },
       ];
     } else if (
@@ -449,7 +510,26 @@
      * Handle the move event for pan functionality. Updates the panX and panY variables and applies the new transform to the target element.
      * @param {MouseEvent} e - The mouse event.
      */
-    function handleMove(e) {
+    function toggleMove(e) {
+      if (hotkeysConfig.moveByKey && e.code === hotkeysConfig.moveKey) {
+        isMoving = !isMoving;
+      }
+    }
+
+    document.addEventListener("keydown", (e) => toggleMove(e));
+
+    function handleMoveByKey(e) {
+      if (isMoving) {
+        panX += e.movementX;
+        panY += e.movementY;
+        targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+        targetElement.style.pointerEvents = "none";
+      } else {
+        targetElement.style.pointerEvents = "auto";
+      }
+    }
+
+    function handleMoveByMouse(e) {
       e.preventDefault();
       panX += e.movementX;
       panY += e.movementY;
@@ -457,19 +537,34 @@
       targetElement.style.pointerEvents = "none";
     }
 
-    /**
-     * Handle the end event for pan functionality. Removes the event listeners. Enables pointer events.
-     */
+    // Handle the end event for pan functionality. Removes the event listeners. Enables pointer event
     function handleEnd() {
-      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mousemove", handleMoveByMouse);
       document.removeEventListener("mouseup", handleEnd);
       targetElement.style.pointerEvents = "auto";
     }
-    targetElement.addEventListener("mousedown", (e) => {
+
+    function targetElementHandler(e) {
       if (e.shiftKey) {
         e.preventDefault();
-        document.addEventListener("mousemove", handleMove);
+        document.addEventListener("mousemove", handleMoveByMouse);
         document.addEventListener("mouseup", handleEnd);
+
+        // remove key listener
+        document.removeEventListener("mousemove", handleMoveByKey);
+      }
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      if (hotkeysConfig.moveByKey) {
+        document.addEventListener("mousemove", handleMoveByKey);
+
+        // remove shift listeners
+        document.removeEventListener("mousemove", handleMoveByMouse);
+        document.removeEventListener("mouseup", handleEnd);
+        targetElement.removeEventListener("mousedown", targetElementHandler);
+      } else {
+        targetElement.addEventListener("mousedown", targetElementHandler);
       }
     });
   }
