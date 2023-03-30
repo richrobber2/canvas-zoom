@@ -54,10 +54,14 @@
     resetZoom: "KeyR",
     overlap: "KeyO",
     openBrushSetting: "KeyQ",
+    openBrushPanelUnderMouse: "KeyT",
     moveKey: "KeyF",
     moveByKey: false,
   };
   let isMoving = false;
+
+  // Variables for mouse position tracking
+  let mouseX, mouseY;
 
   checkAndSetDefaultConfig();
   // Load hotkeys configuration from localStorage or use default configuration
@@ -85,6 +89,7 @@
       hotkeysConfig.resetZoom,
       hotkeysConfig.overlap,
       hotkeysConfig.openBrushSetting,
+      hotkeysConfig.openBrushPanelUnderMouse,
       hotkeysConfig.undo,
       hotkeysConfig.moveKey,
     ];
@@ -158,6 +163,9 @@
     overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
     openBrushSetting: () =>
       updateHotkeyAndSave("openBrushSetting", askForHotkey()),
+    openBrushPanelUnderMouse: () => {
+      updateHotkeyAndSave("openBrushPanelUnderMouse", askForHotkey());
+    },
     setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey()),
     changeMoveMode: () => changeMoveMode(),
   };
@@ -276,6 +284,11 @@
           action: "openBrushSetting",
           hotkey: hotkeysConfig.openBrushSetting,
           label: "Open color panel",
+        },
+        {
+          action: "openBrushPanelUnderMouse",
+          hotkey: hotkeysConfig.openBrushPanelUnderMouse,
+          label: "Experimentally, puts a color bar next to the mouse",
         },
         {
           action: "changeMoveMode",
@@ -411,10 +424,9 @@
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
-    // toggle color panel
+    // toggle color panel, panel stayed pinned to the edge
     function toggleBrushPanel() {
       const colorID = getTabId();
-      console.log(colorID);
 
       const colorBtn = document.querySelector(
         `${colorID} button[aria-label="Select brush color"]`
@@ -433,7 +445,65 @@
         const colorInput = document.querySelector(
           `${colorID} input[aria-label="Brush color"]`
         );
+
         colorInput ? colorInput.click() : colorBtn;
+      }, 0);
+    }
+
+    // toggle color panel, panel appeared under the mouse
+    function openBrushPanelUnderMouse() {
+      const colorID = getTabId();
+
+      const colorBtn = document.querySelector(
+        `${colorID} button[aria-label="Select brush color"]`
+      );
+
+      const colorInput = document.querySelector(
+        `${colorID} input[aria-label="Brush color"]`
+      );
+
+      if (!colorInput) {
+        colorBtn ? colorBtn.click() : null;
+      }
+
+      // Open color menu
+      setTimeout(() => {
+        const colorInput = document.querySelector(
+          `${colorID} input[aria-label="Brush color"]`
+        );
+
+        // Bro if you're reading this comment, I have no idea how it works, but it works.)
+
+        let getOffsetWidth =
+          targetElement.clientWidth -
+          Math.round(targetElement.clientWidth * 0.13);
+
+        if (zoomLevel > 3 && getOffsetWidth < 900) {
+          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.15);
+        }
+
+        // if (getOffsetWidth > 700 && zoomLevel > 3) {
+        //   getOffsetWidth -= Math.round(targetElement.clientWidth * 0.1);
+        // }
+
+        if (getOffsetWidth > 800) {
+          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.1);
+        }
+        if (getOffsetWidth > 900) {
+          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.15);
+        }
+
+        colorInput.style.position = "absolute";
+        colorInput.style.visibility = "hidden";
+
+        // colorInput.style.bottom = "0px";
+        colorInput.style.left = mouseX - getOffsetWidth + "px";
+        colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+
+        setTimeout(() => {
+          colorInput.click();
+        }, 0);
+        // colorInput ?  : colorBtn;
       }, 0);
     }
 
@@ -494,8 +564,18 @@
         case hotkeysConfig.openBrushSetting:
           toggleBrushPanel();
           break;
+        case hotkeysConfig.openBrushPanelUnderMouse:
+          openBrushPanelUnderMouse();
       }
     }
+
+    // Get Mouse position
+    function getMousePosition(e) {
+      mouseX = e.offsetX;
+      mouseY = e.offsetY;
+    }
+
+    targetElement.addEventListener("mousemove", getMousePosition);
 
     //Handle events only inside the targetElement
     function handleMouseEnter() {
