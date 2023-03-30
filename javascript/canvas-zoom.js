@@ -445,6 +445,14 @@
         const colorInput = document.querySelector(
           `${colorID} input[aria-label="Brush color"]`
         );
+        
+        // return brush color panel to the edge
+        if (colorInput.style.visibility === "hidden") {
+          colorInput.style.visibility = "visible";
+          colorInput.style.position = "";
+          colorInput.style.left = "";
+          colorInput.style.top = "";
+        }
 
         colorInput ? colorInput.click() : colorBtn;
       }, 0);
