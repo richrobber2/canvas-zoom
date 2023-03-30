@@ -36,6 +36,8 @@ Default hotkeys:
 1) During the image preview, right-clicking on any area will trigger an Overlap
 Thanks XpucT for this idea.
 
+2) You can fix the color bar wherever you want, for this purpose point the mouse on the place you want and press "T" and then every time you press "Q" the color bar will open in this place. If you click on the button in the right corner, the panel will reset and work as it should.
+
 **Known bugs:**
 
 1. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
@@ -79,6 +81,8 @@ Possible solution to 2 bug:
 
 1) Во время препросмотра сделанного изображения, щелчок правой кнопкой мыши на любой области переключает перекрытие элементов.
 Спасибо XpuсT за идею, в его видео это был баг, теперь это фича.
+
+2) Вы можете закрепить цветовую панель где угодно, для этого наведите мышкой на нужно место и нажмите "T" после чего каждый раз на "Q" Цветовая панель будет открываться в этом месте. Если вы нажмете на кнопку в правом углу, то панель сбросится и будет работать как и должна.
 
 **Известные баги:**
 
