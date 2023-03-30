@@ -25,7 +25,7 @@ Default hotkeys:
 
 **Q** - Open/Close color panel
 
-**T** - Open color panel right above the mouse ( Experimental)
+**T** - Open color panel right above the mouse. The mouse should be in the image area
 
 **O** - Overlap all elements and back
 
@@ -73,7 +73,7 @@ Possible solution to 2 bug:
 
 **Q** - Открыть/Закрыть выбор цвета 
 
-**T** - Открыть выбор цвета прямо над мышкой ( Работает немного коряво )
+**T** - Открыть выбор цвета прямо над мышкой. Мышка должна быть в области изображения
 
 **O** - Перекрыть все элементы и обратно
 
