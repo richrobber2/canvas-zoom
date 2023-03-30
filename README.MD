@@ -11,6 +11,8 @@ You can edit the hotkeys as you want, to do this, you need to get into the conte
 
 **Move mode can be switched via the context menu.**
 
+The hotkeys work in the image area, except for the hotkey for moving
+
 Default hotkeys:
 
 **Shift + click or wheel (hold)** - Move canvas
@@ -58,6 +60,8 @@ Possible solution to 2 bug:
 Вы можете редактировать горячие клавиши по своему усмотрению, для этого нужно попасть в контекстное меню, нужно **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
 
 **Режим перемещения холста может быть изменен в контекстом меню.**
+
+Горячие клавиши работают только в области изображения, мышка должна быть на этой области , за исключением горячей клавиши для перемещения
 
 Горячие клавиши по умолчанию:
 
