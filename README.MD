@@ -7,19 +7,25 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
-You can edit the hotkeys as you want by **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want
+You can edit the hotkeys as you want, to do this, you need to get into the context menu, you need to **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want
+
+**Move mode can be switched via the context menu.**
 
 Default hotkeys:
 
-**Shift + wheel(hold)** - Move canvas
+**Shift + click or wheel (hold)** - Move canvas
 
 **Shift + wheel** - Scale canvas
 
 **Ctr + wheel** - Change brush size
 
+**F (hold)** - Move canvas (Need to switch move mode)
+
 **R** - Reset Zoom.
 
 **Q** - Open/Close color panel
+
+**T** - Open color panel right above the mouse ( Experimental)
 
 **O** - Overlap all elements and back
 
@@ -28,7 +34,9 @@ Default hotkeys:
 **Features**
 
 1) During the image preview, right-clicking on any area will trigger an Overlap
-Thanks XpusT for this idea.
+Thanks XpucT for this idea.
+
+2) You can fix the color bar wherever you want, for this purpose point the mouse on the place you want and press "T" and then every time you press "Q" the color bar will open in this place. If you click on the button in the right corner, the panel will reset and work as it should.
 
 **Known bugs:**
 
@@ -36,25 +44,34 @@ Thanks XpusT for this idea.
 
 2. This is not my bug, the problem is related to automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
 
+Possible solution to 2 bug:
+
+[![Login](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI3N2JlYjc3ZDc5YmIwMWZmMTIwNjk3MzFmNmQ4NGNkN2Y5MjE3MiZjdD1n/R67pCVIilbxy0bsYiq/giphy.gif)]()
 
 # RU
 Расширение [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
 
 Добавляет возможность зума в Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
 
-Вы можете редактировать горячие клавиши по своему усмотрению, **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
+Вы можете редактировать горячие клавиши по своему усмотрению, для этого нужно попасть в контекстное меню, нужно **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
+
+**Режим перемещения холста может быть изменен в контекстом меню.**
 
 Горячие клавиши по умолчанию:
 
-**Shift + колесо (удерживать)** - Переместить холст
+**Shift + левая кнопка или колесо (удерживать)** - Переместить холст
 
 **Shift + колесо** - Масштабировать холст
 
 **Ctr + колесо** - Изменить размер кисти
 
+**F (удерживать)** - Перемещение холста (Нужно включить другой режим перемещения)
+
 **R** - Сброс зума.
 
 **Q** - Открыть/Закрыть выбор цвета 
+
+**T** - Открыть выбор цвета прямо над мышкой ( Работает немного коряво )
 
 **O** - Перекрыть все элементы и обратно
 
@@ -65,8 +82,14 @@ Thanks XpusT for this idea.
 1) Во время препросмотра сделанного изображения, щелчок правой кнопкой мыши на любой области переключает перекрытие элементов.
 Спасибо XpuсT за идею, в его видео это был баг, теперь это фича.
 
+2) Вы можете закрепить цветовую панель где угодно, для этого наведите мышкой на нужно место и нажмите "T" после чего каждый раз на "Q" Цветовая панель будет открываться в этом месте. Если вы нажмете на кнопку в правом углу, то панель сбросится и будет работать как и должна.
+
 **Известные баги:**
 
 1. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезатся. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
 
 2. Это не мой баг, проблема связана с automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
+
+Возможно решение 2 бага:
+
+[![Login](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI3N2JlYjc3ZDc5YmIwMWZmMTIwNjk3MzFmNmQ4NGNkN2Y5MjE3MiZjdD1n/R67pCVIilbxy0bsYiq/giphy.gif)]()
