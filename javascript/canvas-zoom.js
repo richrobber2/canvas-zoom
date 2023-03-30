@@ -12,7 +12,33 @@
   // Retrieve the config from localStorage and return as an object
   function getConfigFromLocalStorage() {
     const configString = localStorage.getItem("hotkeyConfig");
+
+    if (!configString) {
+      return false;
+    }
+
     return JSON.parse(configString);
+  }
+
+  // Check all keys in LocalStorage
+  function checkAndSetDefaultConfig() {
+    const config = getConfigFromLocalStorage();
+    const defaultKeys = Object.keys(defaultHotkeysConfig);
+    const currentKeys = Object.keys(config);
+
+    if (defaultKeys.length !== currentKeys.length) {
+      saveConfigToLocalStorage(defaultHotkeysConfig);
+      return defaultHotkeysConfig;
+    }
+
+    for (const key of defaultKeys) {
+      if (!currentKeys.includes(key)) {
+        saveConfigToLocalStorage(defaultHotkeysConfig);
+        return defaultHotkeysConfig;
+      }
+    }
+
+    return config;
   }
 
   // Update the config, and save it to localStorage
@@ -28,16 +54,20 @@
     resetZoom: "KeyR",
     overlap: "KeyO",
     openBrushSetting: "KeyQ",
+    openBrushPanelUnderMouse: "KeyT",
+    moveKey: "KeyF",
+    moveByKey: false,
   };
+  let isMoving = false;
 
+  // Variables for mouse position tracking
+  let mouseX, mouseY;
+
+  checkAndSetDefaultConfig();
   // Load hotkeys configuration from localStorage or use default configuration
   let hotkeysConfig = getConfigFromLocalStorage() || defaultHotkeysConfig;
 
   // Save the default configuration to localStorage if it's not already saved
-  if (hotkeysConfig === defaultHotkeysConfig) {
-    saveConfigToLocalStorage(hotkeysConfig);
-  }
-
 
   const sketchID = "#img2img_sketch";
   const inpaintID = "#img2maskimg";
@@ -59,7 +89,9 @@
       hotkeysConfig.resetZoom,
       hotkeysConfig.overlap,
       hotkeysConfig.openBrushSetting,
+      hotkeysConfig.openBrushPanelUnderMouse,
       hotkeysConfig.undo,
+      hotkeysConfig.moveKey,
     ];
   
     let hotkey = "";
@@ -93,6 +125,23 @@
     }
   }
 
+  // change move mode
+  function changeMoveMode() {
+    if (hotkeysConfig.moveByKey) {
+      hotkeysConfig.moveByKey = false;
+      updateConfigAndSave("moveByKey", false);
+      alert(
+        "The move method has been changed to SHIFT + mouse drag. \n Hold down Shift and drag with the left, right or middle mouse button."
+      );
+    } else {
+      hotkeysConfig.moveByKey = true;
+      updateConfigAndSave("moveByKey", true);
+      alert(
+        "The move method has been changed to KEY. \nClick the key and hold. the image will follow the mouse as long as you hold down the button."
+      );
+    }
+  }
+
   const actions = {
     settings: () => {
       createModal({
@@ -106,6 +155,11 @@
     overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
     openBrushSetting: () =>
       updateHotkeyAndSave("openBrushSetting", askForHotkey()),
+    openBrushPanelUnderMouse: () => {
+      updateHotkeyAndSave("openBrushPanelUnderMouse", askForHotkey());
+    },
+    setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey()),
+    changeMoveMode: () => changeMoveMode(),
   };
 
   // create an array to hold the modal elements
@@ -174,13 +228,18 @@
   // Get last char, "KeyZ" we get Z , "Digit1" we get 1
   const generateContextMenuItems = (items) =>
     items
-      .map(
-        (item) =>
-          `<li data-action="${item.action}">
+      .map((item) => {
+        if (typeof item.hotkey === "boolean") {
+          return `<li data-action="${item.action}">
+             <span><b>${hotkeysConfig.moveByKey ? "Key" : "Shift"}</b></span> 
+             ${item.label}
+           </li>`;
+        }
+        return `<li data-action="${item.action}">
              <span><b>${item.hotkey.charAt(item.hotkey.length - 1)}</b></span> 
              ${item.label}
-           </li>`
-      )
+           </li>`;
+      })
       .join("");
 
   document.addEventListener("contextmenu", (e) => {
@@ -217,6 +276,21 @@
           action: "openBrushSetting",
           hotkey: hotkeysConfig.openBrushSetting,
           label: "Open color panel",
+        },
+        {
+          action: "openBrushPanelUnderMouse",
+          hotkey: hotkeysConfig.openBrushPanelUnderMouse,
+          label: "Experimentally, puts a color bar next to the mouse",
+        },
+        {
+          action: "changeMoveMode",
+          hotkey: hotkeysConfig.moveByKey,
+          label: "Change Move mode",
+        },
+        {
+          action: "setMoveKey",
+          hotkey: hotkeysConfig.moveKey,
+          label: "Key to move the image",
         },
       ];
     } else if (
@@ -263,27 +337,52 @@
     clearTimeout(timeoutId);
   });
 
+  //helper functions
+  // get active tab
+  function getActiveTab() {
+    const tabs = img2imgTabs.querySelectorAll("button");
+
+    for (let tab of tabs) {
+      if (tab.classList.contains("selected")) {
+        return tab;
+      }
+    }
+  }
+
+  // Get tab ID
+  function getTabId() {
+    let tabId;
+    // Get active tab to avoid some bug
+    const activeTab = getActiveTab();
+    // Select current color panel
+    switch (activeTab.innerText) {
+      case "Sketch":
+        tabId = sketchID;
+        break;
+      case "Inpaint sketch":
+        tabId = inpaintSketchID;
+        break;
+      case "Inpaint":
+        tabId = inpaintID;
+        break;
+      default:
+        return;
+    }
+
+    return tabId;
+  }
+
   /**
    * Trigger undo action on the active tab when Ctrl + Z is pressed.
    * @param {string} elemId - The ID of the element to target.
    */
-  function undoActiveTab(elemId) {
-    document.addEventListener("keydown", (e) => {
 
-      const isUndoKey = e.code === hotkeysConfig.undo;
-
-      const isCtrlPressed = e.ctrlKey;
-
-      if (isUndoKey && isCtrlPressed) {
-        e.preventDefault();
-        const undoBtn = document.querySelector(
-          `${elemId} button[aria-label="Undo"]`
-        );
-        if (undoBtn) {
-          undoBtn.click();
-        }
-      }
-    });
+  // Get Active main tab to prevent "Undo" on text2img from being disabled
+  function getActiveMainTab() {
+    const selectedTab = document.querySelector(
+      "#tabs .tab-nav button.selected"
+    );
+    return selectedTab;
   }
 
   /**
@@ -294,34 +393,16 @@
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
+    // toggle color panel, panel stayed pinned to the edge
     function toggleBrushPanel() {
-      let colorId;
-      // Get active tab to avoid some bug
-      function getActiveTab() {
-        const tabs = img2imgTabs.querySelectorAll("button");
-
-        for (let tab of tabs) {
-          if (tab.classList.contains("selected")) {
-            return tab;
-          }
-        }
-      }
-      const activeTab = getActiveTab();
-      // Select current color panel
-      if (activeTab.innerText === "Sketch") {
-        colorId = sketchID;
-      } else if (activeTab.innerText === "Inpaint sketch") {
-        colorId = inpaintSketchID;
-      } else {
-        return;
-      }
+      const colorID = getTabId();
 
       const colorBtn = document.querySelector(
-        `${colorId} button[aria-label="Select brush color"]`
+        `${colorID} button[aria-label="Select brush color"]`
       );
 
       const colorInput = document.querySelector(
-        `${colorId} input[aria-label="Brush color"]`
+        `${colorID} input[aria-label="Brush color"]`
       );
 
       if (!colorInput) {
@@ -331,10 +412,102 @@
       // Open color menu
       setTimeout(() => {
         const colorInput = document.querySelector(
-          `${colorId} input[aria-label="Brush color"]`
+          `${colorID} input[aria-label="Brush color"]`
         );
+
+        // return brush color panel to the edge
+        // if (colorInput.style.visibility === "hidden") {
+        //   colorInput.style.visibility = "visible";
+        //   colorInput.style.position = "";
+        //   colorInput.style.left = "";
+        //   colorInput.style.top = "";
+        // }
+
         colorInput ? colorInput.click() : colorBtn;
       }, 0);
+    }
+
+    // toggle color panel, panel appeared under the mouse
+    function openBrushPanelUnderMouse() {
+      const colorID = getTabId();
+
+      const colorBtn = document.querySelector(
+        `${colorID} button[aria-label="Select brush color"]`
+      );
+
+      const colorInput = document.querySelector(
+        `${colorID} input[aria-label="Brush color"]`
+      );
+
+      if (!colorInput) {
+        colorBtn ? colorBtn.click() : null;
+      }
+
+      // Open color menu
+      setTimeout(() => {
+        const colorInput = document.querySelector(
+          `${colorID} input[aria-label="Brush color"]`
+        );
+
+        // Bro if you're reading this comment, I have no idea how it works, but it works.)
+
+        let getOffsetWidth =
+          targetElement.clientWidth -
+          Math.round(targetElement.clientWidth * 0.13);
+
+        if (zoomLevel > 3 && getOffsetWidth < 900) {
+          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.15);
+        }
+
+        // if (getOffsetWidth > 700 && zoomLevel > 3) {
+        //   getOffsetWidth -= Math.round(targetElement.clientWidth * 0.1);
+        // }
+
+        if (getOffsetWidth > 800) {
+          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.1);
+        }
+        if (getOffsetWidth > 900) {
+          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.15);
+        }
+
+        colorInput.style.position = "absolute";
+        colorInput.style.visibility = "hidden";
+
+        // colorInput.style.bottom = "0px";
+        colorInput.style.left = mouseX - getOffsetWidth + "px";
+        colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+
+        setTimeout(() => {
+          colorInput.click();
+        }, 0);
+        // colorInput ?  : colorBtn;
+      }, 0);
+    }
+
+    // undo last action
+    function undoActiveTab(e) {
+      // document.addEventListener("keydown", (e) => {
+      const isUndoKey = e.code === hotkeysConfig.undo;
+      const isCtrlPressed = e.ctrlKey;
+
+      const activeTab = getTabId();
+      const activeMainTab = getActiveMainTab();
+
+      if (
+        isUndoKey &&
+        isCtrlPressed &&
+        activeMainTab &&
+        activeMainTab.textContent.trim() === "img2img"
+      ) {
+        e.preventDefault();
+        const undoBtn = document.querySelector(
+          `${elemId} button[aria-label="Undo"]`
+        );
+        if (undoBtn && activeTab === elemId) {
+          undoBtn.click();
+        }
+      }
+      // });
     }
 
     function resetZoom() {
@@ -378,20 +551,13 @@
       resetZoom();
     });
 
-    /**
-     * Disable overlap when open context menu open
-     **/
-    // targetElement.addEventListener("contextmenu", (e) => {
-    //   e.preventDefault();
-    //   targetElement.style.zIndex = 0;
-    // });
-
-    undoActiveTab(elemId);
+    //undo
+    // undoActiveTab(elemId);
 
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
-    document.addEventListener("keydown", (e) => {
-      switch (e.code) {
+    function handleKeyDown(event) {
+      switch (event.code) {
         case hotkeysConfig.resetZoom:
           resetZoom();
           break;
@@ -401,8 +567,33 @@
         case hotkeysConfig.openBrushSetting:
           toggleBrushPanel();
           break;
+        case hotkeysConfig.openBrushPanelUnderMouse:
+          openBrushPanelUnderMouse();
+        case hotkeysConfig.undo:
+          undoActiveTab(event);
       }
-    });
+    }
+
+    // Get Mouse position
+    function getMousePosition(e) {
+      mouseX = e.offsetX;
+      mouseY = e.offsetY;
+    }
+
+    targetElement.addEventListener("mousemove", getMousePosition);
+
+    //Handle events only inside the targetElement
+    function handleMouseEnter() {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    function handleMouseLeave() {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+
+    // Добавить обработчики событий мыши
+    targetElement.addEventListener("mouseenter", handleMouseEnter);
+    targetElement.addEventListener("mouseleave", handleMouseLeave);
 
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
@@ -443,7 +634,33 @@
      * Handle the move event for pan functionality. Updates the panX and panY variables and applies the new transform to the target element.
      * @param {MouseEvent} e - The mouse event.
      */
-    function handleMove(e) {
+    function handleMoveKeyDown(e) {
+      if (hotkeysConfig.moveByKey && e.code === hotkeysConfig.moveKey) {
+        isMoving = true;
+      }
+    }
+
+    function handleMoveKeyUp(e) {
+      if (hotkeysConfig.moveByKey && e.code === hotkeysConfig.moveKey) {
+        isMoving = false;
+      }
+    }
+
+    document.addEventListener("keydown", handleMoveKeyDown);
+    document.addEventListener("keyup", handleMoveKeyUp);
+
+    function handleMoveByKey(e) {
+      if (isMoving) {
+        panX += e.movementX;
+        panY += e.movementY;
+        targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+        targetElement.style.pointerEvents = "none";
+      } else {
+        targetElement.style.pointerEvents = "auto";
+      }
+    }
+
+    function handleMoveByMouse(e) {
       e.preventDefault();
       panX += e.movementX;
       panY += e.movementY;
@@ -451,19 +668,34 @@
       targetElement.style.pointerEvents = "none";
     }
 
-    /**
-     * Handle the end event for pan functionality. Removes the event listeners. Enables pointer events.
-     */
+    // Handle the end event for pan functionality. Removes the event listeners. Enables pointer event
     function handleEnd() {
-      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mousemove", handleMoveByMouse);
       document.removeEventListener("mouseup", handleEnd);
       targetElement.style.pointerEvents = "auto";
     }
-    targetElement.addEventListener("mousedown", (e) => {
+
+    function targetElementHandler(e) {
       if (e.shiftKey) {
         e.preventDefault();
-        document.addEventListener("mousemove", handleMove);
+        document.addEventListener("mousemove", handleMoveByMouse);
         document.addEventListener("mouseup", handleEnd);
+
+        // remove key listener
+        document.removeEventListener("mousemove", handleMoveByKey);
+      }
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      if (hotkeysConfig.moveByKey) {
+        document.addEventListener("mousemove", handleMoveByKey);
+
+        // remove shift listeners
+        document.removeEventListener("mousemove", handleMoveByMouse);
+        document.removeEventListener("mouseup", handleEnd);
+        targetElement.removeEventListener("mousedown", targetElementHandler);
+      } else {
+        targetElement.addEventListener("mousedown", targetElementHandler);
       }
     });
   }
