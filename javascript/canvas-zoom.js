@@ -393,29 +393,6 @@
     return selectedTab;
   }
 
-  function undoActiveTab(elemId) {
-    document.addEventListener("keydown", (e) => {
-      const isUndoKey = e.code === hotkeysConfig.undo;
-      const isCtrlPressed = e.ctrlKey;
-      const activeTab = getActiveMainTab();
-
-      if (
-        isUndoKey &&
-        isCtrlPressed &&
-        activeTab &&
-        activeTab.textContent.trim() === "img2img"
-      ) {
-        e.preventDefault();
-        const undoBtn = document.querySelector(
-          `${elemId} button[aria-label="Undo"]`
-        );
-        if (undoBtn) {
-          undoBtn.click();
-        }
-      }
-    });
-  }
-
   /**
    * Apply zoom and pan functionality to a target element.
    * @param {HTMLElement} targetElement - The element to apply zoom and pan functionality to.
@@ -445,14 +422,14 @@
         const colorInput = document.querySelector(
           `${colorID} input[aria-label="Brush color"]`
         );
-        
+
         // return brush color panel to the edge
-//         if (colorInput.style.visibility === "hidden") {
-//           colorInput.style.visibility = "visible";
-//           colorInput.style.position = "";
-//           colorInput.style.left = "";
-//           colorInput.style.top = "";
-//         }
+        // if (colorInput.style.visibility === "hidden") {
+        //   colorInput.style.visibility = "visible";
+        //   colorInput.style.position = "";
+        //   colorInput.style.left = "";
+        //   colorInput.style.top = "";
+        // }
 
         colorInput ? colorInput.click() : colorBtn;
       }, 0);
@@ -515,6 +492,32 @@
       }, 0);
     }
 
+    // undo last action
+    function undoActiveTab(e) {
+      // document.addEventListener("keydown", (e) => {
+      const isUndoKey = e.code === hotkeysConfig.undo;
+      const isCtrlPressed = e.ctrlKey;
+
+      const activeTab = getTabId();
+      const activeMainTab = getActiveMainTab();
+
+      if (
+        isUndoKey &&
+        isCtrlPressed &&
+        activeMainTab &&
+        activeMainTab.textContent.trim() === "img2img"
+      ) {
+        e.preventDefault();
+        const undoBtn = document.querySelector(
+          `${elemId} button[aria-label="Undo"]`
+        );
+        if (undoBtn && activeTab === elemId) {
+          undoBtn.click();
+        }
+      }
+      // });
+    }
+
     function resetZoom() {
       zoomLevel = 1;
       panX = 0;
@@ -557,7 +560,7 @@
     });
 
     //undo
-    undoActiveTab(elemId);
+    // undoActiveTab(elemId);
 
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
@@ -574,6 +577,8 @@
           break;
         case hotkeysConfig.openBrushPanelUnderMouse:
           openBrushPanelUnderMouse();
+        case hotkeysConfig.undo:
+          undoActiveTab(event);
       }
     }
 
