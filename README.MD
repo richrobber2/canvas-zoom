@@ -25,6 +25,8 @@ Default hotkeys:
 
 **Q** - Open/Close color panel
 
+**T** - Open color panel right above the mouse ( Experimental)
+
 **O** - Overlap all elements and back
 
 **Ctr-Z** - Undo last action
@@ -66,6 +68,8 @@ Possible solution to 2 bug:
 **R** - Сброс зума.
 
 **Q** - Открыть/Закрыть выбор цвета 
+
+**T** - Открыть выбор цвета прямо над мышкой ( Работает немного коряво )
 
 **O** - Перекрыть все элементы и обратно
 
