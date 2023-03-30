@@ -459,30 +459,22 @@
 
         // Bro if you're reading this comment, I have no idea how it works, but it works.)
 
-        let getOffsetWidth =
-          targetElement.clientWidth -
-          Math.round(targetElement.clientWidth * 0.13);
-
-        if (zoomLevel > 3 && getOffsetWidth < 900) {
-          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.15);
-        }
-
-        // if (getOffsetWidth > 700 && zoomLevel > 3) {
-        //   getOffsetWidth -= Math.round(targetElement.clientWidth * 0.1);
-        // }
-
-        if (getOffsetWidth > 800) {
-          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.1);
-        }
-        if (getOffsetWidth > 900) {
-          getOffsetWidth -= Math.round(targetElement.clientWidth * 0.15);
-        }
-
         colorInput.style.position = "absolute";
         colorInput.style.visibility = "hidden";
 
-        // colorInput.style.bottom = "0px";
-        colorInput.style.left = mouseX - getOffsetWidth + "px";
+        const canvas = document.querySelector(
+          `${elemId} canvas[key="interface"]`
+        );
+        const style = window.getComputedStyle(canvas);
+        let marginLeft = style.getPropertyValue("margin-left");
+        marginLeft = +marginLeft.split("px")[0];
+
+        if (isNaN(marginLeft)) {
+          marginLeft = 0;
+        }
+
+        colorInput.style.left =
+          mouseX + marginLeft - targetElement.clientWidth + "px";
         colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
 
         setTimeout(() => {
