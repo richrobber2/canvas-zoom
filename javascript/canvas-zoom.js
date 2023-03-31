@@ -462,12 +462,16 @@
     }
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
-    function toggleOverlap() {
+    function toggleOverlap(forced = false) {
       const zIndex1 = "0";
       const zIndex2 = "99999";
 
       targetElement.style.zIndex =
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
+
+      if (forced) {
+        targetElement.style.zIndex = zIndex1;
+      }
     }
 
     //Toggle overlap when click on box modal by right mouse
@@ -542,7 +546,7 @@
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
       if (e.target.classList.contains("svelte-1g805jl")) {
-        toggleOverlap(false);
+        toggleOverlap(true);
         resetZoom();
       }
     });
