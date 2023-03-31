@@ -48,7 +48,7 @@ Thanks XpucT for this idea.
 
 3. This is not my bug, the problem is related to webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, then you go back, then undo will undo on previous 2 actions, last before switch and last after.
 
-4.This is not my bug, the problem is related to webui automatic1111. Sketch and Inpaint Sketch, when the browser scale is larger or smaller than 100% it breaks if you send the image to them through buttons. Change the browser scale to 100% and everything will be fine.
+4. This is not my bug, the problem is related to webui automatic1111. Sketch and Inpaint Sketch, when the browser scale is larger or smaller than 100% it breaks if you send the image to them through buttons. Change the browser scale to 100% and everything will be fine.
 
 Possible solution to 2 bug:
 
@@ -100,7 +100,7 @@ Possible solution to 2 bug:
 
 3. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, тогда вы вернетесь обратно, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
 
-4.Это не мой баг, проблема связана с webui automatic1111. Sketch и Inpaint Sketch, при маштабе браузера больше или меньше 100% ломают,ломаются если отправить на них изображение через кнопки. Измените маштаб браузера до 100% и все будет отлично.
+4. Это не мой баг, проблема связана с webui automatic1111. Sketch и Inpaint Sketch, при маштабе браузера больше или меньше 100% ломают,ломаются если отправить на них изображение через кнопки. Измените маштаб браузера до 100% и все будет отлично.
 
 Возможно решение 2 бага:
 
