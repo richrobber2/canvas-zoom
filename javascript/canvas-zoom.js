@@ -200,7 +200,9 @@
            </li>`;
         }
         return `<li data-action="${item.action}">
-             <span><b>${item.hotkey.charAt(item.hotkey.length - 1)}</b></span> 
+             <span><b>${item.hotkey.charAt(
+               item.hotkey.length - 1
+             )} - </b></span> 
              ${item.label}
            </li>`;
       })
@@ -228,6 +230,11 @@
           hotkey: "key⚙", // The hotkey to display next to the item in this case. It's the gear icon
           label: "Change hotkeys", // The text to display for the item
         },
+        {
+          action: "changeMoveMode",
+          hotkey: hotkeysConfig.moveByKey,
+          label: " mode.Change Move mode",
+        },
         // handle undo hotkey
         {
           action: "undo",
@@ -253,11 +260,6 @@
           action: "openBrushPanelUnderMouse",
           hotkey: hotkeysConfig.openBrushPanelUnderMouse,
           label: "Puts a color bar next to the mouse",
-        },
-        {
-          action: "changeMoveMode",
-          hotkey: hotkeysConfig.moveByKey,
-          label: "Change Move mode",
         },
         {
           action: "setMoveKey",
