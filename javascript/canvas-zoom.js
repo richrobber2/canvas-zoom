@@ -101,20 +101,11 @@
       hotkey = window.prompt("Please enter a valid hotkey:");
       hotkeyCode = "Key" + hotkey.toUpperCase();
 
-      if (!hotkey) {
-        // User canceled the prompt
-        return null;
-      }
+      if (!hotkey) return null; // User canceled the prompt
 
       if (!validKeys.test(hotkey)) {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
-      } else if (reservedKeys.includes(hotkeyCode)) {
-        window.alert(
-          "This hotkey is already in use. Please enter a different hotkey."
-        );
-        hotkey = "";
-        hotkeyCode = "";
-      } else if (hotkey === " ") {
+      } else if (reservedKeys.includes(hotkeyCode) || hotkey === " ") {
         window.alert(
           "This hotkey is not able to be used. Please enter a different hotkey."
         );
@@ -515,6 +506,8 @@
       panX = 0;
       panY = 0;
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+      targetElement.style.width = "";
+      targetElement.style.height = "";
     }
 
     function toggleOverlap() {
