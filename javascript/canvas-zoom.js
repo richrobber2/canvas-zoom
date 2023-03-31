@@ -211,6 +211,9 @@
    * When triggered, the function generates and displays a context menu with items based on the element that was clicked.
    * The generated menu items include labels and hotkeys for various actions in the application.
    */
+
+  // Timer to close the context menu after a short delay
+  let timeoutId;
   document.addEventListener("contextmenu", (e) => {
     let menuItems = [];
     if (
@@ -249,7 +252,7 @@
         {
           action: "openBrushPanelUnderMouse",
           hotkey: hotkeysConfig.openBrushPanelUnderMouse,
-          label: "Experimentally, puts a color bar next to the mouse",
+          label: "Puts a color bar next to the mouse",
         },
         {
           action: "changeMoveMode",
@@ -277,7 +280,12 @@
     contextMenu.style.display = "block";
     contextMenu.style.left = `${e.pageX}px`;
     contextMenu.style.top = `${e.pageY}px`;
+
+    timeoutId = setTimeout(() => {
+      contextMenu.style.display = "none";
+    }, 500);
   });
+
   contextMenu.addEventListener("click", (e) => {
     // remove the event listeners
     const action = e.target.closest("li").dataset.action;
@@ -293,7 +301,7 @@
   });
 
   // Hide the context menu on left-click
-  let timeoutId;
+
   contextMenu.addEventListener("mouseleave", () => {
     // Set the timer for 1 second, after which the item will disappear
     timeoutId = setTimeout(() => {
@@ -516,7 +524,6 @@
     }
 
     targetElement.addEventListener("mousemove", getMousePosition);
-
     //Handle events only inside the targetElement
     function handleMouseEnter() {
       document.addEventListener("keydown", handleKeyDown);
@@ -526,7 +533,7 @@
       document.removeEventListener("keydown", handleKeyDown);
     }
 
-    // Добавить обработчики событий мыши
+    // Add mouse event handlers
     targetElement.addEventListener("mouseenter", handleMouseEnter);
     targetElement.addEventListener("mouseleave", handleMouseLeave);
 
@@ -622,7 +629,7 @@
       }
     }
 
-    document.addEventListener("mousemove", (e) => {
+    document.addEventListener("mousemove", () => {
       if (hotkeysConfig.moveByKey) {
         document.addEventListener("mousemove", handleMoveByKey);
 
