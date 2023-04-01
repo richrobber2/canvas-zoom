@@ -63,17 +63,20 @@
   // Variables for mouse position tracking
   let mouseX, mouseY;
 
+  // Check if the config is saved in localStorage and checks the amount of keys,
+  // and If there is no configuration or it is incorrect, save the default config
   checkAndSetDefaultConfig();
+
   // Load hotkeys configuration from localStorage or use default configuration
   let hotkeysConfig = getConfigFromLocalStorage() || defaultHotkeysConfig;
 
   // Save the default configuration to localStorage if it's not already saved
-
   const sketchID = "#img2img_sketch";
   const inpaintID = "#img2maskimg";
   const inpaintSketchID = "#inpaint_sketch";
   const img2imgTabsID = "#mode_img2img .tab-nav";
 
+  // Wait for the elements to be loaded
   const [sketchEl, inpaintEl, inpaintSketchEl, img2imgTabs] = await Promise.all(
     [
       document.querySelector(sketchID),
@@ -82,6 +85,12 @@
       document.querySelector(img2imgTabsID),
     ]
   );
+
+  /**
+   * Prompts the user to enter a valid hotkey and returns the corresponding key code.
+   * Validates the input against a regex pattern and a list of reserved hotkeys.
+   * Returns null if the user cancels the prompt.
+   */
 
   function askForHotkey() {
     const validKeys = /^[A-Za-zА]{1}$/; // A regex pattern to match a string containing 'Key' followed by a single alphabetical character
@@ -93,16 +102,16 @@
       hotkeysConfig.undo,
       hotkeysConfig.moveKey,
     ];
-  
+
     let hotkey = "";
     let hotkeyCode = "";
-  
+
     while (!validKeys.test(hotkey)) {
       hotkey = window.prompt("Please enter a valid hotkey:");
       hotkeyCode = "Key" + hotkey.toUpperCase();
-  
+
       if (!hotkey) return null; // User canceled the prompt
-  
+
       if (!validKeys.test(hotkey)) {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
       } else if (reservedKeys.includes(hotkeyCode) || hotkey === " ") {
@@ -113,10 +122,9 @@
         hotkeyCode = "";
       }
     }
-  
+
     return hotkeyCode;
   }
-  
 
   function updateHotkeyAndSave(action, hotkey) {
     if (hotkey !== null) {
@@ -125,7 +133,11 @@
     }
   }
 
-  // change move mode
+  /**
+   * Toggles between two different move methods in an application depending on the current configuration in the hotkeysConfig object.
+   * Updates the configuration and shows a notification alert to the user indicating the currently selected move method.
+   */
+
   function changeMoveMode() {
     if (hotkeysConfig.moveByKey) {
       hotkeysConfig.moveByKey = false;
@@ -142,14 +154,13 @@
     }
   }
 
+  /**
+   * An object containing several functions that update the hotkey configuration and save it when called.
+   * Includes functions for undo, resetting zoom, overlapping images, opening brush settings and panels, and setting the move key.
+   * Also includes a function to toggle between two different move methods in an application.
+   */
+
   const actions = {
-    settings: () => {
-      createModal({
-        title: "Settings",
-        content: "Settings content",
-        actions: [{ label: "Close" }],
-      });
-    },
     undo: () => updateHotkeyAndSave("undo", askForHotkey()),
     resetZoom: () => updateHotkeyAndSave("resetZoom", askForHotkey()),
     overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
@@ -162,60 +173,8 @@
     changeMoveMode: () => changeMoveMode(),
   };
 
-  // create an array to hold the modal elements
-  const modals = [];
-  function createModal({ title = "", content = "", actions = [] }) {
-    // Close any existing modals
-    modals.forEach((modal) => modal.remove());
-    // Create modal elements
-    const modal = document.createElement("div");
-    const modalOverlay = document.createElement("div");
-    const modalContainer = document.createElement("div");
-    const modalTitle = document.createElement("h3");
-    const modalContent = document.createElement("div");
-    const modalActions = document.createElement("div");
-
-    // Set class names
-    modal.className = "modal";
-    modalOverlay.className = "modal-overlay";
-    modalContainer.className = "modal-container";
-    modalTitle.className = "modal-title";
-    modalContent.className = "modal-content";
-    modalActions.className = "modal-actions";
-
-    // Set the title and content
-    modalTitle.textContent = title;
-    modalContent.innerHTML = content;
-
-    // Add actions
-    actions.forEach((action) => {
-      const button = document.createElement("button");
-      button.textContent = action.label;
-      button.className = action.class || "";
-
-      modalActions.appendChild(button);
-      // add the modal to the modals array
-      modals.push(modal);
-    });
-
-    // Assemble the modal
-    modalContainer.appendChild(modalTitle);
-    modalContainer.appendChild(modalContent);
-    modalContainer.appendChild(modalActions);
-    modal.appendChild(modalOverlay);
-    modal.appendChild(modalContainer);
-    document.body.appendChild(modal);
-
-    // Close the modal
-    function closeModal() {
-      modal.remove();
-    }
-
-    // Close the modal when clicking outside the container
-    modalOverlay.addEventListener("click", closeModal);
-    return modal;
-  }
-
+  // This code creates a context menu as a div element and appends it to the body of the document,
+  // and returns the resulting menu element.
   const contextMenu = (() => {
     const menu = document.createElement("div");
     menu.style.listStyleType = "None";
@@ -225,7 +184,12 @@
     return menu;
   })();
 
-  // Get last char, "KeyZ" we get Z , "Digit1" we get 1
+  /**
+   * Generates HTML markup for context menu items based on an array of item objects.
+   * The generated markup includes the label of each item and its associated hotkey (if any).
+   * If the associated hotkey is a boolean, "Shift" or "Key" will be used based on the current move method in the hotkeysConfig object.
+   * Get last char, "KeyZ" we get Z , "Digit1" we get 1
+   */
   const generateContextMenuItems = (items) =>
     items
       .map((item) => {
@@ -236,12 +200,22 @@
            </li>`;
         }
         return `<li data-action="${item.action}">
-             <span><b>${item.hotkey.charAt(item.hotkey.length - 1)}</b></span> 
+             <span><b>${item.hotkey.charAt(
+               item.hotkey.length - 1
+             )} - </b></span> 
              ${item.label}
            </li>`;
       })
       .join("");
 
+  /**
+   * Adds an event listener to the `document` for the `contextmenu` event.
+   * When triggered, the function generates and displays a context menu with items based on the element that was clicked.
+   * The generated menu items include labels and hotkeys for various actions in the application.
+   */
+
+  // Timer to close the context menu after a short delay
+  let timeoutId;
   document.addEventListener("contextmenu", (e) => {
     let menuItems = [];
     if (
@@ -255,6 +229,11 @@
           action: "Change hotkeys", // The action to perform when the item is clicked
           hotkey: "key⚙", // The hotkey to display next to the item in this case. It's the gear icon
           label: "Change hotkeys", // The text to display for the item
+        },
+        {
+          action: "changeMoveMode",
+          hotkey: hotkeysConfig.moveByKey,
+          label: " mode.Change Move mode",
         },
         // handle undo hotkey
         {
@@ -280,12 +259,7 @@
         {
           action: "openBrushPanelUnderMouse",
           hotkey: hotkeysConfig.openBrushPanelUnderMouse,
-          label: "Experimentally, puts a color bar next to the mouse",
-        },
-        {
-          action: "changeMoveMode",
-          hotkey: hotkeysConfig.moveByKey,
-          label: "Change Move mode",
+          label: "Puts a color bar next to the mouse",
         },
         {
           action: "setMoveKey",
@@ -308,7 +282,12 @@
     contextMenu.style.display = "block";
     contextMenu.style.left = `${e.pageX}px`;
     contextMenu.style.top = `${e.pageY}px`;
+
+    timeoutId = setTimeout(() => {
+      contextMenu.style.display = "none";
+    }, 500);
   });
+
   contextMenu.addEventListener("click", (e) => {
     // remove the event listeners
     const action = e.target.closest("li").dataset.action;
@@ -324,7 +303,7 @@
   });
 
   // Hide the context menu on left-click
-  let timeoutId;
+
   contextMenu.addEventListener("mouseleave", () => {
     // Set the timer for 1 second, after which the item will disappear
     timeoutId = setTimeout(() => {
@@ -390,45 +369,33 @@
    * @param {HTMLElement} targetElement - The element to apply zoom and pan functionality to.
    * @param {string} elemId - The ID of the element to target.
    */
+
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
-    // toggle color panel, panel stayed pinned to the edge
-    function toggleBrushPanel() {
-      const colorID = getTabId();
+    // Position the color input element under the mouse cursor.
+    function positionColorInputUnderMouse(colorInput) {
+      colorInput.style.position = "absolute";
+      colorInput.style.visibility = "hidden";
 
-      const colorBtn = document.querySelector(
-        `${colorID} button[aria-label="Select brush color"]`
+      const canvas = document.querySelector(
+        `${elemId} canvas[key="interface"]`
       );
+      const style = window.getComputedStyle(canvas);
+      let marginLeft = style.getPropertyValue("margin-left");
+      marginLeft = +marginLeft.split("px")[0];
 
-      const colorInput = document.querySelector(
-        `${colorID} input[aria-label="Brush color"]`
-      );
-
-      if (!colorInput) {
-        colorBtn ? colorBtn.click() : null;
+      if (isNaN(marginLeft)) {
+        marginLeft = 0;
       }
 
-      // Open color menu
-      setTimeout(() => {
-        const colorInput = document.querySelector(
-          `${colorID} input[aria-label="Brush color"]`
-        );
-
-        // return brush color panel to the edge
-        // if (colorInput.style.visibility === "hidden") {
-        //   colorInput.style.visibility = "visible";
-        //   colorInput.style.position = "";
-        //   colorInput.style.left = "";
-        //   colorInput.style.top = "";
-        // }
-
-        colorInput ? colorInput.click() : colorBtn;
-      }, 0);
+      colorInput.style.left =
+        mouseX + marginLeft - targetElement.clientWidth + "px";
+      colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
     }
 
-    // toggle color panel, panel appeared under the mouse
-    function openBrushPanelUnderMouse() {
+    // Toggle the brush panel's visibility and optionally position it under the mouse cursor.
+    function toggleBrushPanel(openUnderMouse = false) {
       const colorID = getTabId();
 
       const colorBtn = document.querySelector(
@@ -440,7 +407,7 @@
       );
 
       if (!colorInput) {
-        colorBtn ? colorBtn.click() : null;
+        colorBtn && colorBtn.click();
       }
 
       // Open color menu
@@ -449,30 +416,11 @@
           `${colorID} input[aria-label="Brush color"]`
         );
 
-        // Bro if you're reading this comment, I have no idea how it works, but it works.)
-
-        colorInput.style.position = "absolute";
-        colorInput.style.visibility = "hidden";
-
-        const canvas = document.querySelector(
-          `${elemId} canvas[key="interface"]`
-        );
-        const style = window.getComputedStyle(canvas);
-        let marginLeft = style.getPropertyValue("margin-left");
-        marginLeft = +marginLeft.split("px")[0];
-
-        if (isNaN(marginLeft)) {
-          marginLeft = 0;
+        if (openUnderMouse) {
+          positionColorInputUnderMouse(colorInput);
         }
 
-        colorInput.style.left =
-          mouseX + marginLeft - targetElement.clientWidth + "px";
-        colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
-
-        setTimeout(() => {
-          colorInput.click();
-        }, 0);
-        // colorInput ?  : colorBtn;
+        colorInput && colorInput.click();
       }, 0);
     }
 
@@ -502,19 +450,28 @@
       // });
     }
 
+    // Reset the zoom level and pan position of the target element to their initial values.
     function resetZoom() {
       zoomLevel = 1;
       panX = 0;
       panY = 0;
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+
+      targetElement.style.width = "";
+      targetElement.style.height = "";
     }
 
-    function toggleOverlap() {
+    // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
+    function toggleOverlap(forced = false) {
       const zIndex1 = "0";
       const zIndex2 = "99999";
 
       targetElement.style.zIndex =
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
+
+      if (forced) {
+        targetElement.style.zIndex = zIndex1;
+      }
     }
 
     //Toggle overlap when click on box modal by right mouse
@@ -526,6 +483,7 @@
       toggleOverlap();
     });
 
+    // Adjust the brush size based on the deltaY value from a mouse wheel event.
     function adjustBrushSize(elemId, deltaY) {
       const input =
         document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
@@ -543,11 +501,10 @@
       resetZoom();
     });
 
-    //undo
-    // undoActiveTab(elemId);
-
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
+    // Open brush panel under mouse when pressing T
+    // Undo last action when pressing Ctrl + Z
     function handleKeyDown(event) {
       switch (event.code) {
         case hotkeysConfig.resetZoom:
@@ -560,7 +517,7 @@
           toggleBrushPanel();
           break;
         case hotkeysConfig.openBrushPanelUnderMouse:
-          openBrushPanelUnderMouse();
+          toggleBrushPanel(true);
         case hotkeysConfig.undo:
           undoActiveTab(event);
       }
@@ -573,7 +530,6 @@
     }
 
     targetElement.addEventListener("mousemove", getMousePosition);
-
     //Handle events only inside the targetElement
     function handleMouseEnter() {
       document.addEventListener("keydown", handleKeyDown);
@@ -583,14 +539,14 @@
       document.removeEventListener("keydown", handleKeyDown);
     }
 
-    // Добавить обработчики событий мыши
+    // Add mouse event handlers
     targetElement.addEventListener("mouseenter", handleMouseEnter);
     targetElement.addEventListener("mouseleave", handleMouseLeave);
 
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
       if (e.target.classList.contains("svelte-1g805jl")) {
-        toggleOverlap(false);
+        toggleOverlap(true);
         resetZoom();
       }
     });
@@ -605,6 +561,7 @@
         // Calculate new zoom level based on scroll direction and current zoom level
         // - Add or subtract 0.1 if the zoom level is below 3
         // - Add or subtract 0.5 if the zoom level is 3 or above
+
         const delta = zoomLevel >= 3 ? 0.5 : 0.1;
         zoomLevel =
           e.deltaY > 0 ? startZoomLevel - delta : startZoomLevel + delta;
@@ -678,7 +635,7 @@
       }
     }
 
-    document.addEventListener("mousemove", (e) => {
+    document.addEventListener("mousemove", () => {
       if (hotkeysConfig.moveByKey) {
         document.addEventListener("mousemove", handleMoveByKey);
 
