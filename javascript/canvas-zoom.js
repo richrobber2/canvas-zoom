@@ -179,7 +179,7 @@
     const menu = document.createElement("div");
     menu.style.listStyleType = "None";
     menu.className = "context-menu";
-    menu.style.zIndex = "99999";
+    menu.style.zIndex = "999";
     document.body.appendChild(menu);
     return menu;
   })();
@@ -464,7 +464,7 @@
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
     function toggleOverlap(forced = false) {
       const zIndex1 = "0";
-      const zIndex2 = "99999";
+      const zIndex2 = "998";
 
       targetElement.style.zIndex =
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
@@ -473,15 +473,6 @@
         targetElement.style.zIndex = zIndex1;
       }
     }
-
-    //Toggle overlap when click on box modal by right mouse
-    // Thanks XpucT for idea
-    const modalBoxEl = document.querySelector("#lightboxModal");
-
-    modalBoxEl.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      toggleOverlap();
-    });
 
     // Adjust the brush size based on the deltaY value from a mouse wheel event.
     function adjustBrushSize(elemId, deltaY) {
