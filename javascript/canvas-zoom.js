@@ -501,6 +501,35 @@
       resetZoom();
     });
 
+    // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables.
+    function updateZoom(newZoomLevel) {
+      // Clamp the zoom level between 0.5 and 10
+      newZoomLevel = Math.max(0.5, Math.min(newZoomLevel, 10));
+
+      // Update the target element's transform property to apply the new zoom level
+      targetElement.style.transform = `scale(${newZoomLevel}) translate(${panX}px, ${panY}px)`;
+
+      return newZoomLevel;
+    }
+
+    function changeZoomLevel(operation, e) {
+      // Check if the shift key is pressed
+      if (e.shiftKey) {
+        // Calculate the delta based on the current zoom level
+        // - Use 0.1 if the zoom level is below 3
+        // - Use 0.5 if the zoom level is 3 or above
+        const delta = zoomLevel >= 3 ? 0.5 : 0.1;
+
+        // Update the zoom level based on the operation
+        // - Add the delta if the operation is "+"
+        // - Subtract the delta if the operation is "-"
+        zoomLevel = updateZoom(
+          zoomLevel + (operation === "+" ? delta : -delta)
+        );
+      }
+    }
+
+    // + and - (also numpad key ) to change zoom level
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
     // Open brush panel under mouse when pressing T
@@ -520,6 +549,15 @@
           toggleBrushPanel(true);
         case hotkeysConfig.undo:
           undoActiveTab(event);
+        // Keys that replace the zoom with the wheel
+        case "Equal":
+        case "NumpadAdd":
+          changeZoomLevel("+", event);
+          break;
+        case "Minus":
+        case "NumpadSubtract":
+          changeZoomLevel("-", event);
+          break;
       }
     }
 
@@ -552,28 +590,13 @@
     });
 
     targetElement.addEventListener("wheel", (e) => {
-      if (e.shiftKey) {
+      // change zoom level
+      const operation = e.deltaY > 0 ? "-" : "+";
+      changeZoomLevel(operation, e);
+
+      // Handle brush size adjustment with ctrl key pressed
+      if (e.ctrlKey) {
         e.preventDefault();
-
-        // Handle zooming with shift key pressed
-        const startZoomLevel = zoomLevel;
-
-        // Calculate new zoom level based on scroll direction and current zoom level
-        // - Add or subtract 0.1 if the zoom level is below 3
-        // - Add or subtract 0.5 if the zoom level is 3 or above
-
-        const delta = zoomLevel >= 3 ? 0.5 : 0.1;
-        zoomLevel =
-          e.deltaY > 0 ? startZoomLevel - delta : startZoomLevel + delta;
-
-        // Clamp the zoom level between 0.5 and 10
-        zoomLevel = Math.max(0.5, Math.min(zoomLevel, 10));
-
-        // Update the target element's transform property to apply the new zoom level
-        targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
-      } else if (e.ctrlKey) {
-        e.preventDefault();
-        // Handle brush size adjustment with ctrl key pressed
         // Increase or decrease brush size based on scroll direction
         adjustBrushSize(elemId, e.deltaY);
       }
