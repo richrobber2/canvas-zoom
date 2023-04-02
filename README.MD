@@ -17,7 +17,7 @@ Default hotkeys:
 
 **Shift + click or wheel (hold)** - Move canvas
 
-**Shift + "+" or Shift + "-" - Scale canvas ( numpad keys also work )
+**Shift + "+" or Shift + "-"** - Scale canvas ( numpad keys also work )
 
 **Shift + wheel** - Scale canvas
 
