@@ -470,6 +470,7 @@
 
       targetElement.style.width = "";
       targetElement.style.height = "";
+      targetElement.style.transformOrigin = "";
     }
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
