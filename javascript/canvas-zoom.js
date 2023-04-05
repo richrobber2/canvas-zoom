@@ -470,7 +470,6 @@
 
       targetElement.style.width = "";
       targetElement.style.height = "";
-      targetElement.style.transformOrigin = "";
     }
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
@@ -543,6 +542,7 @@
 
     function fitToScreen() {
       resetZoom();
+
       // Get element and screen dimensions
       const elementWidth = targetElement.offsetWidth;
       const elementHeight = targetElement.offsetHeight;
@@ -558,18 +558,35 @@
       const scaleX = screenWidth / elementWidth;
       const scaleY = screenHeight / elementHeight;
       const scale = Math.min(scaleX, scaleY);
-      const offsetX = (screenWidth - elementWidth * scale) / 2;
-      const offsetY = (screenHeight - elementHeight * scale) / 2 - elementY;
+
+      // Get the current transformOrigin
+      const computedStyle = window.getComputedStyle(targetElement);
+      const transformOrigin = computedStyle.transformOrigin;
+      const [originX, originY] = transformOrigin.split(" ");
+      const originXValue = parseFloat(originX);
+      const originYValue = parseFloat(originY);
+
+      // Calculate offsets with respect to the transformOrigin
+      const offsetX =
+        (screenWidth - elementWidth * scale) / 2 -
+        elementX -
+        originXValue * (1 - scale);
+      const offsetY =
+        (screenHeight - elementHeight * scale) / 2 -
+        elementY -
+        originYValue * (1 - scale);
 
       // Apply scale and offsets to the element
       targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-      targetElement.style.transformOrigin = "0 0";
 
       // Update global variables
-
       zoomLevel = scale;
-      panX = (screenWidth - elementWidth * scale - elementX) / 2;
-      panY = (screenHeight - elementHeight * scale - elementY) / 2;
+      panX =
+        (screenWidth - elementWidth * scale - elementX) / 2 +
+        originXValue / 2.5;
+      panY =
+        (screenHeight - elementHeight * scale - elementY) / 2 +
+        originYValue / 2;
 
       toggleOverlap("on");
     }
