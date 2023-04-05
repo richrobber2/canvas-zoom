@@ -542,6 +542,7 @@
      */
 
     function fitToScreen() {
+      resetZoom();
       // Get element and screen dimensions
       const elementWidth = targetElement.offsetWidth;
       const elementHeight = targetElement.offsetHeight;
