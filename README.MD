@@ -25,6 +25,8 @@ Default hotkeys:
 
 **F (hold)** - Move canvas (Need to switch move mode)
 
+**S** - Zoom in on the canvas so that it fits into the screen
+
 **R** - Reset Zoom.
 
 **Q** - Open/Close color panel
@@ -70,9 +72,13 @@ Possible solution to 2 bug:
 
 **Shift + колесо** - Масштабировать холст
 
+**Shift + "+" или Shift + "-"** - масштабирование холста (клавиши нумпада также работают)
+
 **Ctr + колесо** - Изменить размер кисти
 
 **F (удерживать)** - Перемещение холста (Нужно включить другой режим перемещения)
+
+**S** - Максимально увеличить холст так, чтобы он поместился на экране
 
 **R** - Сброс зума.
 
