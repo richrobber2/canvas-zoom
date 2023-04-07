@@ -15,13 +15,13 @@
 }
 
 .context-menu li {
-  font-size: 10px;
+  font-size: 12px;
   padding: 4px 6px;
   cursor: pointer;
 }
 
 .context-menu h3 {
-  font-size: 12px;
+  font-size: 14px;
   margin: 0;
   padding: 4px 8px;
 }
@@ -107,6 +107,3 @@
 .submit-button:hover {
   background-color: #0069d9;
 }
-
-
-
