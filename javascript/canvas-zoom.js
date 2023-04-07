@@ -3,7 +3,6 @@
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   // LocalStorage functions
-
   // Save the config to localStorage
   function saveConfigToLocalStorage(config) {
     localStorage.setItem("hotkeyConfig", JSON.stringify(config));
@@ -57,6 +56,10 @@
     openBrushSetting: "KeyQ",
     openBrushPanelUnderMouse: "KeyT",
     moveKey: "KeyF",
+    toggleCanvasOpacity: "KeyC",
+    toggleBrushOpacity: "KeyV",
+    brushOpacity: 0.5,
+    canvasOpacity: 0.4,
     moveByKey: false,
   };
   let isMoving = false;
@@ -102,6 +105,9 @@
       hotkeysConfig.openBrushPanelUnderMouse,
       hotkeysConfig.undo,
       hotkeysConfig.moveKey,
+      hotkeysConfig.toggleCanvasOpacity,
+      hotkeysConfig.toggleBrushOpacity,
+      hotkeysConfig.fitToScreen,
     ];
 
     let hotkey = "";
@@ -134,6 +140,10 @@
     }
   }
 
+  // Variables for canvas and brush opacity
+  let canvasOpacity = 1;
+  let brushOpacity = 1;
+
   /**
    * Toggles between two different move methods in an application depending on the current configuration in the hotkeysConfig object.
    * Updates the configuration and shows a notification alert to the user indicating the currently selected move method.
@@ -155,6 +165,49 @@
     }
   }
 
+  // Change Opacity Level
+  function askOpacityLevel() {
+    let newOpacityLevel;
+
+    newOpacityLevel = prompt(`Enter a new opacity level (10-70):
+      The higher the transparency level, the more transparent your mask will be:
+      10 - The mask is barely transparent
+      70 - The mask is very transparent.`);
+
+    if (newOpacityLevel === "") return NaN;
+
+    newOpacityLevel = +newOpacityLevel;
+
+    if (
+      newOpacityLevel < 10 ||
+      newOpacityLevel > 70 ||
+      isNaN(newOpacityLevel)
+    ) {
+      alert("Invalid opacity level. Please enter a number between 10 and 70.");
+      return NaN;
+    }
+    newOpacityLevel = 1 - newOpacityLevel / 100;
+    return parseFloat(newOpacityLevel.toFixed(2));
+  }
+
+  function changeCanvasOpacityLevel() {
+    const newOpacityLevel = askOpacityLevel();
+
+    if (isNaN(newOpacityLevel)) return;
+
+    hotkeysConfig["canvasOpacity"] = newOpacityLevel;
+    updateConfigAndSave("canvasOpacity", newOpacityLevel);
+  }
+
+  function changeBrushOpacityLevel() {
+    const newOpacityLevel = askOpacityLevel();
+
+    if (isNaN(newOpacityLevel)) return;
+
+    hotkeysConfig["brushOpacity"] = newOpacityLevel;
+    updateConfigAndSave("brushOpacity", newOpacityLevel);
+  }
+
   /**
    * An object containing several functions that update the hotkey configuration and save it when called.
    * Includes functions for undo, resetting zoom, overlapping images, opening brush settings and panels, and setting the move key.
@@ -173,6 +226,12 @@
     },
     setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey()),
     changeMoveMode: () => changeMoveMode(),
+    changeCanvasOpacityKey: () =>
+      updateHotkeyAndSave("toggleCanvasOpacity", askForHotkey()),
+    changeBrushOpacityKey: () =>
+      updateHotkeyAndSave("toggleBrushOpacity", askForHotkey()),
+    changeCanvasOpacityLevel: () => changeCanvasOpacityLevel(),
+    changeBrushOpacityLevel: () => changeBrushOpacityLevel(),
   };
 
   // This code creates a context menu as a div element and appends it to the body of the document,
@@ -192,23 +251,63 @@
    * If the associated hotkey is a boolean, "Shift" or "Key" will be used based on the current move method in the hotkeysConfig object.
    * Get last char, "KeyZ" we get Z , "Digit1" we get 1
    */
-  const generateContextMenuItems = (items) =>
-    items
-      .map((item) => {
-        if (typeof item.hotkey === "boolean") {
-          return `<li data-action="${item.action}">
-             <span><b>${hotkeysConfig.moveByKey ? "Key" : "Shift"}</b></span> 
-             ${item.label}
-           </li>`;
-        }
-        return `<li data-action="${item.action}">
-             <span><b>${item.hotkey.charAt(
-               item.hotkey.length - 1
-             )} - </b></span> 
-             ${item.label}
-           </li>`;
+  const generateContextMenuItems = (items) => {
+    const groupedItems = [
+      {
+        title: "Canvas Moving",
+        items: [items[8], items[1]],
+      },
+      {
+        title: "Control",
+        items: items.slice(2, 6),
+      },
+      {
+        title: "Color panel",
+        items: items.slice(6, 8),
+      },
+      {
+        title: "Mask transparency",
+        items: items.slice(9),
+      },
+    ];
+
+    return groupedItems
+      .map((group) => {
+        const groupItems = group.items
+          .map((item) => {
+            if (item.action === "changeMoveMode") {
+              return `<li data-action="${item.action}">
+               ${
+                 hotkeysConfig.moveByKey
+                   ? "Toggle drag mode to <b>Shift + mouse drag</b>"
+                   : `Toggle drag mode to <b>${hotkeysConfig.moveKey.charAt(
+                       hotkeysConfig.moveKey.length - 1
+                     )}</b> key`
+               }
+             </li>`;
+            }
+            if (typeof item.hotkey === "number") {
+              return `<li data-action="${item.action}">
+               <span><b>${item.hotkey * 100}</b> - </span> 
+               ${item.label}
+             </li>`;
+            }
+
+            return `<li data-action="${item.action}">
+               <span><b>${item.hotkey.charAt(
+                 item.hotkey.length - 1
+               )} - </b></span> 
+               ${item.label}
+             </li>`;
+          })
+          .join("");
+
+        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
+          group.title !== "Прозрачность" ? "<hr>" : ""
+        }`;
       })
       .join("");
+  };
 
   /**
    * Adds an event listener to the `document` for the `contextmenu` event.
@@ -235,7 +334,7 @@
         {
           action: "changeMoveMode",
           hotkey: hotkeysConfig.moveByKey,
-          label: " mode.Change Move mode",
+          label: " current drag-drop mode. Click to Change Move mode",
         },
         // handle undo hotkey
         {
@@ -273,6 +372,26 @@
           hotkey: hotkeysConfig.moveKey,
           label: "Key to move the image",
         },
+        {
+          action: "changeCanvasOpacityKey",
+          hotkey: hotkeysConfig.toggleCanvasOpacity,
+          label: "Key to toggle opacity mode",
+        },
+        {
+          action: "changeBrushOpacityKey",
+          hotkey: hotkeysConfig.toggleBrushOpacity,
+          label: "Key to toggle brush opacity mode",
+        },
+        {
+          action: "changeCanvasOpacityLevel",
+          hotkey: hotkeysConfig.canvasOpacity,
+          label: "Change canvas opacity level",
+        },
+        {
+          action: "changeBrushOpacityLevel",
+          hotkey: hotkeysConfig.brushOpacity,
+          label: "Change brush opacity level",
+        },
       ];
     } else if (
       e.target.closest(inpaintID) ||
@@ -292,7 +411,7 @@
 
     timeoutId = setTimeout(() => {
       contextMenu.style.display = "none";
-    }, 500);
+    }, 800);
   });
 
   contextMenu.addEventListener("click", (e) => {
@@ -315,7 +434,7 @@
     // Set the timer for 1 second, after which the item will disappear
     timeoutId = setTimeout(() => {
       contextMenu.style.display = "none";
-    }, 200);
+    }, 300);
   });
 
   contextMenu.addEventListener("mouseenter", () => {
@@ -380,6 +499,62 @@
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
+    // Manipulation with canvas , opacity mode
+
+    // Simulate clicking and releasing the mouse on the canvas
+    // Emulate mouse click on canvas
+    function simulateClickAndMouseUp(x, y, canvas) {
+      const mousedownEvent = new MouseEvent("mousedown", {
+        clientX: x,
+        clientY: y,
+        bubbles: true,
+        cancelable: true,
+      });
+
+      const mouseupEvent = new MouseEvent("mouseup", {
+        clientX: x,
+        clientY: y,
+        bubbles: true,
+        cancelable: true,
+      });
+
+      canvas.dispatchEvent(mousedownEvent);
+      canvas.dispatchEvent(mouseupEvent);
+    }
+
+    // Set the opacity of the brush
+    function setBrushOpacity(opacity) {
+      const canvas = document.querySelector(
+        `${inpaintID} canvas[key="interface"]`
+      );
+
+      const ctx = canvas.getContext("2d");
+      ctx.globalAlpha = opacity;
+    }
+
+    // Set the opacity of the canvas
+    function setCanvasOpacity(opacity) {
+      const canvasEmu = document.querySelector(
+        `${inpaintID} canvas[key="interface"]`
+      );
+      const canvas = document.querySelector(`${inpaintID} canvas[key="temp"]`);
+      const ctx = canvas.getContext("2d");
+      const undoBtn = document.querySelector(
+        `${inpaintID} button[aria-label="Undo"]`
+      );
+
+      ctx.globalAlpha = opacity;
+      if (opacity < 1) {
+        // Creates a stack of false lines, but otherwise it will cancel the last line. The user will have to additionally press cancel
+        simulateClickAndMouseUp(0, 0, canvasEmu);
+      }
+      simulateClickAndMouseUp(0, 0, canvasEmu);
+
+      setTimeout(() => {
+        undoBtn.click();
+      }, 100);
+    }
+
     // Position the color input element under the mouse cursor.
     function positionColorInputUnderMouse(colorInput) {
       colorInput.style.position = "absolute";
@@ -443,6 +618,11 @@
 
       const activeTab = getTabId();
       const activeMainTab = getActiveMainTab();
+
+      if (canvasOpacity < 1 && "Inpaint" === getActiveTab().innerText) {
+        setCanvasOpacity(1, elemId);
+        canvasOpacity = 1;
+      }
 
       if (
         isUndoKey &&
@@ -520,6 +700,7 @@
     function changeZoomLevel(operation, e) {
       // Check if the shift key is pressed
       if (e.shiftKey) {
+        e.preventDefault();
         // Calculate the delta based on the current zoom level
         // - Use 0.1 if the zoom level is below 3
         // - Use 0.5 if the zoom level is 3 or above
@@ -542,6 +723,14 @@
 
     function fitToScreen() {
       resetZoom();
+
+      const canvas = document.querySelector(
+        `${elemId} canvas[key="interface"]`
+      );
+
+      if (canvas.offsetWidth > 862) {
+        targetElement.style.width = canvas.offsetWidth + "px";
+      }
 
       // Get element and screen dimensions
       const elementWidth = targetElement.offsetWidth;
@@ -624,6 +813,29 @@
         case "Minus":
         case "NumpadSubtract":
           changeZoomLevel("-", event);
+          break;
+
+        case hotkeysConfig.toggleCanvasOpacity:
+          if ("Inpaint" === getActiveTab().innerText) {
+            if (canvasOpacity === 1) {
+              setCanvasOpacity(hotkeysConfig.canvasOpacity, inpaintID);
+              canvasOpacity = hotkeysConfig.canvasOpacity;
+            } else {
+              canvasOpacity = 1;
+              setCanvasOpacity(1, inpaintID);
+            }
+          }
+          break;
+        case hotkeysConfig.toggleBrushOpacity:
+          if ("Inpaint" === getActiveTab().innerText) {
+            if (brushOpacity === 1) {
+              setBrushOpacity(hotkeysConfig.brushOpacity);
+              brushOpacity = hotkeysConfig.brushOpacity;
+            } else {
+              brushOpacity = 1;
+              setBrushOpacity(1);
+            }
+          }
           break;
       }
     }
