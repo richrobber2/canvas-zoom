@@ -37,19 +37,29 @@ Default hotkeys:
 
 **Ctr-Z** - Undo last action
 
+**C** - Toggle mask transparency mode 
+
+**V** - Toggle brush transparency mode 
+
+Transparency mode of the mask is still in view mode, that is, you turned on look and turned off. Unfortunately so far only so, improvements may be in future updates.
+
 **Features**
 
 1) You can fix the color bar wherever you want, for this purpose point the mouse on the place you want and press "T" and then every time you press "Q" the color bar will open in this place. If you click on the button in the right corner, the panel will reset and work as it should.
 
+2) If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar
+
 **Known bugs:**
 
-1. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
+1. Transparency mode masks while in viewing mode, that is, you turned on look and turn off.Also, there may be problems that the lines disappear, put a small dot before you enter the mode. Unfortunately, only so far, improvements may be in future updates.
 
-2. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
+2. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
 
-3. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
+3. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
 
-4. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser scale to 100% and everything will be fine.
+4. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
+
+5. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser scale to 100% and everything will be fine.
 
 Possible solution to 2 bug:
 
@@ -90,19 +100,27 @@ Possible solution to 2 bug:
 
 **Ctr-Z** - Отменить последнее действие
 
+**C** - Переключение режима прозрачности маски 
+
+**V** - Переключить режим прозрачности кисти 
+
 **Фичи**
 
 1) Вы можете закрепить цветовую панель где угодно, для этого наведите мышкой на нужно место и нажмите "T" после чего каждый раз на "Q" Цветовая панель будет открываться в этом месте. Если вы нажмете на кнопку в правом углу, то панель сбросится и будет работать как и должна.
 
+2) Если вы увеличите картинку с большой шириной, которая не помещается в окно, то при нажатие на "S" вы получите увеличинную во весь экран картинку в полную ширину без полосы прокрутки
+
 **Известные баги:**
 
-1. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезатся. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
+1. Режим прозрачности маски пока в режиме просмотра, то есть вы включили посмотрели и выключили.Так же могут возникать проблемы тем, что линии пропадают, ставьте маленькую точку перед тем ка войти в режим. К сожалению пока только так, улучшения возможно будут в будущих обновлениях.
 
-2. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
+2. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезатся. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
 
-3. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь обратно, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
+3. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
 
-4. Это не мой баг, проблема связана с webui automatic1111. При маштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените маштаб браузера до 100% и все будет отлично.
+4. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь обратно, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
+
+5. Это не мой баг, проблема связана с webui automatic1111. При маштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените маштаб браузера до 100% и все будет отлично.
 
 Возможно решение 2 бага:
 
