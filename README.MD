@@ -37,9 +37,9 @@ Default hotkeys:
 
 **Ctr-Z** - Undo last action
 
-**C** - Toggle mask transparency mode 
+**C** - Toggle mask transparency mode ( Works only in Inpaint )
 
-**V** - Toggle brush transparency mode 
+**V** - Toggle brush transparency mode  ( Works only in Inpaint )
 
 Transparency mode of the mask is still in view mode, that is, you turned on look and turned off. Unfortunately so far only so, improvements may be in future updates.
 
@@ -100,9 +100,9 @@ Possible solution to 2 bug:
 
 **Ctr-Z** - Отменить последнее действие
 
-**C** - Переключение режима прозрачности маски 
+**C** - Переключение режима прозрачности маски ( Работает только в Inpaint )
 
-**V** - Переключить режим прозрачности кисти 
+**V** - Переключить режим прозрачности кисти ( Работает только в Inpaint )
 
 **Фичи**
 
