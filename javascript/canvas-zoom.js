@@ -53,6 +53,7 @@
     undo: "KeyZ",
     resetZoom: "KeyR",
     overlap: "KeyO",
+    fitToScreen: "KeyS",
     openBrushSetting: "KeyQ",
     openBrushPanelUnderMouse: "KeyT",
     moveKey: "KeyF",
@@ -164,6 +165,7 @@
     undo: () => updateHotkeyAndSave("undo", askForHotkey()),
     resetZoom: () => updateHotkeyAndSave("resetZoom", askForHotkey()),
     overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
+    fitToScreen: () => updateHotkeyAndSave("fitToScreen", askForHotkey()),
     openBrushSetting: () =>
       updateHotkeyAndSave("openBrushSetting", askForHotkey()),
     openBrushPanelUnderMouse: () => {
@@ -250,6 +252,11 @@
           action: "overlap",
           hotkey: hotkeysConfig.overlap,
           label: "Toggle Overlap",
+        },
+        {
+          action: "fitToScreen",
+          hotkey: hotkeysConfig.fitToScreen,
+          label: "Fit to screen",
         },
         {
           action: "openBrushSetting",
@@ -398,6 +405,10 @@
     function toggleBrushPanel(openUnderMouse = false) {
       const colorID = getTabId();
 
+      if (colorID === inpaintID) {
+        return;
+      }
+
       const colorBtn = document.querySelector(
         `${colorID} button[aria-label="Select brush color"]`
       );
@@ -462,15 +473,17 @@
     }
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
-    function toggleOverlap(forced = false) {
+    function toggleOverlap(forced = "") {
       const zIndex1 = "0";
       const zIndex2 = "998";
 
       targetElement.style.zIndex =
         targetElement.style.zIndex !== zIndex2 ? zIndex2 : zIndex1;
 
-      if (forced) {
+      if (forced === "off") {
         targetElement.style.zIndex = zIndex1;
+      } else if (forced === "on") {
+        targetElement.style.zIndex = zIndex2;
       }
     }
 
@@ -497,8 +510,9 @@
       // Clamp the zoom level between 0.5 and 10
       newZoomLevel = Math.max(0.5, Math.min(newZoomLevel, 10));
 
-      // Update the target element's transform property to apply the new zoom level
       targetElement.style.transform = `scale(${newZoomLevel}) translate(${panX}px, ${panY}px)`;
+
+      // Update the target element's transform property to apply the new zoom level
 
       return newZoomLevel;
     }
@@ -520,6 +534,63 @@
       }
     }
 
+    /**
+     * This function fits the target element to the screen by calculating
+     * the required scale and offsets. It also updates the global variables
+     * zoomLevel, panX, and panY to reflect the new state.
+     */
+
+    function fitToScreen() {
+      resetZoom();
+
+      // Get element and screen dimensions
+      const elementWidth = targetElement.offsetWidth;
+      const elementHeight = targetElement.offsetHeight;
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      // Get element's coordinates relative to the page
+      const elementRect = targetElement.getBoundingClientRect();
+      const elementY = elementRect.y;
+      const elementX = elementRect.x;
+
+      // Calculate scale and offsets
+      const scaleX = screenWidth / elementWidth;
+      const scaleY = screenHeight / elementHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      // Get the current transformOrigin
+      const computedStyle = window.getComputedStyle(targetElement);
+      const transformOrigin = computedStyle.transformOrigin;
+      const [originX, originY] = transformOrigin.split(" ");
+      const originXValue = parseFloat(originX);
+      const originYValue = parseFloat(originY);
+
+      // Calculate offsets with respect to the transformOrigin
+      const offsetX =
+        (screenWidth - elementWidth * scale) / 2 -
+        elementX -
+        originXValue * (1 - scale);
+      const offsetY =
+        (screenHeight - elementHeight * scale) / 2 -
+        elementY -
+        originYValue * (1 - scale);
+
+      // Apply scale and offsets to the element
+      targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+
+      // Update global variables
+      zoomLevel = scale;
+      panX =
+        (screenWidth - elementWidth * scale - elementX) / 2 +
+        originXValue / 2.5;
+      panY =
+        (screenHeight - elementHeight * scale - elementY) / 2 +
+        originYValue / 2;
+
+      toggleOverlap("on");
+    }
+
     // + and - (also numpad key ) to change zoom level
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
@@ -538,9 +609,14 @@
           break;
         case hotkeysConfig.openBrushPanelUnderMouse:
           toggleBrushPanel(true);
+          break;
         case hotkeysConfig.undo:
           undoActiveTab(event);
+          break;
         // Keys that replace the zoom with the wheel
+        case hotkeysConfig.fitToScreen:
+          fitToScreen();
+          break;
         case "Equal":
         case "NumpadAdd":
           changeZoomLevel("+", event);
@@ -575,7 +651,7 @@
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
       if (e.target.classList.contains("svelte-1g805jl")) {
-        toggleOverlap(true);
+        toggleOverlap("off");
         resetZoom();
       }
     });
