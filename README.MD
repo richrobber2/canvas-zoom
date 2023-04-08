@@ -5,6 +5,8 @@
 # EN
 An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
 
+**You can check out the features of this extension  in [canvas-zoom-showcase](https://github.com/daswer123/canvas-zoom-showcase)**
+
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
 You can edit the hotkeys as you want, to do this, you need to get into the context menu, you need to **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want
