@@ -10,42 +10,32 @@
 
   // Retrieve the config from localStorage and return as an object
   function getConfigFromLocalStorage() {
-    const configString = localStorage.getItem("hotkeyConfig");
-
-    if (!configString) {
-      return false;
-    }
-
-    return JSON.parse(configString);
+    return JSON.parse(localStorage.getItem("hotkeyConfig") || false);
   }
+
 
   // Check all keys in LocalStorage
   function checkAndSetDefaultConfig() {
     const config = getConfigFromLocalStorage();
     const defaultKeys = Object.keys(defaultHotkeysConfig);
-    const currentKeys = Object.keys(config);
 
-    if (defaultKeys.length !== currentKeys.length) {
-      saveConfigToLocalStorage(defaultHotkeysConfig);
-      return defaultHotkeysConfig;
+    if (defaultKeys.length !== Object.keys(config).length) {
+      return saveConfigToLocalStorage(defaultHotkeysConfig);
     }
 
     for (const key of defaultKeys) {
-      if (!currentKeys.includes(key)) {
-        saveConfigToLocalStorage(defaultHotkeysConfig);
-        return defaultHotkeysConfig;
+      if (!Object.keys(config).includes(key)) {
+        return saveConfigToLocalStorage(defaultHotkeysConfig);
       }
     }
 
     return config;
   }
 
+
   // Update the config, and save it to localStorage
-  function updateConfigAndSave(key, value) {
-    const config = getConfigFromLocalStorage();
-    config[key] = value;
-    saveConfigToLocalStorage(config);
-  }
+  const updateConfigAndSave = (key, value) =>
+    saveConfigToLocalStorage({ ...getConfigFromLocalStorage(), [key]: value });
 
   // Default hotkeys configuration
   const defaultHotkeysConfig = {
@@ -134,9 +124,9 @@
   }
 
   function updateHotkeyAndSave(action, hotkey) {
-    if (hotkey !== null) {
+    if (hotkey) {
       hotkeysConfig[action] = hotkey;
-      updateConfigAndSave(action, hotkey);
+      updateConfigAndSave(hotkeysConfig);
     }
   }
 
@@ -148,21 +138,16 @@
    * Toggles between two different move methods in an application depending on the current configuration in the hotkeysConfig object.
    * Updates the configuration and shows a notification alert to the user indicating the currently selected move method.
    */
-
+  // TODO: im pretty sure this still requires shift to be held even with using the key so u might need to modify this
   function changeMoveMode() {
-    if (hotkeysConfig.moveByKey) {
-      hotkeysConfig.moveByKey = false;
-      updateConfigAndSave("moveByKey", false);
-      alert(
-        "The move method has been changed to SHIFT + mouse drag. \n Hold down Shift and drag with the left, right or middle mouse button."
-      );
-    } else {
-      hotkeysConfig.moveByKey = true;
-      updateConfigAndSave("moveByKey", true);
-      alert(
-        "The move method has been changed to KEY. \nClick the key and hold. the image will follow the mouse as long as you hold down the button."
-      );
-    }
+    hotkeysConfig.moveByKey = !hotkeysConfig.moveByKey;
+    updateConfigAndSave("moveByKey", hotkeysConfig.moveByKey);
+    const moveMethod = hotkeysConfig.moveByKey ? "KEY" : "SHIFT + mouse drag";
+    const alertMessage = `The move method has been changed to ${moveMethod}.\n`;
+    const instruction = hotkeysConfig.moveByKey ?
+      "Click the key and hold. the image will follow the mouse as long as you hold down the button." :
+      "Hold down Shift and drag with the left, right or middle mouse button.";
+    alert(alertMessage + instruction);
   }
 
   // Change Opacity Level
@@ -170,8 +155,8 @@
     let newOpacityLevel;
 
     newOpacityLevel = prompt(`Enter a new opacity level (10-70):
-      The higher the transparency level, the more transparent your mask will be:
-      10 - The mask is barely transparent
+The higher the transparency level, the more transparent your mask will be:
+10 - The mask is barely transparent
       70 - The mask is very transparent.`);
 
     if (newOpacityLevel === "") return NaN;
@@ -190,6 +175,7 @@
     return parseFloat(newOpacityLevel.toFixed(2));
   }
 
+
   function changeCanvasOpacityLevel() {
     const newOpacityLevel = askOpacityLevel();
 
@@ -205,6 +191,8 @@
     if (isNaN(newOpacityLevel)) return;
 
     hotkeysConfig["brushOpacity"] = newOpacityLevel;
+
+
     updateConfigAndSave("brushOpacity", newOpacityLevel);
   }
 
@@ -277,13 +265,12 @@
           .map((item) => {
             if (item.action === "changeMoveMode") {
               return `<li data-action="${item.action}">
-               ${
-                 hotkeysConfig.moveByKey
-                   ? "Toggle drag mode to <b>Shift + mouse drag</b>"
-                   : `Toggle drag mode to <b>${hotkeysConfig.moveKey.charAt(
-                       hotkeysConfig.moveKey.length - 1
-                     )}</b> key`
-               }
+               ${hotkeysConfig.moveByKey
+                  ? "Toggle drag mode to <b>Shift + mouse drag</b>"
+                  : `Toggle drag mode to <b>${hotkeysConfig.moveKey.charAt(
+                    hotkeysConfig.moveKey.length - 1
+                  )}</b> key`
+                }
              </li>`;
             }
             if (typeof item.hotkey === "number") {
@@ -295,16 +282,15 @@
 
             return `<li data-action="${item.action}">
                <span><b>${item.hotkey.charAt(
-                 item.hotkey.length - 1
-               )} - </b></span> 
+              item.hotkey.length - 1
+            )} - </b></span> 
                ${item.label}
              </li>`;
           })
           .join("");
 
-        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
-          group.title !== "Прозрачность" ? "<hr>" : ""
-        }`;
+        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${group.title !== "Прозрачность" ? "<hr>" : ""
+          }`;
       })
       .join("");
   };
@@ -431,16 +417,14 @@
   // Hide the context menu on left-click
 
   contextMenu.addEventListener("mouseleave", () => {
-    // Set the timer for 1 second, after which the item will disappear
     timeoutId = setTimeout(() => {
       contextMenu.style.display = "none";
     }, 300);
   });
-
   contextMenu.addEventListener("mouseenter", () => {
-    // If the mouse returns to an item before the timer has expired, cancel it
     clearTimeout(timeoutId);
   });
+
 
   //helper functions
   // get active tab
@@ -456,25 +440,18 @@
 
   // Get tab ID
   function getTabId() {
-    let tabId;
     // Get active tab to avoid some bug
     const activeTab = getActiveTab();
-    // Select current color panel
-    switch (activeTab.innerText) {
-      case "Sketch":
-        tabId = sketchID;
-        break;
-      case "Inpaint sketch":
-        tabId = inpaintSketchID;
-        break;
-      case "Inpaint":
-        tabId = inpaintID;
-        break;
-      default:
-        return;
-    }
 
-    return tabId;
+    // Create a lookup object for tab IDs
+    const tabIdLookup = {
+      "Sketch": sketchID,
+      "Inpaint sketch": inpaintSketchID,
+      "Inpaint": inpaintID
+    };
+
+    // Return the corresponding tab ID or undefined if not found
+    return tabIdLookup[activeTab.innerText];
   }
 
   /**
