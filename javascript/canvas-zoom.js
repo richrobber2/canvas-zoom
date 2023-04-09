@@ -13,7 +13,6 @@
     return JSON.parse(localStorage.getItem("hotkeyConfig") || false);
   }
 
-
   // Check all keys in LocalStorage
   function checkAndSetDefaultConfig() {
     const config = getConfigFromLocalStorage();
@@ -31,7 +30,6 @@
 
     return config;
   }
-
 
   // Update the config, and save it to localStorage
   const updateConfigAndSave = (key, value) =>
@@ -126,7 +124,7 @@
   function updateHotkeyAndSave(action, hotkey) {
     if (hotkey) {
       hotkeysConfig[action] = hotkey;
-      updateConfigAndSave(hotkeysConfig);
+      updateConfigAndSave(action, hotkey);
     }
   }
 
@@ -144,9 +142,9 @@
     updateConfigAndSave("moveByKey", hotkeysConfig.moveByKey);
     const moveMethod = hotkeysConfig.moveByKey ? "KEY" : "SHIFT + mouse drag";
     const alertMessage = `The move method has been changed to ${moveMethod}.\n`;
-    const instruction = hotkeysConfig.moveByKey ?
-      "Click the key and hold. the image will follow the mouse as long as you hold down the button." :
-      "Hold down Shift and drag with the left, right or middle mouse button.";
+    const instruction = hotkeysConfig.moveByKey
+      ? "Click the key and hold. the image will follow the mouse as long as you hold down the button."
+      : "Hold down Shift and drag with the left, right or middle mouse button.";
     alert(alertMessage + instruction);
   }
 
@@ -175,7 +173,6 @@ The higher the transparency level, the more transparent your mask will be:
     return parseFloat(newOpacityLevel.toFixed(2));
   }
 
-
   function changeCanvasOpacityLevel() {
     const newOpacityLevel = askOpacityLevel();
 
@@ -191,7 +188,6 @@ The higher the transparency level, the more transparent your mask will be:
     if (isNaN(newOpacityLevel)) return;
 
     hotkeysConfig["brushOpacity"] = newOpacityLevel;
-
 
     updateConfigAndSave("brushOpacity", newOpacityLevel);
   }
@@ -265,12 +261,13 @@ The higher the transparency level, the more transparent your mask will be:
           .map((item) => {
             if (item.action === "changeMoveMode") {
               return `<li data-action="${item.action}">
-               ${hotkeysConfig.moveByKey
-                  ? "Toggle drag mode to <b>Shift + mouse drag</b>"
-                  : `Toggle drag mode to <b>${hotkeysConfig.moveKey.charAt(
-                    hotkeysConfig.moveKey.length - 1
-                  )}</b> key`
-                }
+               ${
+                 hotkeysConfig.moveByKey
+                   ? "Toggle drag mode to <b>Shift + mouse drag</b>"
+                   : `Toggle drag mode to <b>${hotkeysConfig.moveKey.charAt(
+                       hotkeysConfig.moveKey.length - 1
+                     )}</b> key`
+               }
              </li>`;
             }
             if (typeof item.hotkey === "number") {
@@ -282,15 +279,16 @@ The higher the transparency level, the more transparent your mask will be:
 
             return `<li data-action="${item.action}">
                <span><b>${item.hotkey.charAt(
-              item.hotkey.length - 1
-            )} - </b></span> 
+                 item.hotkey.length - 1
+               )} - </b></span> 
                ${item.label}
              </li>`;
           })
           .join("");
 
-        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${group.title !== "Прозрачность" ? "<hr>" : ""
-          }`;
+        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
+          group.title !== "Прозрачность" ? "<hr>" : ""
+        }`;
       })
       .join("");
   };
@@ -425,7 +423,6 @@ The higher the transparency level, the more transparent your mask will be:
     clearTimeout(timeoutId);
   });
 
-
   //helper functions
   // get active tab
   function getActiveTab() {
@@ -445,9 +442,9 @@ The higher the transparency level, the more transparent your mask will be:
 
     // Create a lookup object for tab IDs
     const tabIdLookup = {
-      "Sketch": sketchID,
+      Sketch: sketchID,
       "Inpaint sketch": inpaintSketchID,
-      "Inpaint": inpaintID
+      Inpaint: inpaintID,
     };
 
     // Return the corresponding tab ID or undefined if not found
