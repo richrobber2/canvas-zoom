@@ -287,7 +287,7 @@ The higher the transparency level, the more transparent your mask will be:
           .join("");
 
         return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
-          group.title !== "Прозрачность" ? "<hr>" : ""
+          group.title !== "Mask transparency" ? "<hr>" : ""
         }`;
       })
       .join("");
