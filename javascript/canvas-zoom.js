@@ -459,7 +459,7 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    targetElement.addEventListener("contextmenu", disableCanvasTraces);
+    targetElement.addEventListener("mousedown", disableCanvasTraces, true);
 
     // Manipulation with canvas , opacity mode
 
