@@ -1,6 +1,6 @@
 **This version of canvas-zoom only works with the March 25th and later versions of the WebUI.**
 
-**If you haven't updated, you can install from this commit** https://github.com/richrobber2/canvas-zoom/tree/33b690c2ccec1bf436d4d37af1c6998209a860b6.
+**If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
 # EN
 
@@ -63,6 +63,8 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 # RU
 
 Расширение [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
+
+**Если расширение не работает проверьте страницу с решением частых проблем https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
 Добавляет возможность зума в Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
 
