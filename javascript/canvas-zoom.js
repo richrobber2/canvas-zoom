@@ -275,6 +275,7 @@ The higher the transparency level, the more transparent your mask will be:
   let timeoutId;
   document.addEventListener("contextmenu", (e) => {
     let menuItems = [];
+
     if (
       e.target.closest(sketchID) ||
       e.target.closest(inpaintID) ||
@@ -439,6 +440,26 @@ The higher the transparency level, the more transparent your mask will be:
 
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
+
+    // Cancel the traces on all keys except the left one
+    function disableCanvasTraces() {
+      let cancelTraceHandler = (e) => {
+        if (e.button !== 0) {
+          e.stopImmediatePropagation();
+        }
+      };
+
+      let canvas = targetElement.querySelector(`canvas[key="interface"]`);
+
+      if (canvas) {
+        if (!canvas.classList.contains("disableTrace")) {
+          canvas.addEventListener("mousedown", cancelTraceHandler, true);
+          canvas.classList.add("disableTrace");
+        }
+      }
+    }
+
+    targetElement.addEventListener("contextmenu", disableCanvasTraces);
 
     // Manipulation with canvas , opacity mode
 
@@ -622,8 +643,13 @@ The higher the transparency level, the more transparent your mask will be:
     fileInput = document.querySelector(
       `${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`
     );
+
     fileInput.addEventListener("click", function () {
       resetZoom();
+    });
+
+    fileInput.addEventListener("change", (e) => {
+      setTimeout(disableCanvasTraces, 200);
     });
 
     // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables.
@@ -806,6 +832,8 @@ The higher the transparency level, the more transparent your mask will be:
       if (e.target.classList.contains("svelte-1g805jl")) {
         toggleOverlap("off");
         resetZoom();
+
+        setTimeout(disableCanvasTraces, 1000);
       }
     });
 
@@ -859,6 +887,8 @@ The higher the transparency level, the more transparent your mask will be:
         panY += e.movementY;
         targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
         targetElement.style.pointerEvents = "none";
+
+        disableCanvasTraces();
       }
     }
 
@@ -876,7 +906,7 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    targetElement.addEventListener("mousedown", targetElementHandler);
+    targetElement.addEventListener("mousedown", targetElementHandler, true);
     document.addEventListener("mousemove", handleMoveByKey);
   }
 

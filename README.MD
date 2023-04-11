@@ -60,10 +60,6 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 4. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser scale to 100% and everything will be fine.
 
-Possible solution to 2 bug:
-
-[![Login](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI3N2JlYjc3ZDc5YmIwMWZmMTIwNjk3MzFmNmQ4NGNkN2Y5MjE3MiZjdD1n/R67pCVIilbxy0bsYiq/giphy.gif)]()
-
 # RU
 
 Расширение [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
@@ -119,7 +115,3 @@ Possible solution to 2 bug:
 3. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
 
 4. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера до 100% и все будет отлично.
-
-Возможно решение 2 бага:
-
-[![Login](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI3N2JlYjc3ZDc5YmIwMWZmMTIwNjk3MzFmNmQ4NGNkN2Y5MjE3MiZjdD1n/R67pCVIilbxy0bsYiq/giphy.gif)]()
