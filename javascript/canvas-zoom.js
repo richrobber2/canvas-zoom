@@ -48,7 +48,6 @@
     toggleBrushOpacity: "KeyV",
     brushOpacity: 0.5,
     canvasOpacity: 0.4,
-    moveByKey: false,
   };
   let isMoving = false;
 
@@ -131,22 +130,6 @@
   // Variables for canvas and brush opacity
   let canvasOpacity = 1;
   let brushOpacity = 1;
-
-  /**
-   * Toggles between two different move methods in an application depending on the current configuration in the hotkeysConfig object.
-   * Updates the configuration and shows a notification alert to the user indicating the currently selected move method.
-   */
-  // TODO: im pretty sure this still requires shift to be held even with using the key so u might need to modify this
-  function changeMoveMode() {
-    hotkeysConfig.moveByKey = !hotkeysConfig.moveByKey;
-    updateConfigAndSave("moveByKey", hotkeysConfig.moveByKey);
-    const moveMethod = hotkeysConfig.moveByKey ? "KEY" : "SHIFT + mouse drag";
-    const alertMessage = `The move method has been changed to ${moveMethod}.\n`;
-    const instruction = hotkeysConfig.moveByKey
-      ? "Click the key and hold. the image will follow the mouse as long as you hold down the button."
-      : "Hold down Shift and drag with the left, right or middle mouse button.";
-    alert(alertMessage + instruction);
-  }
 
   // Change Opacity Level
   function askOpacityLevel() {
@@ -239,19 +222,19 @@ The higher the transparency level, the more transparent your mask will be:
     const groupedItems = [
       {
         title: "Canvas Moving",
-        items: [items[8], items[1]],
+        items: [items[7]],
       },
       {
         title: "Control",
-        items: items.slice(2, 6),
+        items: items.slice(1, 5),
       },
       {
         title: "Color panel",
-        items: items.slice(6, 8),
+        items: items.slice(5, 7),
       },
       {
         title: "Mask transparency",
-        items: items.slice(9),
+        items: items.slice(8),
       },
     ];
 
@@ -259,20 +242,9 @@ The higher the transparency level, the more transparent your mask will be:
       .map((group) => {
         const groupItems = group.items
           .map((item) => {
-            if (item.action === "changeMoveMode") {
-              return `<li data-action="${item.action}">
-               ${
-                 hotkeysConfig.moveByKey
-                   ? "Toggle drag mode to <b>Shift + mouse drag</b>"
-                   : `Toggle drag mode to <b>${hotkeysConfig.moveKey.charAt(
-                       hotkeysConfig.moveKey.length - 1
-                     )}</b> key`
-               }
-             </li>`;
-            }
             if (typeof item.hotkey === "number") {
               return `<li data-action="${item.action}">
-               <span><b>${item.hotkey * 100}</b> - </span> 
+               <span><b>${100 - item.hotkey * 100}</b> - </span> 
                ${item.label}
              </li>`;
             }
@@ -314,11 +286,6 @@ The higher the transparency level, the more transparent your mask will be:
           action: "Change hotkeys", // The action to perform when the item is clicked
           hotkey: "key⚙", // The hotkey to display next to the item in this case. It's the gear icon
           label: "Change hotkeys", // The text to display for the item
-        },
-        {
-          action: "changeMoveMode",
-          hotkey: hotkeysConfig.moveByKey,
-          label: " current drag-drop mode. Click to Change Move mode",
         },
         // handle undo hotkey
         {
@@ -860,13 +827,13 @@ The higher the transparency level, the more transparent your mask will be:
      * @param {MouseEvent} e - The mouse event.
      */
     function handleMoveKeyDown(e) {
-      if (hotkeysConfig.moveByKey && e.code === hotkeysConfig.moveKey) {
+      if (e.code === hotkeysConfig.moveKey) {
         isMoving = true;
       }
     }
 
     function handleMoveKeyUp(e) {
-      if (hotkeysConfig.moveByKey && e.code === hotkeysConfig.moveKey) {
+      if (e.code === hotkeysConfig.moveKey) {
         isMoving = false;
       }
     }
@@ -886,14 +853,15 @@ The higher the transparency level, the more transparent your mask will be:
     }
 
     function handleMoveByMouse(e) {
-      e.preventDefault();
-      panX += e.movementX;
-      panY += e.movementY;
-      targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
-      targetElement.style.pointerEvents = "none";
+      if (e.shiftKey) {
+        e.preventDefault();
+        panX += e.movementX;
+        panY += e.movementY;
+        targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+        targetElement.style.pointerEvents = "none";
+      }
     }
 
-    // Handle the end event for pan functionality. Removes the event listeners. Enables pointer event
     function handleEnd() {
       document.removeEventListener("mousemove", handleMoveByMouse);
       document.removeEventListener("mouseup", handleEnd);
@@ -905,24 +873,11 @@ The higher the transparency level, the more transparent your mask will be:
         e.preventDefault();
         document.addEventListener("mousemove", handleMoveByMouse);
         document.addEventListener("mouseup", handleEnd);
-
-        // remove key listener
-        document.removeEventListener("mousemove", handleMoveByKey);
       }
     }
 
-    document.addEventListener("mousemove", () => {
-      if (hotkeysConfig.moveByKey) {
-        document.addEventListener("mousemove", handleMoveByKey);
-
-        // remove shift listeners
-        document.removeEventListener("mousemove", handleMoveByMouse);
-        document.removeEventListener("mouseup", handleEnd);
-        targetElement.removeEventListener("mousedown", targetElementHandler);
-      } else {
-        targetElement.addEventListener("mousedown", targetElementHandler);
-      }
-    });
+    targetElement.addEventListener("mousedown", targetElementHandler);
+    document.addEventListener("mousemove", handleMoveByKey);
   }
 
   applyZoomAndPan(sketchEl, sketchID);
