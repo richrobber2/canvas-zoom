@@ -102,9 +102,10 @@
 
     while (!validKeys.test(hotkey)) {
       hotkey = window.prompt("Please enter a valid hotkey:");
-      hotkeyCode = "Key" + hotkey.toUpperCase();
 
-      if (!hotkey) return null; // User canceled the prompt
+      if (!hotkey || hotkey === " ") return null; // User canceled the prompt
+
+      hotkeyCode = "Key" + hotkey.toUpperCase();
 
       if (!validKeys.test(hotkey)) {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
@@ -367,8 +368,12 @@ The higher the transparency level, the more transparent your mask will be:
   });
 
   contextMenu.addEventListener("click", (e) => {
-    // remove the event listeners
+    if (!e.target.closest("li")) {
+      return;
+    }
+
     const action = e.target.closest("li").dataset.action;
+
     // Check if the action exists in the actions object and run the corresponding function
     if (actions.hasOwnProperty(action)) {
       actions[action]();
@@ -376,8 +381,8 @@ The higher the transparency level, the more transparent your mask will be:
   });
 
   // Hide the context menu on left-click
-  document.addEventListener("click", () => {
-    contextMenu.style.display = "none";
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".context-menu")) contextMenu.style.display = "none";
   });
 
   // Hide the context menu on left-click
@@ -694,6 +699,8 @@ The higher the transparency level, the more transparent your mask will be:
       const canvas = document.querySelector(
         `${elemId} canvas[key="interface"]`
       );
+
+      if (!canvas) return;
 
       if (canvas.offsetWidth > 862) {
         targetElement.style.width = canvas.offsetWidth + "px";
