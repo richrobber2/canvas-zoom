@@ -96,30 +96,38 @@
       hotkeysConfig.toggleBrushOpacity,
       hotkeysConfig.fitToScreen,
     ];
-
+  
     let hotkey = "";
     let hotkeyCode = "";
-
+  
     while (!validKeys.test(hotkey)) {
       hotkey = window.prompt("Please enter a valid hotkey:");
-
-      if (!hotkey || hotkey === " ") return null; // User canceled the prompt
-
-      hotkeyCode = "Key" + hotkey.toUpperCase();
-
+  
+      if (!hotkey || hotkey.trim() === "") {
+        window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
+        return null; // User canceled the prompt
+      }
+  
+      hotkey = hotkey.trim();
+  
       if (!validKeys.test(hotkey)) {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
-      } else if (reservedKeys.includes(hotkeyCode) || hotkey === " ") {
-        window.alert(
-          "This hotkey is not able to be used. Please enter a different hotkey."
-        );
-        hotkey = "";
-        hotkeyCode = "";
+      } else {
+        hotkeyCode = "Key" + hotkey.toUpperCase();
+  
+        if (reservedKeys.includes(hotkeyCode)) {
+          window.alert(
+            "This hotkey is not able to be used. Please enter a different hotkey."
+          );
+          hotkey = "";
+          hotkeyCode = "";
+        }
       }
     }
-
+  
     return hotkeyCode;
   }
+  
 
   function updateHotkeyAndSave(action, hotkey) {
     if (hotkey) {
@@ -252,16 +260,15 @@ The higher the transparency level, the more transparent your mask will be:
 
             return `<li data-action="${item.action}">
                <span><b>${item.hotkey.charAt(
-                 item.hotkey.length - 1
-               )} - </b></span> 
+              item.hotkey.length - 1
+            )} - </b></span> 
                ${item.label}
              </li>`;
           })
           .join("");
 
-        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
-          group.title !== "Mask transparency" ? "<hr>" : ""
-        }`;
+        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${group.title !== "Mask transparency" ? "<hr>" : ""
+          }`;
       })
       .join("");
   };
