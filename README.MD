@@ -10,7 +10,9 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
-You can edit the hotkeys as you want, to do this, you need to get into the context menu, you need to **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want
+You can edit the hotkeys as you want, to do this, you need to get into the context menu, you need to **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want.
+
+Now you can customize the hotkeys in the customHotkeys.js file, and then load them in the context menu. You can pass this file to anyone and they will be able to use your hotkeys settings. After changing customHotkeys,js, refresh the page.
 
 The hotkeys only work in the image area, except for the hotkey for moving
 
@@ -69,6 +71,8 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 Добавляет возможность зума в Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
 
 Вы можете редактировать горячие клавиши по своему усмотрению, для этого нужно попасть в контекстное меню, нужно **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
+
+Теперь вы можете настроить хоткеи в файле customHotkeys,js, после чего в контекстном меню, загрузить их. Вы можете передать этот файл любому человеку, и он сможет воспользоватся вашими настройками горячих клавиш. После того как измените customHotkeys,js, обновите страницу.
 
 Горячие клавиши работают только в области изображения, мышка должна быть на этой области , за исключением горячей клавиши для перемещения
 
