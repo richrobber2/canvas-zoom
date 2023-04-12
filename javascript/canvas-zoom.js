@@ -1,3 +1,4 @@
+// Main
 (async () => {
   // Wait for the specified delay
   await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -11,6 +12,10 @@
   // Retrieve the config from localStorage and return as an object
   function getConfigFromLocalStorage() {
     return JSON.parse(localStorage.getItem("hotkeyConfig") || false);
+  }
+
+  function getCustomConfigFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("customHotkeyConfig") || false);
   }
 
   // Check all keys in LocalStorage
@@ -50,6 +55,8 @@
     canvasOpacity: 0.4,
   };
   let isMoving = false;
+  let isMouseOverCanvas = true;
+  let contextMenu;
 
   // Variables for mouse position tracking
   let mouseX, mouseY;
@@ -96,25 +103,25 @@
       hotkeysConfig.toggleBrushOpacity,
       hotkeysConfig.fitToScreen,
     ];
-  
+
     let hotkey = "";
     let hotkeyCode = "";
-  
+
     while (!validKeys.test(hotkey)) {
       hotkey = window.prompt("Please enter a valid hotkey:");
-  
+
       if (!hotkey || hotkey.trim() === "") {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
         return null; // User canceled the prompt
       }
-  
+
       hotkey = hotkey.trim();
-  
+
       if (!validKeys.test(hotkey)) {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
       } else {
         hotkeyCode = "Key" + hotkey.toUpperCase();
-  
+
         if (reservedKeys.includes(hotkeyCode)) {
           window.alert(
             "This hotkey is not able to be used. Please enter a different hotkey."
@@ -124,10 +131,10 @@
         }
       }
     }
-  
+
+    contextMenu.style.display = "none";
     return hotkeyCode;
   }
-  
 
   function updateHotkeyAndSave(action, hotkey) {
     if (hotkey) {
@@ -146,7 +153,7 @@
 
     newOpacityLevel = prompt(`Enter a new opacity level (10-70):
 The higher the transparency level, the more transparent your mask will be:
-10 - The mask is barely transparent
+      10 - The mask is barely transparent
       70 - The mask is very transparent.`);
 
     if (newOpacityLevel === "") return NaN;
@@ -161,6 +168,9 @@ The higher the transparency level, the more transparent your mask will be:
       alert("Invalid opacity level. Please enter a number between 10 and 70.");
       return NaN;
     }
+
+    contextMenu.style.display = "none";
+
     newOpacityLevel = 1 - newOpacityLevel / 100;
     return parseFloat(newOpacityLevel.toFixed(2));
   }
@@ -184,6 +194,24 @@ The higher the transparency level, the more transparent your mask will be:
     updateConfigAndSave("brushOpacity", newOpacityLevel);
   }
 
+  // Load custom hotkeys from customHotkeys.js file
+  function loadCustomHotkeys() {
+    customHotkeysConfig = getCustomConfigFromLocalStorage();
+
+    if (!customHotkeysConfig) {
+      alert(
+        "Custom hotkeys config not found. Please set your custom hotkeys in customHotkeys.js file"
+      );
+      return;
+    }
+
+    hotkeysConfig = customHotkeysConfig;
+    saveConfigToLocalStorage(customHotkeysConfig);
+    contextMenu.style.display = "none";
+
+    alert("Custom hotkeys successfully loaded");
+  }
+
   /**
    * An object containing several functions that update the hotkey configuration and save it when called.
    * Includes functions for undo, resetting zoom, overlapping images, opening brush settings and panels, and setting the move key.
@@ -201,18 +229,18 @@ The higher the transparency level, the more transparent your mask will be:
       updateHotkeyAndSave("openBrushPanelUnderMouse", askForHotkey());
     },
     setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey()),
-    changeMoveMode: () => changeMoveMode(),
     changeCanvasOpacityKey: () =>
       updateHotkeyAndSave("toggleCanvasOpacity", askForHotkey()),
     changeBrushOpacityKey: () =>
       updateHotkeyAndSave("toggleBrushOpacity", askForHotkey()),
     changeCanvasOpacityLevel: () => changeCanvasOpacityLevel(),
     changeBrushOpacityLevel: () => changeBrushOpacityLevel(),
+    loadCustomHotkeys: () => loadCustomHotkeys(),
   };
 
   // This code creates a context menu as a div element and appends it to the body of the document,
   // and returns the resulting menu element.
-  const contextMenu = (() => {
+  contextMenu = (() => {
     const menu = document.createElement("div");
     menu.style.listStyleType = "None";
     menu.className = "context-menu";
@@ -228,6 +256,9 @@ The higher the transparency level, the more transparent your mask will be:
    * Get last char, "KeyZ" we get Z , "Digit1" we get 1
    */
   const generateContextMenuItems = (items) => {
+    // Remove "Change hotkeys" item
+    items.splice(0, 1);
+
     const groupedItems = [
       {
         title: "Canvas Moving",
@@ -235,7 +266,7 @@ The higher the transparency level, the more transparent your mask will be:
       },
       {
         title: "Control",
-        items: items.slice(1, 5),
+        items: items.slice(0, 4),
       },
       {
         title: "Color panel",
@@ -247,30 +278,42 @@ The higher the transparency level, the more transparent your mask will be:
       },
     ];
 
-    return groupedItems
-      .map((group) => {
-        const groupItems = group.items
-          .map((item) => {
-            if (typeof item.hotkey === "number") {
-              return `<li data-action="${item.action}">
+    const loadCustomHotkeysItem = `<li data-action="${items[4].action}">
+               <span><b>${items[4].hotkey.charAt(
+                 items[4].hotkey.length - 1
+               )}</b></span><b>
+               ${items[4].label}
+               </b>
+             </li><hr>`;
+
+    return (
+      loadCustomHotkeysItem +
+      groupedItems
+        .map((group) => {
+          const groupItems = group.items
+            .map((item) => {
+              if (typeof item.hotkey === "number") {
+                return `<li data-action="${item.action}">
                <span><b>${100 - item.hotkey * 100}</b> - </span> 
                ${item.label}
              </li>`;
-            }
+              }
 
-            return `<li data-action="${item.action}">
+              return `<li data-action="${item.action}">
                <span><b>${item.hotkey.charAt(
-              item.hotkey.length - 1
-            )} - </b></span> 
+                 item.hotkey.length - 1
+               )} - </b></span> 
                ${item.label}
              </li>`;
-          })
-          .join("");
+            })
+            .join("");
 
-        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${group.title !== "Mask transparency" ? "<hr>" : ""
+          return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
+            group.title !== "Mask transparency" ? "<hr>" : ""
           }`;
-      })
-      .join("");
+        })
+        .join("")
+    );
   };
 
   /**
@@ -316,6 +359,11 @@ The higher the transparency level, the more transparent your mask will be:
           action: "fitToScreen",
           hotkey: hotkeysConfig.fitToScreen,
           label: "Fit to screen",
+        },
+        {
+          action: "loadCustomHotkeys",
+          hotkey: "",
+          label: "Load custom hotkeys from customHotkeys.js file",
         },
         {
           action: "openBrushSetting",
@@ -537,6 +585,15 @@ The higher the transparency level, the more transparent your mask will be:
       const canvas = document.querySelector(
         `${elemId} canvas[key="interface"]`
       );
+
+      canvas.addEventListener("mousemove", () => {
+        isMouseOverCanvas = true;
+      });
+
+      canvas.addEventListener("mouseleave", () => {
+        isMouseOverCanvas = false;
+      });
+
       const style = window.getComputedStyle(canvas);
       let marginLeft = style.getPropertyValue("margin-left");
       marginLeft = +marginLeft.split("px")[0];
@@ -545,9 +602,14 @@ The higher the transparency level, the more transparent your mask will be:
         marginLeft = 0;
       }
 
-      colorInput.style.left =
-        mouseX + marginLeft - targetElement.clientWidth + "px";
-      colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+      if (!isMouseOverCanvas) {
+        colorInput.style.left = mouseX - targetElement.clientWidth + "px";
+        colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+      } else {
+        colorInput.style.left =
+          mouseX + marginLeft - targetElement.clientWidth + "px";
+        colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+      }
     }
 
     // Toggle the brush panel's visibility and optionally position it under the mouse cursor.
@@ -662,6 +724,7 @@ The higher the transparency level, the more transparent your mask will be:
 
     fileInput.addEventListener("change", (e) => {
       setTimeout(disableCanvasTraces, 200);
+      isMouseOverCanvas = true;
     });
 
     // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables.
@@ -847,7 +910,25 @@ The higher the transparency level, the more transparent your mask will be:
         toggleOverlap("off");
         resetZoom();
 
-        setTimeout(disableCanvasTraces, 1000);
+        setTimeout(() => {
+          disableCanvasTraces();
+
+          const canvas = document.querySelector(
+            `${inpaintID} canvas[key="interface"]`
+          );
+
+          if (canvas) {
+            canvas.addEventListener("mousemove", () => {
+              isMouseOverCanvas = true;
+            });
+
+            canvas.addEventListener("mouseleave", () => {
+              isMouseOverCanvas = false;
+            });
+          } else {
+            isMouseOverCanvas = true;
+          }
+        }, 1000);
       }
     });
 
