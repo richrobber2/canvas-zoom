@@ -453,8 +453,10 @@ The higher the transparency level, the more transparent your mask will be:
 
   //helper functions
   // get active tab
-  function getActiveTab() {
+  function getActiveTab(all = false) {
     const tabs = img2imgTabs.querySelectorAll("button");
+
+    if (all) return tabs;
 
     for (let tab of tabs) {
       if (tab.classList.contains("selected")) {
@@ -677,12 +679,40 @@ The higher the transparency level, the more transparent your mask will be:
       // });
     }
 
+    function fixCanvas() {
+      // Get active Tab
+      const activeTab = getActiveTab().textContent.trim();
+
+      // Do only if not Inpaint tab
+      if (activeTab !== "Inpaint") {
+        const img = targetElement.querySelector(`${elemId} img`);
+
+        // Check if img exists
+        if (img) {
+          // To restore cler func we need to clone img
+          // This tag doesn't do anything useful, but it breaks a lot of things
+          const fakeImg = img;
+          img.remove();
+
+          // Restore clear func
+          const clearBtn = document.querySelector(
+            `${elemId} button[aria-label="Clear"]`
+          );
+          clearBtn.addEventListener("click", () => {
+            targetElement.appendChild(fakeImg);
+          });
+        }
+      }
+    }
+
     // Reset the zoom level and pan position of the target element to their initial values.
 
     function resetZoom() {
       zoomLevel = 1;
       panX = 0;
       panY = 0;
+
+      fixCanvas();
 
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
 
@@ -724,9 +754,13 @@ The higher the transparency level, the more transparent your mask will be:
       const input =
         document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
         document.querySelector(`${elemId} button[aria-label="Use brush"]`);
-      input.click();
-      input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
-      input.dispatchEvent(new Event("change"));
+
+      if (input) {
+        input.click();
+
+        input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
+        input.dispatchEvent(new Event("change"));
+      }
     }
 
     //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
