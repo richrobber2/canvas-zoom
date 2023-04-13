@@ -772,9 +772,9 @@ The higher the transparency level, the more transparent your mask will be:
 
       if (!canvas) return;
 
-      // if (canvas.offsetWidth > 862) {
-      //   targetElement.style.width = canvas.offsetWidth + "px";
-      // }
+      if (canvas.offsetWidth > 862 && getActiveTab().innerText === "Inpaint") {
+        targetElement.style.width = canvas.offsetWidth + "px";
+      }
 
       // Get element and screen dimensions
       const elementWidth = targetElement.offsetWidth;

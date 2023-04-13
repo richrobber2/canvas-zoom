@@ -50,7 +50,7 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 1. You can fix the color bar wherever you want, for this purpose point the mouse on the place you want and press "T" and then every time you press "Q" the color bar will open in this place. If you click on the button in the right corner, the panel will reset and work as it should.
 
-2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar
+2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar. ( Only Inpaint for now, work on Sketch and Inpaint Sketch will be introduced.)
 
 **Known bugs:**
 
@@ -110,7 +110,7 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 1. Вы можете закрепить цветовую панель где угодно, для этого наведите мышкой на нужно место и нажмите "T" после чего каждый раз на "Q" Цветовая панель будет открываться в этом месте. Если вы нажмете на кнопку в правом углу, то панель сбросится и будет работать, как и должна.
 
-2. Если вы увеличите картинку с большой шириной, которая не помещается в окно, то при нажатии на "S" вы получите увеличенную во весь экран картинку в полную ширину без полосы прокрутки
+2. Если вы увеличите картинку с большой шириной, которая не помещается в окно, то при нажатии на "S" вы получите увеличенную во весь экран картинку в полную ширину без полосы прокрутки ( Пока только Inpaint, введется работа над Sketch и Inpaint Sketch)
 
 **Известные баги:**
 
