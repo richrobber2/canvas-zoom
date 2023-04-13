@@ -678,11 +678,27 @@ The higher the transparency level, the more transparent your mask will be:
     }
 
     // Reset the zoom level and pan position of the target element to their initial values.
+
     function resetZoom() {
       zoomLevel = 1;
       panX = 0;
       panY = 0;
+
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+
+      // If the canvas is wider than 860px, fit it to the element
+      const canvas = document.querySelector(
+        `${elemId} canvas[key="interface"]`
+      );
+
+      if (
+        canvas &&
+        parseFloat(canvas.style.width) > 865 &&
+        parseFloat(targetElement.style.width) > 865
+      ) {
+        fitToElement();
+        return;
+      }
 
       targetElement.style.width = "";
       targetElement.style.height = "";
@@ -763,6 +779,45 @@ The higher the transparency level, the more transparent your mask will be:
      * zoomLevel, panX, and panY to reflect the new state.
      */
 
+    function fitToElement() {
+      //Reset Zoom
+      targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
+
+      // Get element and screen dimensions
+      const elementWidth = targetElement.offsetWidth;
+      const elementHeight = targetElement.offsetHeight;
+      const parentElement = targetElement.parentElement;
+      const screenWidth = parentElement.clientWidth;
+      const screenHeight = parentElement.clientHeight;
+
+      // Get element's coordinates relative to the parent element
+      const elementRect = targetElement.getBoundingClientRect();
+      const parentRect = parentElement.getBoundingClientRect();
+      const elementX = elementRect.x - parentRect.x;
+
+      // Calculate scale and offsets
+      const scaleX = screenWidth / elementWidth;
+      const scaleY = screenHeight / elementHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      const transformOrigin =
+        window.getComputedStyle(targetElement).transformOrigin;
+      const [originX, originY] = transformOrigin.split(" ");
+      const originXValue = parseFloat(originX);
+
+      const offsetX =
+        (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
+      // Apply scale and offsets to the element
+      targetElement.style.transform = `translate(${offsetX}px, 0px) scale(${scale})`;
+
+      // Update global variables
+      zoomLevel = scale;
+      panX = offsetX;
+      panY = 0;
+
+      toggleOverlap("off");
+    }
+
     function fitToScreen() {
       resetZoom();
 
@@ -772,7 +827,7 @@ The higher the transparency level, the more transparent your mask will be:
 
       if (!canvas) return;
 
-      if (canvas.offsetWidth > 862 && getActiveTab().innerText === "Inpaint") {
+      if (canvas.offsetWidth > 862) {
         targetElement.style.width = canvas.offsetWidth + "px";
       }
 
