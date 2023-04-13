@@ -50,17 +50,23 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 1. You can fix the color bar wherever you want, for this purpose point the mouse on the place you want and press "T" and then every time you press "Q" the color bar will open in this place. If you click on the button in the right corner, the panel will reset and work as it should.
 
-2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar. ( Only Inpaint for now, work on Sketch and Inpaint Sketch will be introduced.)
+2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar. 
 
 **Known bugs:**
 
-1. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
+1. If you increase the size of the picture and draw something in the Sketch and Inpaint Sketch tabs. Then when you switch to another tab and go back, the canvas may fill with white and remove everything that was there. To avoid this, you can click the undo button and then the original image will return.
 
-2. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
+2. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
 
-3. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
+3. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
 
-4. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser scale to 100% and everything will be fine.
+4. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
+
+5. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser scale to 100% and everything will be fine.
+
+Solution to Bug #1:
+
+https://user-images.githubusercontent.com/22278673/231813341-f2c2a069-0c8a-43b3-b82f-5d60a4f198b3.mp4
 
 # RU
 
@@ -114,10 +120,19 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 **Известные баги:**
 
-1. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезаться. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
+1. Если вы увеличите размер картинки и что-то нарисуете во вкладках Sketch и Inpaint Sketch. То после того как вы переключитесь на другую вкладку и вернетесь обратно, холст может залится белым и удалить все что было. Что бы избежать этого, можно нажать кнопку отмены и тогда исходное изображение вернется.
 
-2. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
+2. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезаться. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
 
-3. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
+3. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
 
-4. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера до 100% и все будет отлично.
+4. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
+
+5. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера до 100% и все будет отлично.
+
+Решение проблемы №1:
+
+https://user-images.githubusercontent.com/22278673/231813341-f2c2a069-0c8a-43b3-b82f-5d60a4f198b3.mp4
+
+
+
