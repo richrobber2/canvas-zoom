@@ -1,12 +1,16 @@
+## Important Notes
+
 **This version of canvas-zoom only works with the March 25th and later versions of the WebUI.**
 
 **If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
+**You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/daswer123/canvas-zoom-showcase)**
+
+**The extension description also available in <a href="#ru"> RU </a> language:**
+
 # EN
 
 An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
-
-**You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/daswer123/canvas-zoom-showcase)**
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
@@ -16,7 +20,7 @@ Now you can customize the hotkeys in the customHotkeys.js file, and then load th
 
 The hotkeys only work in the image area, except for the hotkey for moving
 
-Default hotkeys:
+## Default hotkeys:
 
 **Shift + click or wheel (hold)** - Move canvas
 
@@ -46,13 +50,13 @@ Default hotkeys:
 
 You can't draw in transparency mode, otherwise there is a chance that one of the lines will be cancelled. Turn off mask transparency mode when you draw. This mode is not stable yet, work will be done to improve it.
 
-**Features**
+## Features
 
 1. You can fix the color bar wherever you want, for this purpose point the mouse on the place you want and press "T" and then every time you press "Q" the color bar will open in this place. If you click on the button in the right corner, the panel will reset and work as it should.
 
 2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar.
 
-**Known bugs:**
+## Known bugs:
 
 1. If you increase the size of the picture and draw something in the Sketch and Inpaint Sketch tabs. Then when you switch to another tab and go back, the canvas may fill with white and remove everything that was there. To avoid this, you can click the undo button and then the original image will return. **Fixed in the latest update**
 
@@ -66,9 +70,15 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 # RU
 
-Расширение [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
+## Важные замечания
 
 **Если расширение не работает проверьте страницу с решением частых проблем https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
+
+**Вы можете ознакомиться с возможностями этого расширения в [canvas-zoom-showcase](https://github.com/daswer123/canvas-zoom-showcase)**
+
+## О Расширении
+
+Расширение [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
 
 Добавляет возможность зума в Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
 
@@ -78,7 +88,7 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 Горячие клавиши работают только в области изображения, мышка должна быть на этой области , за исключением горячей клавиши для перемещения
 
-Горячие клавиши по умолчанию:
+## Горячие клавиши по умолчанию:
 
 **Shift + левая кнопка или колесо (удерживать)** - Переместить холст
 
@@ -108,13 +118,13 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 В режиме прозрачности нельзя рисовать, иначе есть шанс что одна из линий отменится. Отключайте режим прозрачности маски когда рисуете. Данный режим пока работает не стабильно, введется работа по улучшению.
 
-**Фичи**
+## Фичи
 
 1. Вы можете закрепить цветовую панель где угодно, для этого наведите мышкой на нужно место и нажмите "T" после чего каждый раз на "Q" Цветовая панель будет открываться в этом месте. Если вы нажмете на кнопку в правом углу, то панель сбросится и будет работать, как и должна.
 
 2. Если вы увеличите картинку с большой шириной, которая не помещается в окно, то при нажатии на "S" вы получите увеличенную во весь экран картинку в полную ширину без полосы прокрутки
 
-**Известные баги:**
+## Известные баги:
 
 1. Если вы увеличите размер картинки и что-то нарисуете во вкладках Sketch и Inpaint Sketch. То после того как вы переключитесь на другую вкладку и вернетесь обратно, холст может залится белым и удалить все что было. Что бы избежать этого, можно нажать кнопку отмены и тогда исходное изображение вернется. **Исправленно в последнем обновлении**
 
