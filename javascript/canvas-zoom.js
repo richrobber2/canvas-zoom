@@ -688,20 +688,11 @@ The higher the transparency level, the more transparent your mask will be:
         const img = targetElement.querySelector(`${elemId} img`);
 
         // Check if img exists
-        if (img) {
+        if (img && img.style.display !== "none") {
           // To restore cler func we need to clone img
           // This tag doesn't do anything useful, but it breaks a lot of things
-          const fakeImg = img;
-          img.remove();
-
-          // Restore clear func
-          const clearBtn = targetElement.querySelector(
-            `${elemId} button[aria-label="Clear"]`
-          );
-
-          clearBtn.addEventListener("click", () => {
-            targetElement.appendChild(fakeImg);
-          });
+          img.style.display = "none";
+          img.style.visibility = "hidden";
         }
       }
     }
@@ -721,6 +712,8 @@ The higher the transparency level, the more transparent your mask will be:
       const canvas = document.querySelector(
         `${elemId} canvas[key="interface"]`
       );
+
+      toggleOverlap("off");
 
       if (
         canvas &&
@@ -787,6 +780,7 @@ The higher the transparency level, the more transparent your mask will be:
 
       // Update the target element's transform property to apply the new zoom level
 
+      toggleOverlap("on");
       return newZoomLevel;
     }
 
@@ -996,11 +990,10 @@ The higher the transparency level, the more transparent your mask will be:
 
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
+      resetZoom();
       if (e.target.classList.contains("svelte-1g805jl")) {
-        toggleOverlap("off");
-        resetZoom();
-
         setTimeout(() => {
+          resetZoom();
           disableCanvasTraces();
 
           const canvas = document.querySelector(
@@ -1018,7 +1011,7 @@ The higher the transparency level, the more transparent your mask will be:
           } else {
             isMouseOverCanvas = true;
           }
-        }, 1000);
+        }, 0);
       }
     });
 
