@@ -684,7 +684,7 @@ The higher the transparency level, the more transparent your mask will be:
       const activeTab = getActiveTab().textContent.trim();
 
       // Do only if not Inpaint tab
-      if (activeTab !== "Inpaint") {
+      if (activeTab !== "img2img") {
         const img = targetElement.querySelector(`${elemId} img`);
 
         // Check if img exists
@@ -695,9 +695,10 @@ The higher the transparency level, the more transparent your mask will be:
           img.remove();
 
           // Restore clear func
-          const clearBtn = document.querySelector(
+          const clearBtn = targetElement.querySelector(
             `${elemId} button[aria-label="Clear"]`
           );
+
           clearBtn.addEventListener("click", () => {
             targetElement.appendChild(fakeImg);
           });
