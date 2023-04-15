@@ -2,6 +2,61 @@
 (async () => {
   // Wait for the specified delay
   await new Promise((resolve) => setTimeout(resolve, 3000));
+  class Toast {
+    constructor(message, duration) {
+      this.message = message;
+      this.duration = duration;
+      this.id = Toast.instances.length;
+      this.toast = document.createElement('div');
+      this.toast.className = 'toast';
+      this.toast.setAttribute('data-id', this.id);
+      this.toast.innerText = this.message;
+      this.body = document.body;
+      this.body.appendChild(this.toast);
+      Toast.instances.push(this);
+    }
+
+    setMessage(message) {
+      this.message = message;
+      this.toast.innerText = this.message;
+      this.show();
+    }
+
+    show(duration = this.duration) {
+      this.toast.classList.add('show');
+
+      // Calculate the bottom position of the toast
+      const toasts = document.querySelectorAll('.toast.show');
+      const numToasts = toasts.length;
+      const offset = numToasts * (this.toast.offsetHeight + 10) + 20;
+      this.toast.style.bottom = `${offset}px`;
+
+      setTimeout(() => {
+        this.hide();
+      }, duration);
+    }
+
+
+    hide() {
+      this.toast.classList.remove('show');
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          this.toast.remove();
+          Toast.instances.splice(this.id, 1);
+        }, 500);
+      });
+    }
+  }
+
+  Toast.instances = [];
+
+  // toast to tell the user that the extentions is loaded
+  const toast = new Toast('Canvas Zoom is loaded', 3000);
+  toast.show();
+  // timout
+  setTimeout(() => {
+    toast.setMessage('reuse the toast');
+  }, 3000);
 
   // LocalStorage functions
   // Save the config to localStorage
@@ -73,25 +128,16 @@
   const inpaintID = "#img2maskimg";
   const inpaintSketchID = "#inpaint_sketch";
   const img2imgTabsID = "#mode_img2img .tab-nav";
-  const rangeWidthId = "#range_id_20";
-  const rangeHeightId = "#range_id_21";
 
   // Wait for the elements to be loaded
-  const [
-    sketchEl,
-    inpaintEl,
-    inpaintSketchEl,
-    img2imgTabs,
-    rangeWidth,
-    rangeHeight,
-  ] = await Promise.all([
-    document.querySelector(sketchID),
-    document.querySelector(inpaintID),
-    document.querySelector(inpaintSketchID),
-    document.querySelector(img2imgTabsID),
-    document.querySelector(rangeWidthId),
-    document.querySelector(rangeHeightId),
-  ]);
+  const [sketchEl, inpaintEl, inpaintSketchEl, img2imgTabs] = await Promise.all(
+    [
+      document.querySelector(sketchID),
+      document.querySelector(inpaintID),
+      document.querySelector(inpaintSketchID),
+      document.querySelector(img2imgTabsID),
+    ]
+  );
 
   /**
    * Prompts the user to enter a valid hotkey and returns the corresponding key code.
@@ -289,8 +335,8 @@ The higher the transparency level, the more transparent your mask will be:
 
     const loadCustomHotkeysItem = `<li data-action="${items[4].action}">
                <span><b>${items[4].hotkey.charAt(
-                 items[4].hotkey.length - 1
-               )}</b></span><b>
+      items[4].hotkey.length - 1
+    )}</b></span><b>
                ${items[4].label}
                </b>
              </li><hr>`;
@@ -310,16 +356,15 @@ The higher the transparency level, the more transparent your mask will be:
 
               return `<li data-action="${item.action}">
                <span><b>${item.hotkey.charAt(
-                 item.hotkey.length - 1
-               )} - </b></span> 
+                item.hotkey.length - 1
+              )} - </b></span> 
                ${item.label}
              </li>`;
             })
             .join("");
 
-          return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
-            group.title !== "Mask transparency" ? "<hr>" : ""
-          }`;
+          return `<h3>${group.title}</h3><ul>${groupItems}</ul>${group.title !== "Mask transparency" ? "<hr>" : ""
+            }`;
         })
         .join("")
     );
@@ -502,71 +547,6 @@ The higher the transparency level, the more transparent your mask will be:
     );
     return selectedTab;
   }
-
-  /**
-   * The restoreImgRedMask function displays a red mask around an image to indicate the aspect ratio.
-   * If the image display property is set to 'none', the mask breaks. To fix this, the function
-   * temporarily sets the display property to 'block' and then hides the mask again after 300 milliseconds
-   * to avoid breaking the canvas. Additionally, the function adjusts the mask to work correctly on
-   * very long images.
-   *
-   * The function works as follows:
-   * 1. Check if the mainTabId is defined.
-   * 2. Find the mainTab and the image element.
-   * 3. Reset the transform property of the imageARPreview element.
-   * 4. If the width of the mainTab is greater than 865, calculate the new transform values
-   *    for the imageARPreview element based on the mainTab's transform values.
-   * 5. Show the red mask by setting the display property to 'block' if it is 'none'.
-   * 6. Clear any existing timers and set a new timer to hide the mask after 300ms.
-   */
-
-  function restoreImgRedMask() {
-    const mainTabId = getTabId();
-
-    if (mainTabId !== undefined) {
-      const mainTab = document.querySelector(mainTabId);
-
-      let timer;
-      const img = mainTab.querySelector("img");
-      const imageARPreview = document.querySelector("#imageARPreview");
-
-      if (img && imageARPreview) {
-        imageARPreview.style.transform = "";
-        if (parseFloat(mainTab.style.width) > 865) {
-          const str = mainTab.style.transform;
-          const regex = /[-+]?[0-9]*\.?[0-9]+/g;
-          const numbers = str.match(regex).map(Number);
-
-          const [posX, posY, zoom] = numbers;
-
-          const transformOrigin =
-            window.getComputedStyle(mainTab).transformOrigin;
-          const [originX, originY] = transformOrigin.split(" ");
-          const originYValue = parseFloat(originY);
-
-          const offsetY = originYValue * (1 - zoom);
-
-          imageARPreview.style.transform = `translate(${posX}px, ${-offsetY}px) scale(${zoom})`;
-        }
-
-        if (img.style.display == "none") {
-          img.style.display = "block";
-
-          if (timer) {
-            clearTimeout(timer);
-          }
-
-          timer = setTimeout(() => {
-            img.style.display = "none";
-          }, 300);
-        }
-      }
-    }
-  }
-
-  // Apply functionality to the range inputs
-  rangeWidth.addEventListener("input", restoreImgRedMask);
-  rangeHeight.addEventListener("input", restoreImgRedMask);
 
   /**
    * Apply zoom and pan functionality to a target element.
@@ -817,19 +797,20 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    // Adjust the brush size based on the deltaY value from a mouse wheel event.
     function adjustBrushSize(elemId, deltaY) {
-      const input =
-        document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
-        document.querySelector(`${elemId} button[aria-label="Use brush"]`);
+      // Get brush input element
+      const input = document.querySelector(
+        `${elemId} input[aria-label='Brush radius'], ${elemId} button[aria-label='Use brush']`
+      );
 
+      // Click on the input element to make it active and change the brush size
       if (input) {
         input.click();
-
         input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
         input.dispatchEvent(new Event("change"));
       }
     }
+
 
     //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
     fileInput = document.querySelector(
@@ -1071,7 +1052,7 @@ The higher the transparency level, the more transparent your mask will be:
           disableCanvasTraces();
 
           const canvas = document.querySelector(
-            `${elemId} canvas[key="interface"]`
+            `${inpaintID} canvas[key="interface"]`
           );
 
           if (canvas) {
@@ -1165,4 +1146,6 @@ The higher the transparency level, the more transparent your mask will be:
   applyZoomAndPan(sketchEl, sketchID);
   applyZoomAndPan(inpaintEl, inpaintID);
   applyZoomAndPan(inpaintSketchEl, inpaintSketchID);
+
+
 })();
