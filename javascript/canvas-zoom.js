@@ -73,16 +73,25 @@
   const inpaintID = "#img2maskimg";
   const inpaintSketchID = "#inpaint_sketch";
   const img2imgTabsID = "#mode_img2img .tab-nav";
+  const rangeWidthId = "#range_id_20";
+  const rangeHeightId = "#range_id_21";
 
   // Wait for the elements to be loaded
-  const [sketchEl, inpaintEl, inpaintSketchEl, img2imgTabs] = await Promise.all(
-    [
-      document.querySelector(sketchID),
-      document.querySelector(inpaintID),
-      document.querySelector(inpaintSketchID),
-      document.querySelector(img2imgTabsID),
-    ]
-  );
+  const [
+    sketchEl,
+    inpaintEl,
+    inpaintSketchEl,
+    img2imgTabs,
+    rangeWidth,
+    rangeHeight,
+  ] = await Promise.all([
+    document.querySelector(sketchID),
+    document.querySelector(inpaintID),
+    document.querySelector(inpaintSketchID),
+    document.querySelector(img2imgTabsID),
+    document.querySelector(rangeWidthId),
+    document.querySelector(rangeHeightId),
+  ]);
 
   /**
    * Prompts the user to enter a valid hotkey and returns the corresponding key code.
@@ -493,6 +502,71 @@ The higher the transparency level, the more transparent your mask will be:
     );
     return selectedTab;
   }
+
+  /**
+   * The restoreImgRedMask function displays a red mask around an image to indicate the aspect ratio.
+   * If the image display property is set to 'none', the mask breaks. To fix this, the function
+   * temporarily sets the display property to 'block' and then hides the mask again after 300 milliseconds
+   * to avoid breaking the canvas. Additionally, the function adjusts the mask to work correctly on
+   * very long images.
+   *
+   * The function works as follows:
+   * 1. Check if the mainTabId is defined.
+   * 2. Find the mainTab and the image element.
+   * 3. Reset the transform property of the imageARPreview element.
+   * 4. If the width of the mainTab is greater than 865, calculate the new transform values
+   *    for the imageARPreview element based on the mainTab's transform values.
+   * 5. Show the red mask by setting the display property to 'block' if it is 'none'.
+   * 6. Clear any existing timers and set a new timer to hide the mask after 300ms.
+   */
+
+  function restoreImgRedMask() {
+    const mainTabId = getTabId();
+
+    if (mainTabId !== undefined) {
+      const mainTab = document.querySelector(mainTabId);
+
+      let timer;
+      const img = mainTab.querySelector("img");
+      const imageARPreview = document.querySelector("#imageARPreview");
+
+      if (img && imageARPreview) {
+        imageARPreview.style.transform = "";
+        if (parseFloat(mainTab.style.width) > 865) {
+          const str = mainTab.style.transform;
+          const regex = /[-+]?[0-9]*\.?[0-9]+/g;
+          const numbers = str.match(regex).map(Number);
+
+          const [posX, posY, zoom] = numbers;
+
+          const transformOrigin =
+            window.getComputedStyle(mainTab).transformOrigin;
+          const [originX, originY] = transformOrigin.split(" ");
+          const originYValue = parseFloat(originY);
+
+          const offsetY = originYValue * (1 - zoom);
+
+          imageARPreview.style.transform = `translate(${posX}px, ${-offsetY}px) scale(${zoom})`;
+        }
+
+        if (img.style.display == "none") {
+          img.style.display = "block";
+
+          if (timer) {
+            clearTimeout(timer);
+          }
+
+          timer = setTimeout(() => {
+            img.style.display = "none";
+          }, 300);
+        }
+      }
+    }
+  }
+
+  // Apply functionality to the range inputs
+  rangeWidth.addEventListener("input", restoreImgRedMask);
+  rangeHeight.addEventListener("input", restoreImgRedMask);
 
   /**
    * Apply zoom and pan functionality to a target element.
@@ -997,7 +1071,7 @@ The higher the transparency level, the more transparent your mask will be:
           disableCanvasTraces();
 
           const canvas = document.querySelector(
-            `${inpaintID} canvas[key="interface"]`
+            `${elemId} canvas[key="interface"]`
           );
 
           if (canvas) {
