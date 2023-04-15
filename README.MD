@@ -48,6 +48,8 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 **V** - Toggle brush transparency mode ( Works only in Inpaint )
 
+You can turn on or off the white color of the brush outline in Inpaint. In the context menu.
+
 You can't draw in transparency mode, otherwise there is a chance that one of the lines will be cancelled. Turn off mask transparency mode when you draw. This mode is not stable yet, work will be done to improve it.
 
 ## Features
@@ -115,6 +117,8 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 **C** - Переключение режима прозрачности маски ( Работает только в Inpaint )
 
 **V** - Переключить режим прозрачности кисти ( Работает только в Inpaint )
+
+Вы можете включить или отключить обводку кисти в Inpaint белым цветом. В контекстном меню.
 
 В режиме прозрачности нельзя рисовать, иначе есть шанс что одна из линий отменится. Отключайте режим прозрачности маски когда рисуете. Данный режим пока работает не стабильно, введется работа по улучшению.
 

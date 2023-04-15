@@ -16,6 +16,7 @@ toggleCanvasOpacity: Toggle the canvas opacity
 toggleBrushOpacity: Toggle the brush opacity
 brushOpacity: Set the brush opacity
 canvasOpacity: Set the canvas opacity
+brushOutline: Toggle the brush outline
 
 */
 
@@ -25,6 +26,7 @@ canvasOpacity: Set the canvas opacity
 
 // Change the last letter to the one you want.
 // For example: "KeyR" = change "R" to any letter you want
+// change brushOutline to true or false
 
 const customHotkeys = {
   undo: "KeyZ",
@@ -38,6 +40,7 @@ const customHotkeys = {
   toggleBrushOpacity: "KeyV",
   brushOpacity: 0.6,
   canvasOpacity: 0.3,
+  brushOutline: false,
 };
 
 // Don't change anything below this line
