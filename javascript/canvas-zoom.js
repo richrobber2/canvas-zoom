@@ -128,25 +128,17 @@
   const inpaintID = "#img2maskimg";
   const inpaintSketchID = "#inpaint_sketch";
   const img2imgTabsID = "#mode_img2img .tab-nav";
-  const rangeWidthId = "#range_id_20";
-  const rangeHeightId = "#range_id_21";
+  const rangeGroupId = "#img2img_column_size";
 
   // Wait for the elements to be loaded
-  const [
-    sketchEl,
-    inpaintEl,
-    inpaintSketchEl,
-    img2imgTabs,
-    rangeWidth,
-    rangeHeight,
-  ] = await Promise.all([
-    document.querySelector(sketchID),
-    document.querySelector(inpaintID),
-    document.querySelector(inpaintSketchID),
-    document.querySelector(img2imgTabsID),
-    document.querySelector(rangeWidthId),
-    document.querySelector(rangeHeightId),
-  ]);
+  const [sketchEl, inpaintEl, inpaintSketchEl, img2imgTabs, rangeGroup] =
+    await Promise.all([
+      document.querySelector(sketchID),
+      document.querySelector(inpaintID),
+      document.querySelector(inpaintSketchID),
+      document.querySelector(img2imgTabsID),
+      document.querySelector(rangeGroupId),
+    ]);
 
   // Create a div element for the cursor circle
   const cursorCircle = document.createElement("div");
@@ -653,8 +645,9 @@ The higher the transparency level, the more transparent your mask will be:
   }
 
   // Apply functionality to the range inputs
-  rangeWidth.addEventListener("input", restoreImgRedMask);
-  rangeHeight.addEventListener("input", restoreImgRedMask);
+  rangeGroup.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", restoreImgRedMask);
+  });
 
   /**
    * Apply zoom and pan functionality to a target element.

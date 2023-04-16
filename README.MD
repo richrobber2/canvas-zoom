@@ -48,8 +48,6 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 **V** - Toggle brush transparency mode ( Works only in Inpaint )
 
-You can turn on or off the white color of the brush outline in Inpaint. In the context menu.
-
 You can't draw in transparency mode, otherwise there is a chance that one of the lines will be cancelled. Turn off mask transparency mode when you draw. This mode is not stable yet, work will be done to improve it.
 
 ## Features
@@ -57,6 +55,8 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 1. You can fix the color bar wherever you want, for this purpose point the mouse on the place you want and press "T" and then every time you press "Q" the color bar will open in this place. If you click on the button in the right corner, the panel will reset and work as it should.
 
 2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar.
+
+3. You can add a white outline to the brush to better see its borders. You can turn it on in the context menu. It works only in Inpaint.
 
 ## Known bugs:
 
@@ -118,8 +118,6 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 **V** - Переключить режим прозрачности кисти ( Работает только в Inpaint )
 
-Вы можете включить или отключить обводку кисти в Inpaint белым цветом. В контекстном меню.
-
 В режиме прозрачности нельзя рисовать, иначе есть шанс что одна из линий отменится. Отключайте режим прозрачности маски когда рисуете. Данный режим пока работает не стабильно, введется работа по улучшению.
 
 ## Фичи
@@ -127,6 +125,8 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 1. Вы можете закрепить цветовую панель где угодно, для этого наведите мышкой на нужно место и нажмите "T" после чего каждый раз на "Q" Цветовая панель будет открываться в этом месте. Если вы нажмете на кнопку в правом углу, то панель сбросится и будет работать, как и должна.
 
 2. Если вы увеличите картинку с большой шириной, которая не помещается в окно, то при нажатии на "S" вы получите увеличенную во весь экран картинку в полную ширину без полосы прокрутки
+
+3. Вы можете добавить кисти белую обводку, что бы лучше видеть её границы. Включить можно в контекстном меню. Работает только в Inpaint.
 
 ## Известные баги:
 
