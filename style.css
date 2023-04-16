@@ -96,7 +96,7 @@
 .submit-button {
   background-color: #007bff;
   border: none;
-  border-radius: 3px;
+  border-radius: 1.5px;
   padding: 5px 15px;
   color: white;
   cursor: pointer;
@@ -108,6 +108,15 @@
   background-color: #0069d9;
 }
 
-button[aria-label="Redraw"] {
+
+.cursor-circle {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 50%;
+  z-index: 999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
   display: none;
 }

@@ -1,6 +1,61 @@
+// Main
 (async () => {
   // Wait for the specified delay
   await new Promise((resolve) => setTimeout(resolve, 3000));
+  class Toast {
+    constructor(message, duration) {
+      this.message = message;
+      this.duration = duration;
+      this.id = Toast.instances.length;
+      this.toast = document.createElement("div");
+      this.toast.className = "toast";
+      this.toast.setAttribute("data-id", this.id);
+      this.toast.innerText = this.message;
+      this.body = document.body;
+      this.body.appendChild(this.toast);
+      Toast.instances.push(this);
+    }
+
+    setMessage(message) {
+      this.message = message;
+      this.toast.innerText = this.message;
+      this.show();
+    }
+
+    show(duration = this.duration) {
+      this.toast.classList.add("show");
+
+      // Calculate the bottom position of the toast
+      const toasts = document.querySelectorAll(".toast.show");
+      const numToasts = toasts.length;
+      const offset = numToasts * (this.toast.offsetHeight + 10) + 20;
+      this.toast.style.bottom = `${offset}px`;
+
+      setTimeout(() => {
+        this.hide();
+      }, duration);
+    }
+
+    hide() {
+      this.toast.classList.remove("show");
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          this.toast.remove();
+          Toast.instances.splice(this.id, 1);
+        }, 500);
+      });
+    }
+  }
+
+  Toast.instances = [];
+
+  // toast to tell the user that the extentions is loaded
+  const toast = new Toast("Canvas Zoom is loaded", 3000);
+  toast.show();
+  // timout
+  setTimeout(() => {
+    toast.setMessage("reuse the toast");
+  }, 3000);
 
   // LocalStorage functions
   // Save the config to localStorage
@@ -11,6 +66,10 @@
   // Retrieve the config from localStorage and return as an object
   function getConfigFromLocalStorage() {
     return JSON.parse(localStorage.getItem("hotkeyConfig") || false);
+  }
+
+  function getCustomConfigFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("customHotkeyConfig") || false);
   }
 
   // Check all keys in LocalStorage
@@ -48,8 +107,11 @@
     toggleBrushOpacity: "KeyV",
     brushOpacity: 0.5,
     canvasOpacity: 0.4,
+    brushOutline: false,
   };
   let isMoving = false;
+  let isMouseOverCanvas = true;
+  let contextMenu;
 
   // Variables for mouse position tracking
   let mouseX, mouseY;
@@ -66,16 +128,33 @@
   const inpaintID = "#img2maskimg";
   const inpaintSketchID = "#inpaint_sketch";
   const img2imgTabsID = "#mode_img2img .tab-nav";
+  const rangeGroupId = "#img2img_column_size";
+  const img2imgPromptId = "#img2img_prompt textarea";
+  const img2imgNegPromptId = "#img2img_neg_prompt textarea";
 
   // Wait for the elements to be loaded
-  const [sketchEl, inpaintEl, inpaintSketchEl, img2imgTabs] = await Promise.all(
-    [
-      document.querySelector(sketchID),
-      document.querySelector(inpaintID),
-      document.querySelector(inpaintSketchID),
-      document.querySelector(img2imgTabsID),
-    ]
-  );
+  const [
+    sketchEl,
+    inpaintEl,
+    inpaintSketchEl,
+    img2imgTabs,
+    rangeGroup,
+    img2imgPrompt,
+    img2imgNegPrompt,
+  ] = await Promise.all([
+    document.querySelector(sketchID),
+    document.querySelector(inpaintID),
+    document.querySelector(inpaintSketchID),
+    document.querySelector(img2imgTabsID),
+    document.querySelector(rangeGroupId),
+    document.querySelector(img2imgPromptId),
+    document.querySelector(img2imgNegPromptId),
+  ]);
+
+  // Create a div element for the cursor circle
+  const cursorCircle = document.createElement("div");
+  cursorCircle.classList.add("cursor-circle");
+  document.body.appendChild(cursorCircle);
 
   /**
    * Prompts the user to enter a valid hotkey and returns the corresponding key code.
@@ -102,21 +181,30 @@
 
     while (!validKeys.test(hotkey)) {
       hotkey = window.prompt("Please enter a valid hotkey:");
-      hotkeyCode = "Key" + hotkey.toUpperCase();
 
-      if (!hotkey) return null; // User canceled the prompt
+      if (!hotkey || hotkey.trim() === "") {
+        window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
+        return null; // User canceled the prompt
+      }
+
+      hotkey = hotkey.trim();
 
       if (!validKeys.test(hotkey)) {
         window.alert("Invalid hotkey. Please enter 1 alphabetical character.");
-      } else if (reservedKeys.includes(hotkeyCode) || hotkey === " ") {
-        window.alert(
-          "This hotkey is not able to be used. Please enter a different hotkey."
-        );
-        hotkey = "";
-        hotkeyCode = "";
+      } else {
+        hotkeyCode = "Key" + hotkey.toUpperCase();
+
+        if (reservedKeys.includes(hotkeyCode)) {
+          window.alert(
+            "This hotkey is not able to be used. Please enter a different hotkey."
+          );
+          hotkey = "";
+          hotkeyCode = "";
+        }
       }
     }
 
+    contextMenu.style.display = "none";
     return hotkeyCode;
   }
 
@@ -137,7 +225,7 @@
 
     newOpacityLevel = prompt(`Enter a new opacity level (10-70):
 The higher the transparency level, the more transparent your mask will be:
-10 - The mask is barely transparent
+      10 - The mask is barely transparent
       70 - The mask is very transparent.`);
 
     if (newOpacityLevel === "") return NaN;
@@ -152,6 +240,9 @@ The higher the transparency level, the more transparent your mask will be:
       alert("Invalid opacity level. Please enter a number between 10 and 70.");
       return NaN;
     }
+
+    contextMenu.style.display = "none";
+
     newOpacityLevel = 1 - newOpacityLevel / 100;
     return parseFloat(newOpacityLevel.toFixed(2));
   }
@@ -173,6 +264,43 @@ The higher the transparency level, the more transparent your mask will be:
     hotkeysConfig["brushOpacity"] = newOpacityLevel;
 
     updateConfigAndSave("brushOpacity", newOpacityLevel);
+    contextMenu.style.display = "none";
+  }
+
+  function toggleBrushOutline() {
+    const brushOutline = !getConfigFromLocalStorage().brushOutline;
+
+    alert(
+      `You toggle Outline brush to:  ${
+        !hotkeysConfig["brushOutline"] ? "Enabled" : "Disabled"
+      }`
+    );
+
+    contextMenu.style.display = "none";
+    hotkeysConfig.brushOutline = brushOutline;
+    updateConfigAndSave("brushOutline", brushOutline);
+
+    if (!brushOutline) {
+      cursorCircle.style.display = "none";
+    }
+  }
+
+  // Load custom hotkeys from customHotkeys.js file
+  function loadCustomHotkeys() {
+    customHotkeysConfig = getCustomConfigFromLocalStorage();
+
+    if (!customHotkeysConfig) {
+      alert(
+        "Custom hotkeys config not found. Please set your custom hotkeys in customHotkeys.js file"
+      );
+      return;
+    }
+
+    hotkeysConfig = customHotkeysConfig;
+    saveConfigToLocalStorage(customHotkeysConfig);
+    contextMenu.style.display = "none";
+
+    alert("Custom hotkeys successfully loaded");
   }
 
   /**
@@ -192,18 +320,19 @@ The higher the transparency level, the more transparent your mask will be:
       updateHotkeyAndSave("openBrushPanelUnderMouse", askForHotkey());
     },
     setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey()),
-    changeMoveMode: () => changeMoveMode(),
     changeCanvasOpacityKey: () =>
       updateHotkeyAndSave("toggleCanvasOpacity", askForHotkey()),
     changeBrushOpacityKey: () =>
       updateHotkeyAndSave("toggleBrushOpacity", askForHotkey()),
     changeCanvasOpacityLevel: () => changeCanvasOpacityLevel(),
     changeBrushOpacityLevel: () => changeBrushOpacityLevel(),
+    loadCustomHotkeys: () => loadCustomHotkeys(),
+    toggleBrushOutline: () => toggleBrushOutline(),
   };
 
   // This code creates a context menu as a div element and appends it to the body of the document,
   // and returns the resulting menu element.
-  const contextMenu = (() => {
+  contextMenu = (() => {
     const menu = document.createElement("div");
     menu.style.listStyleType = "None";
     menu.className = "context-menu";
@@ -219,50 +348,73 @@ The higher the transparency level, the more transparent your mask will be:
    * Get last char, "KeyZ" we get Z , "Digit1" we get 1
    */
   const generateContextMenuItems = (items) => {
+    // Remove "Change hotkeys" item
+    items.splice(0, 1);
+
     const groupedItems = [
       {
         title: "Canvas Moving",
-        items: [items[7]],
+        items: [items[8]],
       },
       {
         title: "Control",
-        items: items.slice(1, 5),
+        items: items.slice(0, 4),
       },
       {
         title: "Color panel",
-        items: items.slice(5, 7),
+        items: items.slice(5, 8),
       },
       {
         title: "Mask transparency",
-        items: items.slice(8),
+        items: items.slice(9),
       },
     ];
 
-    return groupedItems
-      .map((group) => {
-        const groupItems = group.items
-          .map((item) => {
-            if (typeof item.hotkey === "number") {
-              return `<li data-action="${item.action}">
+    const loadCustomHotkeysItem = `<li data-action="${items[4].action}">
+               <span><b>${items[4].hotkey.charAt(
+                 items[4].hotkey.length - 1
+               )}</b></span><b>
+               ${items[4].label}
+               </b>
+             </li><hr>`;
+
+    return (
+      loadCustomHotkeysItem +
+      groupedItems
+        .map((group) => {
+          const groupItems = group.items
+            .map((item) => {
+              if (typeof item.hotkey === "number") {
+                return `<li data-action="${item.action}">
                <span><b>${100 - item.hotkey * 100}</b> - </span> 
                ${item.label}
              </li>`;
-            }
+              }
 
-            return `<li data-action="${item.action}">
+              if (typeof item.hotkey === "boolean") {
+                return `<li data-action="${item.action}">
+               <span> Outline at Brush now  <b>${
+                 hotkeysConfig["brushOutline"] ? "Enabled" : "Disabled"
+               }</b> </span> 
+               Click to toggle outline
+             </li>`;
+              }
+
+              return `<li data-action="${item.action}">
                <span><b>${item.hotkey.charAt(
                  item.hotkey.length - 1
                )} - </b></span> 
                ${item.label}
              </li>`;
-          })
-          .join("");
+            })
+            .join("");
 
-        return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
-          group.title !== "Mask transparency" ? "<hr>" : ""
-        }`;
-      })
-      .join("");
+          return `<h3>${group.title}</h3><ul>${groupItems}</ul>${
+            group.title !== "Mask transparency" ? "<hr>" : ""
+          }`;
+        })
+        .join("")
+    );
   };
 
   /**
@@ -310,6 +462,11 @@ The higher the transparency level, the more transparent your mask will be:
           label: "Fit to screen",
         },
         {
+          action: "loadCustomHotkeys",
+          hotkey: "",
+          label: "Load custom hotkeys from customHotkeys.js file",
+        },
+        {
           action: "openBrushSetting",
           hotkey: hotkeysConfig.openBrushSetting,
           label: "Open color panel",
@@ -318,6 +475,11 @@ The higher the transparency level, the more transparent your mask will be:
           action: "openBrushPanelUnderMouse",
           hotkey: hotkeysConfig.openBrushPanelUnderMouse,
           label: "Puts a color bar next to the mouse",
+        },
+        {
+          action: "toggleBrushOutline",
+          hotkey: hotkeysConfig.brushOutline,
+          label: " .Click to toggle brush outline",
         },
         {
           action: "setMoveKey",
@@ -367,8 +529,12 @@ The higher the transparency level, the more transparent your mask will be:
   });
 
   contextMenu.addEventListener("click", (e) => {
-    // remove the event listeners
+    if (!e.target.closest("li")) {
+      return;
+    }
+
     const action = e.target.closest("li").dataset.action;
+
     // Check if the action exists in the actions object and run the corresponding function
     if (actions.hasOwnProperty(action)) {
       actions[action]();
@@ -376,8 +542,8 @@ The higher the transparency level, the more transparent your mask will be:
   });
 
   // Hide the context menu on left-click
-  document.addEventListener("click", () => {
-    contextMenu.style.display = "none";
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".context-menu")) contextMenu.style.display = "none";
   });
 
   // Hide the context menu on left-click
@@ -393,8 +559,10 @@ The higher the transparency level, the more transparent your mask will be:
 
   //helper functions
   // get active tab
-  function getActiveTab() {
+  function getActiveTab(all = false) {
     const tabs = img2imgTabs.querySelectorAll("button");
+
+    if (all) return tabs;
 
     for (let tab of tabs) {
       if (tab.classList.contains("selected")) {
@@ -418,12 +586,6 @@ The higher the transparency level, the more transparent your mask will be:
     // Return the corresponding tab ID or undefined if not found
     return tabIdLookup[activeTab.innerText];
   }
-
-  /**
-   * Trigger undo action on the active tab when Ctrl + Z is pressed.
-   * @param {string} elemId - The ID of the element to target.
-   */
-
   // Get Active main tab to prevent "Undo" on text2img from being disabled
   function getActiveMainTab() {
     const selectedTab = document.querySelector(
@@ -433,6 +595,72 @@ The higher the transparency level, the more transparent your mask will be:
   }
 
   /**
+   * The restoreImgRedMask function displays a red mask around an image to indicate the aspect ratio.
+   * If the image display property is set to 'none', the mask breaks. To fix this, the function
+   * temporarily sets the display property to 'block' and then hides the mask again after 300 milliseconds
+   * to avoid breaking the canvas. Additionally, the function adjusts the mask to work correctly on
+   * very long images.
+   *
+   * The function works as follows:
+   * 1. Check if the mainTabId is defined.
+   * 2. Find the mainTab and the image element.
+   * 3. Reset the transform property of the imageARPreview element.
+   * 4. If the width of the mainTab is greater than 865, calculate the new transform values
+   *    for the imageARPreview element based on the mainTab's transform values.
+   * 5. Show the red mask by setting the display property to 'block' if it is 'none'.
+   * 6. Clear any existing timers and set a new timer to hide the mask after 300ms.
+   */
+
+  function restoreImgRedMask() {
+    const mainTabId = getTabId();
+
+    if (mainTabId !== undefined) {
+      const mainTab = document.querySelector(mainTabId);
+
+      let timer;
+      const img = mainTab.querySelector("img");
+      const imageARPreview = document.querySelector("#imageARPreview");
+
+      if (img && imageARPreview) {
+        imageARPreview.style.transform = "";
+        if (parseFloat(mainTab.style.width) > 865) {
+          const str = mainTab.style.transform;
+          const regex = /[-+]?[0-9]*\.?[0-9]+/g;
+          const numbers = str.match(regex).map(Number);
+
+          const [posX, posY, zoom] = numbers;
+
+          const transformOrigin =
+            window.getComputedStyle(mainTab).transformOrigin;
+          const [originX, originY] = transformOrigin.split(" ");
+          const originYValue = parseFloat(originY);
+
+          const offsetY = originYValue * (1 - zoom);
+
+          imageARPreview.style.transform = `translate(${posX}px, ${-offsetY}px) scale(${zoom})`;
+        }
+
+        if (img.style.display == "none") {
+          img.style.display = "block";
+
+          if (timer) {
+            clearTimeout(timer);
+          }
+
+          timer = setTimeout(() => {
+            img.style.display = "none";
+          }, 300);
+        }
+      }
+    }
+  }
+
+  // Apply functionality to the range inputs
+  rangeGroup.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", restoreImgRedMask);
+  });
+
+  /**
    * Apply zoom and pan functionality to a target element.
    * @param {HTMLElement} targetElement - The element to apply zoom and pan functionality to.
    * @param {string} elemId - The ID of the element to target.
@@ -440,6 +668,61 @@ The higher the transparency level, the more transparent your mask will be:
 
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
+
+    // Change cursor position on mousemove
+    function changeCursorCords(e) {
+      if (getTabId() !== inpaintID || !hotkeysConfig.brushOutline) {
+        cursorCircle.style.display = "none";
+        cursorCircle.classList.remove("enabled");
+        return;
+      }
+
+      const { clientX, clientY } = e;
+      cursorCircle.style.left = `${clientX}px`;
+      cursorCircle.style.top = `${clientY + window.scrollY}px`;
+
+      cursorCircle.style.display = "block";
+      cursorCircle.classList.add("enabled");
+    }
+
+    // Remove cursor display on mouseout
+    function removeCursorDisplay() {
+      cursorCircle.style.display = "none";
+      cursorCircle.classList.remove("enabled");
+    }
+
+    function attachEventListeners(canvas, input) {
+      canvas.addEventListener("mousemove", changeCursorCords);
+      canvas.addEventListener("mouseout", removeCursorDisplay);
+      input.addEventListener("change", () => {
+        setCircleSize(elemId);
+      });
+    }
+
+    targetElement.addEventListener("mousemove", (e) => {
+      const canvas = targetElement.querySelector(`canvas[key="interface"]`);
+      const input = targetElement.querySelector(
+        `${elemId} input[aria-label='Brush radius']`
+      );
+
+      if (getTabId() !== inpaintID || !hotkeysConfig.brushOutline) {
+        cursorCircle.style.display = "none";
+        return;
+      }
+
+      if (!input) {
+        adjustBrushSize(elemId, 0, true);
+      }
+
+      if (!cursorCircle.classList.contains("enabled") && canvas && input) {
+        attachEventListeners(canvas, input);
+      }
+    });
+
+    targetElement.addEventListener("mouseout", () => {
+      if (getTabId() !== inpaintID) return;
+      cursorCircle.style.display = "none";
+    });
 
     // Cancel the traces on all keys except the left one
     function disableCanvasTraces() {
@@ -465,24 +748,24 @@ The higher the transparency level, the more transparent your mask will be:
 
     // Simulate clicking and releasing the mouse on the canvas
     // Emulate mouse click on canvas
-    // function simulateClickAndMouseUp(x, y, canvas) {
-    //   const mousedownEvent = new MouseEvent("mousedown", {
-    //     clientX: x,
-    //     clientY: y,
-    //     bubbles: true,
-    //     cancelable: true,
-    //   });
+    function simulateClickAndMouseUp(x, y, canvas) {
+      const mousedownEvent = new MouseEvent("mousedown", {
+        clientX: x,
+        clientY: y,
+        bubbles: true,
+        cancelable: true,
+      });
 
-    //   const mouseupEvent = new MouseEvent("mouseup", {
-    //     clientX: x,
-    //     clientY: y,
-    //     bubbles: true,
-    //     cancelable: true,
-    //   });
+      const mouseupEvent = new MouseEvent("mouseup", {
+        clientX: x,
+        clientY: y,
+        bubbles: true,
+        cancelable: true,
+      });
 
-    //   canvas.dispatchEvent(mousedownEvent);
-    //   canvas.dispatchEvent(mouseupEvent);
-    // }
+      canvas.dispatchEvent(mousedownEvent);
+      canvas.dispatchEvent(mouseupEvent);
+    }
 
     // Set the opacity of the brush
     function setBrushOpacity(opacity) {
@@ -496,10 +779,6 @@ The higher the transparency level, the more transparent your mask will be:
 
     // Set the opacity of the canvas
     function setCanvasOpacity(opacity) {
-      // const canvasEmu = document.querySelector(
-      //   `${inpaintID} canvas[key="interface"]`
-      // );
-
       const canvas = document.querySelector(`${inpaintID} canvas[key="temp"]`);
       const ctx = canvas.getContext("2d");
       const redrawBtn = document.querySelector(
@@ -507,7 +786,6 @@ The higher the transparency level, the more transparent your mask will be:
       );
 
       ctx.globalAlpha = opacity;
-
       // if (opacity < 1) {
       //   // Creates a stack of false lines, but otherwise it will cancel the last line. The user will have to additionally press cancel
       //   simulateClickAndMouseUp(0, 0, canvasEmu);
@@ -527,6 +805,15 @@ The higher the transparency level, the more transparent your mask will be:
       const canvas = document.querySelector(
         `${elemId} canvas[key="interface"]`
       );
+
+      canvas.addEventListener("mousemove", () => {
+        isMouseOverCanvas = true;
+      });
+
+      canvas.addEventListener("mouseleave", () => {
+        isMouseOverCanvas = false;
+      });
+
       const style = window.getComputedStyle(canvas);
       let marginLeft = style.getPropertyValue("margin-left");
       marginLeft = +marginLeft.split("px")[0];
@@ -535,9 +822,14 @@ The higher the transparency level, the more transparent your mask will be:
         marginLeft = 0;
       }
 
-      colorInput.style.left =
-        mouseX + marginLeft - targetElement.clientWidth + "px";
-      colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+      if (!isMouseOverCanvas) {
+        colorInput.style.left = mouseX - targetElement.clientWidth + "px";
+        colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+      } else {
+        colorInput.style.left =
+          mouseX + marginLeft - targetElement.clientWidth + "px";
+        colorInput.style.top = mouseY - 40 - colorInput.offsetHeight + "px";
+      }
     }
 
     // Toggle the brush panel's visibility and optionally position it under the mouse cursor.
@@ -605,12 +897,51 @@ The higher the transparency level, the more transparent your mask will be:
       // });
     }
 
+    function fixCanvas() {
+      // Get active Tab
+      const activeTab = getActiveTab().textContent.trim();
+
+      // Do only if not Inpaint tab
+      if (activeTab !== "img2img") {
+        const img = targetElement.querySelector(`${elemId} img`);
+
+        // Check if img exists
+        if (img && img.style.display !== "none") {
+          // To restore cler func we need to clone img
+          // This tag doesn't do anything useful, but it breaks a lot of things
+          img.style.display = "none";
+          img.style.visibility = "hidden";
+        }
+      }
+    }
+
     // Reset the zoom level and pan position of the target element to their initial values.
+
     function resetZoom() {
       zoomLevel = 1;
       panX = 0;
       panY = 0;
+
+      setCircleSize(elemId);
+      fixCanvas();
+
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+
+      // If the canvas is wider than 860px, fit it to the element
+      const canvas = document.querySelector(
+        `${elemId} canvas[key="interface"]`
+      );
+
+      toggleOverlap("off");
+
+      if (
+        canvas &&
+        parseFloat(canvas.style.width) > 865 &&
+        parseFloat(targetElement.style.width) > 865
+      ) {
+        fitToElement();
+        return;
+      }
 
       targetElement.style.width = "";
       targetElement.style.height = "";
@@ -631,14 +962,67 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    // Adjust the brush size based on the deltaY value from a mouse wheel event.
-    function adjustBrushSize(elemId, deltaY) {
+    function calculateCircleSizeAdjustment(circleSizeResult) {
+      if (circleSizeResult > 0.35) {
+        return 0.8 - circleSizeResult;
+      } else if (circleSizeResult > 0.25) {
+        return 0.85 - circleSizeResult;
+      } else if (circleSizeResult > 0.15) {
+        return 0.9 - circleSizeResult;
+      } else if (circleSizeResult > 0.1) {
+        return 0.95 - circleSizeResult;
+      } else {
+        return 1 - circleSizeResult;
+      }
+    }
+
+    function setCircleSize(elemId) {
       const input =
         document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
         document.querySelector(`${elemId} button[aria-label="Use brush"]`);
-      input.click();
-      input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
-      input.dispatchEvent(new Event("change"));
+
+      const canvas = targetElement.querySelector(
+        `${elemId} canvas[key='interface']`
+      );
+
+      if (!input || !canvas) return;
+
+      const brushSize = parseFloat(input.value);
+      const adjustedBrushSize = brushSize >= 50 ? brushSize * 1 : brushSize;
+
+      const canvasWidth = parseFloat(canvas.width);
+      const canvasHeight = parseFloat(canvas.height);
+
+      const canvasWidthOffset = canvas.clientWidth;
+      const canvasHeightOffset = canvas.clientHeight;
+
+      const circleSizeResult = (canvasWidth - canvasWidthOffset) / 1000;
+
+      const circleSizeAdjustment =
+        calculateCircleSizeAdjustment(circleSizeResult);
+
+      const circleWidth = circleSizeAdjustment * adjustedBrushSize;
+
+      cursorCircle.style.width = `${zoomLevel * circleWidth}px`;
+      cursorCircle.style.height = `${zoomLevel * circleWidth}px`;
+    }
+
+    // Adjust the brush size based on the deltaY value from a mouse wheel event.
+    function adjustBrushSize(elemId, deltaY, withotValue = false) {
+      // Get brush input element
+      const input =
+        document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
+        document.querySelector(`${elemId} button[aria-label="Use brush"]`);
+
+      if (input) {
+        input.click();
+        if (!withotValue) {
+          input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
+          input.dispatchEvent(new Event("change"));
+        }
+
+        setCircleSize(elemId);
+      }
     }
 
     //Reset Zoom when upload image, To get rid of the bug, the picture becomes cropped
@@ -651,7 +1035,12 @@ The higher the transparency level, the more transparent your mask will be:
     });
 
     fileInput.addEventListener("change", (e) => {
-      setTimeout(disableCanvasTraces, 200);
+      setTimeout(() => {
+        setCircleSize(elemId);
+        disableCanvasTraces();
+      }, 200);
+
+      isMouseOverCanvas = true;
     });
 
     // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables.
@@ -663,6 +1052,7 @@ The higher the transparency level, the more transparent your mask will be:
 
       // Update the target element's transform property to apply the new zoom level
 
+      toggleOverlap("on");
       return newZoomLevel;
     }
 
@@ -681,6 +1071,8 @@ The higher the transparency level, the more transparent your mask will be:
         zoomLevel = updateZoom(
           zoomLevel + (operation === "+" ? delta : -delta)
         );
+
+        setCircleSize(elemId);
       }
     }
 
@@ -690,12 +1082,54 @@ The higher the transparency level, the more transparent your mask will be:
      * zoomLevel, panX, and panY to reflect the new state.
      */
 
+    function fitToElement() {
+      //Reset Zoom
+      targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
+
+      // Get element and screen dimensions
+      const elementWidth = targetElement.offsetWidth;
+      const elementHeight = targetElement.offsetHeight;
+      const parentElement = targetElement.parentElement;
+      const screenWidth = parentElement.clientWidth;
+      const screenHeight = parentElement.clientHeight;
+
+      // Get element's coordinates relative to the parent element
+      const elementRect = targetElement.getBoundingClientRect();
+      const parentRect = parentElement.getBoundingClientRect();
+      const elementX = elementRect.x - parentRect.x;
+
+      // Calculate scale and offsets
+      const scaleX = screenWidth / elementWidth;
+      const scaleY = screenHeight / elementHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      const transformOrigin =
+        window.getComputedStyle(targetElement).transformOrigin;
+      const [originX, originY] = transformOrigin.split(" ");
+      const originXValue = parseFloat(originX);
+
+      const offsetX =
+        (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
+      // Apply scale and offsets to the element
+      targetElement.style.transform = `translate(${offsetX}px, 0px) scale(${scale})`;
+
+      // Update global variables
+      zoomLevel = scale;
+      panX = offsetX;
+      panY = 0;
+
+      setCircleSize(elemId);
+      toggleOverlap("off");
+    }
+
     function fitToScreen() {
       resetZoom();
 
       const canvas = document.querySelector(
         `${elemId} canvas[key="interface"]`
       );
+
+      if (!canvas) return;
 
       if (canvas.offsetWidth > 862) {
         targetElement.style.width = canvas.offsetWidth + "px";
@@ -746,7 +1180,14 @@ The higher the transparency level, the more transparent your mask will be:
         (screenHeight - elementHeight * scale - elementY) / 2 +
         originYValue / 2;
 
+      setCircleSize(elemId);
       toggleOverlap("on");
+    }
+
+    // Blur prompt Textarea
+    function blurTextArea() {
+      img2imgPrompt.blur();
+      img2imgNegPrompt.blur();
     }
 
     // + and - (also numpad key ) to change zoom level
@@ -755,6 +1196,7 @@ The higher the transparency level, the more transparent your mask will be:
     // Open brush panel under mouse when pressing T
     // Undo last action when pressing Ctrl + Z
     function handleKeyDown(event) {
+      blurTextArea();
       switch (event.code) {
         case hotkeysConfig.resetZoom:
           resetZoom();
@@ -831,11 +1273,28 @@ The higher the transparency level, the more transparent your mask will be:
 
     // Reset zoom when click on another tab
     img2imgTabs.addEventListener("click", (e) => {
+      resetZoom();
       if (e.target.classList.contains("svelte-1g805jl")) {
-        toggleOverlap("off");
-        resetZoom();
+        setTimeout(() => {
+          resetZoom();
+          disableCanvasTraces();
 
-        setTimeout(disableCanvasTraces, 1000);
+          const canvas = document.querySelector(
+            `${elemId} canvas[key="interface"]`
+          );
+
+          if (canvas) {
+            canvas.addEventListener("mousemove", () => {
+              isMouseOverCanvas = true;
+            });
+
+            canvas.addEventListener("mouseleave", () => {
+              isMouseOverCanvas = false;
+            });
+          } else {
+            isMouseOverCanvas = true;
+          }
+        }, 0);
       }
     });
 
