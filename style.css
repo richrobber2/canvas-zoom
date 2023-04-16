@@ -120,3 +120,7 @@
   transform: translate(-50%, -50%);
   display: none;
 }
+
+button[aria-label="Redraw"] {
+  display:none
+}

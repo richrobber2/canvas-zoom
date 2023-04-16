@@ -832,13 +832,34 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
+    function changeLineColors() {
+      const colorBtn = document.querySelector(
+        `${colorID} button[aria-label="Select brush color"]`
+      );
+      const colorInput = document.querySelector(
+        `${colorID} input[aria-label="Brush color"]`
+      );
+      if (!colorInput) {
+        colorBtn && colorBtn.click();
+      }
+
+      if (colorInput.classList.contains("Marked")) {
+        return;
+      }
+
+      // Open color menu
+      setTimeout(() => {
+        const colorInput = document.querySelector(
+          `${colorID} input[aria-label="Brush color"]`
+        );
+
+        colorInput.classList.add("Marked");
+      }, 0);
+    }
+
     // Toggle the brush panel's visibility and optionally position it under the mouse cursor.
     function toggleBrushPanel(openUnderMouse = false) {
       const colorID = getTabId();
-
-      if (colorID === inpaintID) {
-        return;
-      }
 
       const colorBtn = document.querySelector(
         `${colorID} button[aria-label="Select brush color"]`
@@ -858,6 +879,17 @@ The higher the transparency level, the more transparent your mask will be:
           `${colorID} input[aria-label="Brush color"]`
         );
 
+        if (colorID === inpaintID) {
+          console.log("worked");
+          const redrawBtn = document.querySelector(
+            `${inpaintID} button[aria-label="Redraw"]`
+          );
+          colorInput.addEventListener("change", () => {
+            redrawBtn.click();
+          });
+          return;
+        }
+
         if (openUnderMouse) {
           positionColorInputUnderMouse(colorInput);
         }
@@ -867,7 +899,7 @@ The higher the transparency level, the more transparent your mask will be:
     }
 
     // undo last action
-    function undoActiveTab(e) {
+    function undoLastAction(e) {
       // document.addEventListener("keydown", (e) => {
       const isUndoKey = e.code === hotkeysConfig.undo;
       const isCtrlPressed = e.ctrlKey;
@@ -1211,7 +1243,7 @@ The higher the transparency level, the more transparent your mask will be:
           toggleBrushPanel(true);
           break;
         case hotkeysConfig.undo:
-          undoActiveTab(event);
+          undoLastAction(event);
           break;
         // Keys that replace the zoom with the wheel
         case hotkeysConfig.fitToScreen:

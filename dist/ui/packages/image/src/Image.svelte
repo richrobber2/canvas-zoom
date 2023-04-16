@@ -10,6 +10,7 @@
 	import ModifySketch from "./ModifySketch.svelte";
 	import SketchSettings from "./SketchSettings.svelte";
 	import { Upload, ModifyUpload } from "@gradio/upload";
+	import Json from "packages/icons/src/JSON.svelte";
 
 	export let value:
 		| null
@@ -76,9 +77,7 @@
 		} else {
 			value = detail;
 		}
-
 		await tick();
-
 		dispatch(streaming ? "stream" : "edit");
 	}
 
@@ -211,7 +210,7 @@
 						bind:this={value_img}
 						class="absolute-img"
 						src={static_image || value?.image || value}
-						alt=""
+						alt="load-2"
 						on:load={handle_image_load}
 						class:webcam={source === "webcam" && mirror_webcam}
 					/>
@@ -316,7 +315,7 @@
 				bind:this={value_img}
 				class="absolute-img"
 				src={static_image || value?.image || value}
-				alt=""
+				alt="load-1"
 				on:load={handle_image_load}
 				class:webcam={source === "webcam" && mirror_webcam}
 			/>

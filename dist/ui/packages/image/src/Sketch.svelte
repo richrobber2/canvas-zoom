@@ -259,33 +259,16 @@
 
 		clear_canvas();
 		if (value_img) {
-			if (source === "webcam") {
-				ctx.temp.save();
-				ctx.temp.translate(width, 0);
-				ctx.temp.scale(-1, 1);
-				ctx.temp.drawImage(value_img, 0, 0);
-				ctx.temp.restore();
-			} else {
-				draw_cropped_image();
-			}
-
-			if (!lines || !lines.length) {
-				ctx.drawing.drawImage(canvas.temp, 0, 0, width, height);
-			}
+			draw_cropped_image();
 		}
 
-		if (!isMaskMode) {
-			isMaskMode = true;
-		} else {
-			isMaskMode = false;
-		}
-
-		draw_lines({ lines: lines });
+		draw_lines({ lines: lines }, true);
 		line_count = lines.length;
 
 		if (lines.length == 0) {
 			dispatch("clear");
 		}
+
 		trigger_on_change();
 	}
 
@@ -298,19 +281,28 @@
 	};
 
 	let draw_lines = ({ lines }) => {
+		const brushMain = brush_color;
 		lines.forEach((line) => {
 			let { points: _points, brush_color, brush_radius } = line;
 
-			draw_points({
-				points: _points,
-				brush_color,
-				brush_radius
-			});
+			if (mode === "mask") {
+				draw_points({
+					points: _points,
+					brush_color: brushMain,
+					brush_radius
+				});
+			} else {
+				draw_points({
+					points: _points,
+					brush_color,
+					brush_radius
+				});
+			}
 
 			if (mode === "mask") {
 				draw_fake_points({
 					points: _points,
-					brush_color,
+					brush_color: brushMain,
 					brush_radius
 				});
 			}
@@ -319,7 +311,6 @@
 
 			return;
 		});
-
 		saveLine({ brush_color, brush_radius });
 
 		if (mode === "mask") {

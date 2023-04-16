@@ -36,7 +36,7 @@
 		{/if}
 	</span>
 
-	{#if mode !== "mask"}
+	{#if true}
 		<span class="col">
 			<IconButton
 				Icon={Color}
