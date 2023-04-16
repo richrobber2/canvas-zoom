@@ -680,6 +680,7 @@ The higher the transparency level, the more transparent your mask will be:
       const { clientX, clientY } = e;
       cursorCircle.style.left = `${clientX}px`;
       cursorCircle.style.top = `${clientY + window.scrollY}px`;
+
       cursorCircle.style.display = "block";
       cursorCircle.classList.add("enabled");
     }
@@ -964,17 +965,28 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    // set circle cursor size to the zoom level
     function setCircleSize(elemId) {
       const input =
         document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
         document.querySelector(`${elemId} button[aria-label="Use brush"]`);
 
+      const canvas = targetElement.querySelector(
+        `${elemId} canvas[key='interface']`
+      );
+
       if (!input) return;
 
       const brushSize = parseFloat(input.value);
-      cursorCircle.style.width = `${zoomLevel * brushSize * 0.8}px`;
-      cursorCircle.style.height = `${zoomLevel * brushSize * 0.8}px`;
+      const adjustedBrushSize = brushSize >= 50 ? brushSize * 0.95 : brushSize;
+
+      // Calculate the circle size based on the canvas size
+      const canvasWidth = canvas.clientWidth;
+      const canvasHeight = canvas.clientHeight;
+      const circleWidth = Math.min(adjustedBrushSize, canvasWidth);
+      const circleHeight = Math.min(adjustedBrushSize, canvasHeight);
+
+      cursorCircle.style.width = `${zoomLevel * circleWidth * 0.95}px`;
+      cursorCircle.style.height = `${zoomLevel * circleHeight * 0.95}px`;
     }
 
     // Adjust the brush size based on the deltaY value from a mouse wheel event.
