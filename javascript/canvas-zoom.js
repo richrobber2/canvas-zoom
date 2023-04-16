@@ -988,8 +988,6 @@ The higher the transparency level, the more transparent your mask will be:
         adjustment = isHeight ? 0.8 - circleSizeResult : 1 - circleSizeResult;
       }
 
-      console.log(circleSizeResult, isHeight, adjustment);
-
       return adjustment;
     }
 
