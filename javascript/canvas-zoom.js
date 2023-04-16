@@ -980,13 +980,19 @@ The higher the transparency level, the more transparent your mask will be:
       const adjustedBrushSize = brushSize >= 50 ? brushSize * 0.95 : brushSize;
 
       // Calculate the circle size based on the canvas size
-      const canvasWidth = canvas.clientWidth;
-      const canvasHeight = canvas.clientHeight;
-      const circleWidth = Math.min(adjustedBrushSize, canvasWidth);
-      const circleHeight = Math.min(adjustedBrushSize, canvasHeight);
+      const canvasWidth = parseFloat(canvas.width);
+      const canvasHeight = parseFloat(canvas.height);
 
-      cursorCircle.style.width = `${zoomLevel * circleWidth * 0.95}px`;
-      cursorCircle.style.height = `${zoomLevel * circleHeight * 0.95}px`;
+      const canvasWidthOffset = canvas.clientWidth;
+      const canvasHeightOffset = canvas.clientHeight;
+
+      const circleWidth =
+        (1 - (canvasWidth - canvasWidthOffset) / 1000) * adjustedBrushSize;
+      const circleHeight =
+        (1 - (canvasHeight - canvasHeightOffset) / 1000) * adjustedBrushSize;
+
+      cursorCircle.style.width = `${zoomLevel * circleWidth}px`;
+      cursorCircle.style.height = `${zoomLevel * circleHeight}px`;
     }
 
     // Adjust the brush size based on the deltaY value from a mouse wheel event.
