@@ -965,6 +965,20 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
+    function calculateCircleSizeAdjustment(circleSizeResult) {
+      if (circleSizeResult > 0.35) {
+        return 0.8 - circleSizeResult;
+      } else if (circleSizeResult > 0.25) {
+        return 0.85 - circleSizeResult;
+      } else if (circleSizeResult > 0.15) {
+        return 0.9 - circleSizeResult;
+      } else if (circleSizeResult > 0.1) {
+        return 0.95 - circleSizeResult;
+      } else {
+        return 1 - circleSizeResult;
+      }
+    }
+
     function setCircleSize(elemId) {
       const input =
         document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
@@ -974,59 +988,26 @@ The higher the transparency level, the more transparent your mask will be:
         `${elemId} canvas[key='interface']`
       );
 
-      if (!input) return;
+      if (!input || !canvas) return;
 
       const brushSize = parseFloat(input.value);
       const adjustedBrushSize = brushSize >= 50 ? brushSize * 1 : brushSize;
 
-      // Calculate the circle size based on the canvas size
       const canvasWidth = parseFloat(canvas.width);
       const canvasHeight = parseFloat(canvas.height);
 
       const canvasWidthOffset = canvas.clientWidth;
       const canvasHeightOffset = canvas.clientHeight;
 
-      let circleWidthResult = (canvasWidth - canvasWidthOffset) / 1000;
-      let circleHeightResult = (canvasWidth - canvasWidthOffset) / 1000;
+      const circleSizeResult = (canvasWidth - canvasWidthOffset) / 1000;
 
-      console.log(
-        "circleWidthResult",
-        circleWidthResult,
-        "circleHeightResult",
-        circleHeightResult
-      );
-      if (circleWidthResult > 0.12 || circleHeightResult > 0.12) {
-        circleWidthResult = 0.9 - circleWidthResult;
-        circleHeightResult = 0.9 - circleHeightResult;
-      } else if (circleWidthResult > 0.08 || circleHeightResult > 0.08) {
-        circleWidthResult = 0.95 - circleWidthResult;
-        circleHeightResult = 0.95 - circleHeightResult;
-      } else {
-        circleWidthResult = 1 - circleWidthResult;
-        circleHeightResult = 1 - circleHeightResult;
-      }
+      const circleSizeAdjustment =
+        calculateCircleSizeAdjustment(circleSizeResult);
 
-      const circleWidth = circleWidthResult * adjustedBrushSize;
-      const circleHeight = circleHeightResult * adjustedBrushSize;
-
-      console.log(
-        adjustedBrushSize,
-        "Width: width offset",
-        canvasWidth,
-        canvasWidthOffset,
-        circleWidth,
-        "Height Height-offset",
-        canvasHeight,
-        canvasHeightOffset,
-        circleHeight
-      );
-
-      console.log("Result", circleHeight, circleWidth);
-      console.log("Heihgt ", (canvasHeight - canvasHeightOffset) / 100);
-      console.log("Width ", (canvasWidth - canvasWidthOffset) / 100);
+      const circleWidth = circleSizeAdjustment * adjustedBrushSize;
 
       cursorCircle.style.width = `${zoomLevel * circleWidth}px`;
-      cursorCircle.style.height = `${zoomLevel * circleHeight}px`;
+      cursorCircle.style.height = `${zoomLevel * circleWidth}px`;
     }
 
     // Adjust the brush size based on the deltaY value from a mouse wheel event.
