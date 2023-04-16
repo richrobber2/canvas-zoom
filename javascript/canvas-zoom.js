@@ -977,7 +977,7 @@ The higher the transparency level, the more transparent your mask will be:
       if (!input) return;
 
       const brushSize = parseFloat(input.value);
-      const adjustedBrushSize = brushSize >= 50 ? brushSize * 0.95 : brushSize;
+      const adjustedBrushSize = brushSize >= 50 ? brushSize * 1 : brushSize;
 
       // Calculate the circle size based on the canvas size
       const canvasWidth = parseFloat(canvas.width);
@@ -986,10 +986,44 @@ The higher the transparency level, the more transparent your mask will be:
       const canvasWidthOffset = canvas.clientWidth;
       const canvasHeightOffset = canvas.clientHeight;
 
-      const circleWidth =
-        (1 - (canvasWidth - canvasWidthOffset) / 1000) * adjustedBrushSize;
-      const circleHeight =
-        (1 - (canvasHeight - canvasHeightOffset) / 1000) * adjustedBrushSize;
+      let circleWidthResult = (canvasWidth - canvasWidthOffset) / 1000;
+      let circleHeightResult = (canvasWidth - canvasWidthOffset) / 1000;
+
+      console.log(
+        "circleWidthResult",
+        circleWidthResult,
+        "circleHeightResult",
+        circleHeightResult
+      );
+      if (circleWidthResult > 0.12 || circleHeightResult > 0.12) {
+        circleWidthResult = 0.9 - circleWidthResult;
+        circleHeightResult = 0.9 - circleHeightResult;
+      } else if (circleWidthResult > 0.08 || circleHeightResult > 0.08) {
+        circleWidthResult = 0.95 - circleWidthResult;
+        circleHeightResult = 0.95 - circleHeightResult;
+      } else {
+        circleWidthResult = 1 - circleWidthResult;
+        circleHeightResult = 1 - circleHeightResult;
+      }
+
+      const circleWidth = circleWidthResult * adjustedBrushSize;
+      const circleHeight = circleHeightResult * adjustedBrushSize;
+
+      console.log(
+        adjustedBrushSize,
+        "Width: width offset",
+        canvasWidth,
+        canvasWidthOffset,
+        circleWidth,
+        "Height Height-offset",
+        canvasHeight,
+        canvasHeightOffset,
+        circleHeight
+      );
+
+      console.log("Result", circleHeight, circleWidth);
+      console.log("Heihgt ", (canvasHeight - canvasHeightOffset) / 100);
+      console.log("Width ", (canvasWidth - canvasWidthOffset) / 100);
 
       cursorCircle.style.width = `${zoomLevel * circleWidth}px`;
       cursorCircle.style.height = `${zoomLevel * circleHeight}px`;
