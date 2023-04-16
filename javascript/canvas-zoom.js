@@ -965,18 +965,32 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    function calculateCircleSizeAdjustment(circleSizeResult) {
-      if (circleSizeResult > 0.35) {
-        return 0.8 - circleSizeResult;
+    function calculateCircleSizeAdjustment(circleSizeResult, isHeight = false) {
+      let adjustment;
+
+      if (circleSizeResult > 0.45) {
+        adjustment = isHeight ? 1 - circleSizeResult : 1 - circleSizeResult;
+      } else if (circleSizeResult > 0.35) {
+        adjustment = isHeight ? 0.95 - circleSizeResult : 1 - circleSizeResult;
       } else if (circleSizeResult > 0.25) {
-        return 0.85 - circleSizeResult;
+        adjustment = isHeight
+          ? 0.85 - circleSizeResult
+          : 0.9 - circleSizeResult;
       } else if (circleSizeResult > 0.15) {
-        return 0.9 - circleSizeResult;
+        adjustment = isHeight
+          ? 0.8 - circleSizeResult
+          : 0.95 - circleSizeResult;
       } else if (circleSizeResult > 0.1) {
-        return 0.95 - circleSizeResult;
+        adjustment = isHeight
+          ? 0.8 - circleSizeResult
+          : 0.95 - circleSizeResult;
       } else {
-        return 1 - circleSizeResult;
+        adjustment = isHeight ? 0.8 - circleSizeResult : 1 - circleSizeResult;
       }
+
+      console.log(circleSizeResult, isHeight, adjustment);
+
+      return adjustment;
     }
 
     function setCircleSize(elemId) {
@@ -999,10 +1013,23 @@ The higher the transparency level, the more transparent your mask will be:
       const canvasWidthOffset = canvas.clientWidth;
       const canvasHeightOffset = canvas.clientHeight;
 
-      const circleSizeResult = (canvasWidth - canvasWidthOffset) / 1000;
+      const circleWidthResult = (canvasWidth - canvasWidthOffset) / 1000;
+      const circleHeightResult = (canvasHeight - canvasHeightOffset) / 1000;
 
-      const circleSizeAdjustment =
-        calculateCircleSizeAdjustment(circleSizeResult);
+      let circleSizeAdjustment = Math.max(
+        circleWidthResult,
+        circleHeightResult
+      );
+
+      if (circleSizeAdjustment === circleHeightResult) {
+        circleSizeAdjustment = calculateCircleSizeAdjustment(
+          circleSizeAdjustment,
+          true
+        );
+      } else {
+        circleSizeAdjustment =
+          calculateCircleSizeAdjustment(circleSizeAdjustment);
+      }
 
       const circleWidth = circleSizeAdjustment * adjustedBrushSize;
 
