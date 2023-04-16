@@ -129,16 +129,27 @@
   const inpaintSketchID = "#inpaint_sketch";
   const img2imgTabsID = "#mode_img2img .tab-nav";
   const rangeGroupId = "#img2img_column_size";
+  const img2imgPromptId = "#img2img_prompt textarea";
+  const img2imgNegPromptId = "#img2img_neg_prompt textarea";
 
   // Wait for the elements to be loaded
-  const [sketchEl, inpaintEl, inpaintSketchEl, img2imgTabs, rangeGroup] =
-    await Promise.all([
-      document.querySelector(sketchID),
-      document.querySelector(inpaintID),
-      document.querySelector(inpaintSketchID),
-      document.querySelector(img2imgTabsID),
-      document.querySelector(rangeGroupId),
-    ]);
+  const [
+    sketchEl,
+    inpaintEl,
+    inpaintSketchEl,
+    img2imgTabs,
+    rangeGroup,
+    img2imgPrompt,
+    img2imgNegPrompt,
+  ] = await Promise.all([
+    document.querySelector(sketchID),
+    document.querySelector(inpaintID),
+    document.querySelector(inpaintSketchID),
+    document.querySelector(img2imgTabsID),
+    document.querySelector(rangeGroupId),
+    document.querySelector(img2imgPromptId),
+    document.querySelector(img2imgNegPromptId),
+  ]);
 
   // Create a div element for the cursor circle
   const cursorCircle = document.createElement("div");
@@ -1143,12 +1154,19 @@ The higher the transparency level, the more transparent your mask will be:
       toggleOverlap("on");
     }
 
+    // Blur prompt Textarea
+    function blurTextArea() {
+      img2imgPrompt.blur();
+      img2imgNegPrompt.blur();
+    }
+
     // + and - (also numpad key ) to change zoom level
     // Reset zoom when pressing R key and toggle overlap when pressing O key
     // Open brush panel when pressing Q
     // Open brush panel under mouse when pressing T
     // Undo last action when pressing Ctrl + Z
     function handleKeyDown(event) {
+      blurTextArea();
       switch (event.code) {
         case hotkeysConfig.resetZoom:
           resetZoom();
