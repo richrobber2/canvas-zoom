@@ -105,6 +105,7 @@
     moveKey: "KeyF",
     toggleCanvasOpacity: "KeyC",
     toggleBrushOpacity: "KeyV",
+    togglePipette: "KeyA",
     brushOpacity: 0.5,
     canvasOpacity: 0.4,
     brushOutline: false,
@@ -174,6 +175,7 @@
       hotkeysConfig.toggleCanvasOpacity,
       hotkeysConfig.toggleBrushOpacity,
       hotkeysConfig.fitToScreen,
+      hotkeysConfig.togglePipette,
     ];
 
     let hotkey = "";
@@ -328,6 +330,7 @@ The higher the transparency level, the more transparent your mask will be:
     changeBrushOpacityLevel: () => changeBrushOpacityLevel(),
     loadCustomHotkeys: () => loadCustomHotkeys(),
     toggleBrushOutline: () => toggleBrushOutline(),
+    togglePipette: () => updateHotkeyAndSave("togglePipette", askForHotkey()),
   };
 
   // This code creates a context menu as a div element and appends it to the body of the document,
@@ -354,7 +357,7 @@ The higher the transparency level, the more transparent your mask will be:
     const groupedItems = [
       {
         title: "Canvas Moving",
-        items: [items[8]],
+        items: [items[9]],
       },
       {
         title: "Control",
@@ -362,11 +365,11 @@ The higher the transparency level, the more transparent your mask will be:
       },
       {
         title: "Color panel",
-        items: items.slice(5, 8),
+        items: items.slice(5, 9),
       },
       {
         title: "Mask transparency",
-        items: items.slice(9),
+        items: items.slice(10),
       },
     ];
 
@@ -475,6 +478,11 @@ The higher the transparency level, the more transparent your mask will be:
           action: "openBrushPanelUnderMouse",
           hotkey: hotkeysConfig.openBrushPanelUnderMouse,
           label: "Puts a color bar next to the mouse",
+        },
+        {
+          action: "togglePipette",
+          hotkey: hotkeysConfig.togglePipette,
+          label: "Toggle Pipette",
         },
         {
           action: "toggleBrushOutline",
@@ -779,25 +787,22 @@ The higher the transparency level, the more transparent your mask will be:
 
     // Set the opacity of the canvas
     function setCanvasOpacity(opacity) {
-      const canvasEmu = document.querySelector(
-        `${inpaintID} canvas[key="interface"]`
-      );
       const canvas = document.querySelector(`${inpaintID} canvas[key="temp"]`);
       const ctx = canvas.getContext("2d");
-      const undoBtn = document.querySelector(
-        `${inpaintID} button[aria-label="Undo"]`
+      const redrawBtn = document.querySelector(
+        `${inpaintID} button[aria-label="Redraw"]`
       );
 
       ctx.globalAlpha = opacity;
-      if (opacity < 1) {
-        // Creates a stack of false lines, but otherwise it will cancel the last line. The user will have to additionally press cancel
-        simulateClickAndMouseUp(0, 0, canvasEmu);
-      }
-      simulateClickAndMouseUp(0, 0, canvasEmu);
+      // if (opacity < 1) {
+      //   // Creates a stack of false lines, but otherwise it will cancel the last line. The user will have to additionally press cancel
+      //   simulateClickAndMouseUp(0, 0, canvasEmu);
+      // }
+      // simulateClickAndMouseUp(0, 0, canvasEmu);
 
       setTimeout(() => {
-        undoBtn.click();
-      }, 100);
+        redrawBtn.click();
+      }, 0);
     }
 
     // Position the color input element under the mouse cursor.
@@ -835,13 +840,34 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
+    function changeLineColors() {
+      const colorBtn = document.querySelector(
+        `${colorID} button[aria-label="Select brush color"]`
+      );
+      const colorInput = document.querySelector(
+        `${colorID} input[aria-label="Brush color"]`
+      );
+      if (!colorInput) {
+        colorBtn && colorBtn.click();
+      }
+
+      if (colorInput.classList.contains("Marked")) {
+        return;
+      }
+
+      // Open color menu
+      setTimeout(() => {
+        const colorInput = document.querySelector(
+          `${colorID} input[aria-label="Brush color"]`
+        );
+
+        colorInput.classList.add("Marked");
+      }, 0);
+    }
+
     // Toggle the brush panel's visibility and optionally position it under the mouse cursor.
     function toggleBrushPanel(openUnderMouse = false) {
       const colorID = getTabId();
-
-      if (colorID === inpaintID) {
-        return;
-      }
 
       const colorBtn = document.querySelector(
         `${colorID} button[aria-label="Select brush color"]`
@@ -868,9 +894,21 @@ The higher the transparency level, the more transparent your mask will be:
         colorInput && colorInput.click();
       }, 0);
     }
+    //Restore undo func
+    function restoreUndo() {
+      const img = targetElement.querySelector(`${elemId} img`);
+
+      const imgData = img.src;
+      const imgDataSource = img.getAttribute("data-source");
+      const isUpload = img.getAttribute("data-isupload");
+
+      if (imgDataSource && imgData !== imgDataSource && isUpload === "false") {
+        img.src = imgDataSource;
+      }
+    }
 
     // undo last action
-    function undoActiveTab(e) {
+    function undoLastAction(e) {
       // document.addEventListener("keydown", (e) => {
       const isUndoKey = e.code === hotkeysConfig.undo;
       const isCtrlPressed = e.ctrlKey;
@@ -894,6 +932,7 @@ The higher the transparency level, the more transparent your mask will be:
           `${elemId} button[aria-label="Undo"]`
         );
         if (undoBtn && activeTab === elemId) {
+          restoreUndo();
           undoBtn.click();
         }
       }
@@ -1239,7 +1278,7 @@ The higher the transparency level, the more transparent your mask will be:
           toggleBrushPanel(true);
           break;
         case hotkeysConfig.undo:
-          undoActiveTab(event);
+          undoLastAction(event);
           break;
         // Keys that replace the zoom with the wheel
         case hotkeysConfig.fitToScreen:
@@ -1252,6 +1291,16 @@ The higher the transparency level, the more transparent your mask will be:
         case "Minus":
         case "NumpadSubtract":
           changeZoomLevel("-", event);
+          break;
+
+        case hotkeysConfig.togglePipette:
+          const colorPickerEnabled =
+            localStorage.getItem("colorPickerEnable") === "true";
+          if (colorPickerEnabled) {
+            localStorage.setItem("colorPickerEnable", false);
+          } else {
+            localStorage.setItem("colorPickerEnable", true);
+          }
           break;
 
         case hotkeysConfig.toggleCanvasOpacity:
