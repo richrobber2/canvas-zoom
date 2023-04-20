@@ -1,5 +1,9 @@
 # A small guide to development
 
-In the folder ui are components of gradio 3.23.0, what would be possible to edit them you need to download from gradio repository githab and replace in the folder ui, then compile through the script build_frontend.sh then the folder templates from gradio moved to \stable-diffusion-webui\venv\Lib\site-packages\gradio with replacement.
-
-After editing the files, you should always compile and drop them into gradio.
+To change the changes in the main scripts, you need:
+1) download the source code of the gradio
+2) Transfer ui folder from this repo to gradio with substitution
+3) After you finish editing the changes in the source files. Run the file
+scripts\build_frontend.sh
+4) After you are done, go to gradio folder inside of the gradio source code and copy templates folder to dist folder inside of the extension
+5) Restart webui extension will replace the files by itself and you will see the change
