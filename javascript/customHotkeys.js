@@ -14,6 +14,7 @@ openBrushPanelUnderMouse: Open the brush panel next to the mouse
 moveKey: Move the canvas
 toggleCanvasOpacity: Toggle the canvas opacity
 toggleBrushOpacity: Toggle the brush opacity
+togglePipette: Toggle the pipette
 brushOpacity: Set the brush opacity
 canvasOpacity: Set the canvas opacity
 brushOutline: Toggle the brush outline
@@ -38,6 +39,7 @@ const customHotkeys = {
   moveKey: "KeyF",
   toggleCanvasOpacity: "KeyC",
   toggleBrushOpacity: "KeyV",
+  togglePipette: "KeyA",
   brushOpacity: 0.6,
   canvasOpacity: 0.3,
   brushOutline: false,

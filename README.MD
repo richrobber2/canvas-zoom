@@ -40,6 +40,8 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 **T** - Open color panel right above the mouse. The mouse should be in the image area
 
+**A** - Toggle dropper ( Works in Sketch and Inpaint Sketch )
+
 **O** - Overlap all elements and back
 
 **Ctr-Z** - Undo last action
@@ -58,13 +60,15 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 3. You can add a white outline to the brush to better see its borders. You can turn it on in the context menu. It works only in Inpaint.
 
+4. You can select the color of the mask in Inpaint and the color of all your lines will change to the color of the mask
+
 ## Known bugs:
 
-1. If you increase the size of the picture and draw something in the Sketch and Inpaint Sketch tabs. Then when you switch to another tab and go back, the canvas may fill with white and remove everything that was there. To avoid this, you can click the undo button and then the original image will return. **Fixed in the latest update**
+1. If a white image appears when you cancel on the Hotkey, press the cancel hotkey again and the image will return.
 
 2. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
 
-3. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste.
+3. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste. **The problem is solved in the latest update, but only works on hotkeys ( Ctr+Z )**
 
 4. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
 
@@ -110,6 +114,8 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 **T** - Открыть выбор цвета прямо над мышкой. Мышка должна быть в области изображения
 
+**A** - Включить пипетку ( Работает в Sketch и Inpaint Sketch )
+
 **O** - Перекрыть все элементы и обратно
 
 **Ctr-Z** - Отменить последнее действие
@@ -128,13 +134,15 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 3. Вы можете добавить кисти белую обводку, что бы лучше видеть её границы. Включить можно в контекстном меню. Работает только в Inpaint.
 
+4. Вы можете выбрать цвет маски в Inpaint, и цвет всех ваших линий изменится на цвет маски
+
 ## Известные баги:
 
-1. Если вы увеличите размер картинки и что-то нарисуете во вкладках Sketch и Inpaint Sketch. То после того как вы переключитесь на другую вкладку и вернетесь обратно, холст может залится белым и удалить все что было. Что бы избежать этого, можно нажать кнопку отмены и тогда исходное изображение вернется. **Исправленно в последнем обновлении**
+1. Если при отмене на горячей клавише появляется белое изображение, нажмите горячую клавишу отмены еще раз, и изображение вернется.
 
 2. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезаться. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
 
-3. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку.
+3. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку. **Проблема решена в последнем обновлении, но работает только на горячих клавишах ( Ctr+Z )**
 
 4. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
 
