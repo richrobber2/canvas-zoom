@@ -29,4 +29,8 @@
 		gap: var(--spacing-sm);
 		z-index: var(--layer-5);
 	}
+
+	button[aria-label="Redraw"] {
+		display: none;
+	}
 </style>

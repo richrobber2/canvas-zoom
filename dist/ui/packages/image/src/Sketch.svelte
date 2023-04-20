@@ -19,6 +19,7 @@
 	export let height = 200;
 	export let container_height = 200;
 	export let shape;
+	let colorPickerEnabled = localStorage.setItem("colorPickerEnable", false);
 
 	$: {
 		if (shape && (width || height)) {
@@ -255,8 +256,6 @@
 	}
 
 	export function redraw() {
-		console.log("first init", lines, value_img);
-
 		clear_canvas();
 		if (value_img) {
 			draw_cropped_image();
@@ -320,8 +319,17 @@
 
 	let handle_draw_start = (e) => {
 		e.preventDefault();
-		is_pressing = true;
 		const { x, y } = get_pointer_pos(e);
+
+		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
+
+		if (colorPickerEnabled && mode !== "mask") {
+			brush_color = getPixelColor(x, y);
+			localStorage.setItem("colorPickerEnable", "false");
+			return;
+		}
+		is_pressing = true;
+
 		if (e.touches && e.touches.length > 0) {
 			lazy.update({ x, y }, { both: true });
 		}
@@ -442,8 +450,29 @@
 		};
 	};
 
+	function toggleColorPicker() {
+		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
+		if (colorPickerEnabled && mode !== "mask") {
+			for (const key in canvas) {
+				canvas[key].style.cursor = "crosshair";
+			}
+		} else {
+			for (const key in canvas) {
+				canvas[key].style.cursor = "none";
+			}
+		}
+	}
+
 	let handle_pointer_move = (x, y) => {
+		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
+		toggleColorPicker();
+
+		if (colorPickerEnabled && mode !== "mask") {
+			return;
+		}
+
 		lazy.update({ x: x, y: y });
+
 		const is_disabled = !lazy.isEnabled();
 		if ((is_pressing && !is_drawing) || (is_disabled && is_pressing)) {
 			is_drawing = true;
@@ -512,6 +541,12 @@
 		ctx.temp_fake.lineTo(p1.x, p1.y);
 		ctx.temp_fake.stroke();
 	};
+
+	function getPixelColor(x, y) {
+		const imageData = ctx.drawing.getImageData(x, y, 1, 1);
+		const [r, g, b, a] = imageData.data;
+		return `rgb(${r}, ${g}, ${b})`;
+	}
 
 	let save_mask_line = () => {
 		if (points.length < 1) return;
@@ -665,8 +700,12 @@
 		border-bottom: 1px solid var(--border-color-primary);
 	}
 
-	canvas:hover {
+	canvas:not(.color-picker-enabled):hover {
 		cursor: none;
+	}
+
+	canvas.color-picker-enabled:hover {
+		cursor: crosshair;
 	}
 
 	.wrap {

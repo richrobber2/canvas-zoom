@@ -1,14 +1,15 @@
 import sys
 import os
 import shutil
+from pathlib import Path
 
 canvasZoomPath = sys.path[0]
-gradioPath = sys.path[-1] + "/gradio"
 
-
+gradioPath = Path.cwd()
+gradio_path = gradioPath / 'venv' / 'lib' / 'site-packages' / 'gradio'
 
 source_dir = os.path.join(canvasZoomPath, 'dist/templates')
-destination_dir = os.path.join(gradioPath, 'templates')
+destination_dir = os.path.join(gradio_path, 'templates')
 
 # Deleting the existing "templates" folder in the gradio folder, if it exists
 if os.path.exists(destination_dir):

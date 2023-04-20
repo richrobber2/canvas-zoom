@@ -105,6 +105,7 @@
     moveKey: "KeyF",
     toggleCanvasOpacity: "KeyC",
     toggleBrushOpacity: "KeyV",
+    togglePipette: "KeyA",
     brushOpacity: 0.5,
     canvasOpacity: 0.4,
     brushOutline: false,
@@ -174,6 +175,7 @@
       hotkeysConfig.toggleCanvasOpacity,
       hotkeysConfig.toggleBrushOpacity,
       hotkeysConfig.fitToScreen,
+      hotkeysConfig.togglePipette,
     ];
 
     let hotkey = "";
@@ -328,6 +330,7 @@ The higher the transparency level, the more transparent your mask will be:
     changeBrushOpacityLevel: () => changeBrushOpacityLevel(),
     loadCustomHotkeys: () => loadCustomHotkeys(),
     toggleBrushOutline: () => toggleBrushOutline(),
+    togglePipette: () => updateHotkeyAndSave("togglePipette", askForHotkey()),
   };
 
   // This code creates a context menu as a div element and appends it to the body of the document,
@@ -354,7 +357,7 @@ The higher the transparency level, the more transparent your mask will be:
     const groupedItems = [
       {
         title: "Canvas Moving",
-        items: [items[8]],
+        items: [items[9]],
       },
       {
         title: "Control",
@@ -362,11 +365,11 @@ The higher the transparency level, the more transparent your mask will be:
       },
       {
         title: "Color panel",
-        items: items.slice(5, 8),
+        items: items.slice(5, 9),
       },
       {
         title: "Mask transparency",
-        items: items.slice(9),
+        items: items.slice(10),
       },
     ];
 
@@ -475,6 +478,11 @@ The higher the transparency level, the more transparent your mask will be:
           action: "openBrushPanelUnderMouse",
           hotkey: hotkeysConfig.openBrushPanelUnderMouse,
           label: "Puts a color bar next to the mouse",
+        },
+        {
+          action: "togglePipette",
+          hotkey: hotkeysConfig.togglePipette,
+          label: "Toggle Pipette",
         },
         {
           action: "toggleBrushOutline",
@@ -879,23 +887,24 @@ The higher the transparency level, the more transparent your mask will be:
           `${colorID} input[aria-label="Brush color"]`
         );
 
-        if (colorID === inpaintID) {
-          console.log("worked");
-          const redrawBtn = document.querySelector(
-            `${inpaintID} button[aria-label="Redraw"]`
-          );
-          colorInput.addEventListener("change", () => {
-            redrawBtn.click();
-          });
-          return;
-        }
-
         if (openUnderMouse) {
           positionColorInputUnderMouse(colorInput);
         }
 
         colorInput && colorInput.click();
       }, 0);
+    }
+    //Restore undo func
+    function restoreUndo() {
+      const img = targetElement.querySelector(`${elemId} img`);
+
+      const imgData = img.src;
+      const imgDataSource = img.getAttribute("data-source");
+      const isUpload = img.getAttribute("data-isupload");
+
+      if (imgDataSource && imgData !== imgDataSource && isUpload === "false") {
+        img.src = imgDataSource;
+      }
     }
 
     // undo last action
@@ -923,6 +932,7 @@ The higher the transparency level, the more transparent your mask will be:
           `${elemId} button[aria-label="Undo"]`
         );
         if (undoBtn && activeTab === elemId) {
+          restoreUndo();
           undoBtn.click();
         }
       }
@@ -994,18 +1004,30 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    function calculateCircleSizeAdjustment(circleSizeResult) {
-      if (circleSizeResult > 0.35) {
-        return 0.8 - circleSizeResult;
+    function calculateCircleSizeAdjustment(circleSizeResult, isHeight = false) {
+      let adjustment;
+
+      if (circleSizeResult > 0.45) {
+        adjustment = isHeight ? 1 - circleSizeResult : 1 - circleSizeResult;
+      } else if (circleSizeResult > 0.35) {
+        adjustment = isHeight ? 0.95 - circleSizeResult : 1 - circleSizeResult;
       } else if (circleSizeResult > 0.25) {
-        return 0.85 - circleSizeResult;
+        adjustment = isHeight
+          ? 0.85 - circleSizeResult
+          : 0.9 - circleSizeResult;
       } else if (circleSizeResult > 0.15) {
-        return 0.9 - circleSizeResult;
+        adjustment = isHeight
+          ? 0.8 - circleSizeResult
+          : 0.95 - circleSizeResult;
       } else if (circleSizeResult > 0.1) {
-        return 0.95 - circleSizeResult;
+        adjustment = isHeight
+          ? 0.8 - circleSizeResult
+          : 0.95 - circleSizeResult;
       } else {
-        return 1 - circleSizeResult;
+        adjustment = isHeight ? 0.8 - circleSizeResult : 1 - circleSizeResult;
       }
+
+      return adjustment;
     }
 
     function setCircleSize(elemId) {
@@ -1028,10 +1050,23 @@ The higher the transparency level, the more transparent your mask will be:
       const canvasWidthOffset = canvas.clientWidth;
       const canvasHeightOffset = canvas.clientHeight;
 
-      const circleSizeResult = (canvasWidth - canvasWidthOffset) / 1000;
+      const circleWidthResult = (canvasWidth - canvasWidthOffset) / 1000;
+      const circleHeightResult = (canvasHeight - canvasHeightOffset) / 1000;
 
-      const circleSizeAdjustment =
-        calculateCircleSizeAdjustment(circleSizeResult);
+      let circleSizeAdjustment = Math.max(
+        circleWidthResult,
+        circleHeightResult
+      );
+
+      if (circleSizeAdjustment === circleHeightResult) {
+        circleSizeAdjustment = calculateCircleSizeAdjustment(
+          circleSizeAdjustment,
+          true
+        );
+      } else {
+        circleSizeAdjustment =
+          calculateCircleSizeAdjustment(circleSizeAdjustment);
+      }
 
       const circleWidth = circleSizeAdjustment * adjustedBrushSize;
 
@@ -1256,6 +1291,16 @@ The higher the transparency level, the more transparent your mask will be:
         case "Minus":
         case "NumpadSubtract":
           changeZoomLevel("-", event);
+          break;
+
+        case hotkeysConfig.togglePipette:
+          const colorPickerEnabled =
+            localStorage.getItem("colorPickerEnable") === "true";
+          if (colorPickerEnabled) {
+            localStorage.setItem("colorPickerEnable", false);
+          } else {
+            localStorage.setItem("colorPickerEnable", true);
+          }
           break;
 
         case hotkeysConfig.toggleCanvasOpacity:

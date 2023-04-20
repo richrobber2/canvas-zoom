@@ -10,7 +10,7 @@
 	import ModifySketch from "./ModifySketch.svelte";
 	import SketchSettings from "./SketchSettings.svelte";
 	import { Upload, ModifyUpload } from "@gradio/upload";
-	import Json from "packages/icons/src/JSON.svelte";
+	// import Json from "packages/icons/src/JSON.svelte";
 
 	export let value:
 		| null
@@ -30,6 +30,9 @@
 	let sketch: Sketch;
 	let cropper: Cropper;
 
+	let prevValue = "";
+	let isUpload = false;
+
 	if (
 		value &&
 		(source === "upload" || source === "webcam") &&
@@ -47,6 +50,8 @@
 					? { image: detail, mask: null }
 					: detail;
 		}
+		isUpload = true;
+		console.log(1);
 		dispatch("upload", detail);
 	}
 
@@ -56,7 +61,11 @@
 		dispatch("clear");
 	}
 
-	async function handle_save({ detail }: { detail: string }, initial) {
+	async function handle_save(
+		{ detail }: { detail: string },
+		initial,
+		change = false
+	) {
 		if (mode === "mask") {
 			if (source === "webcam" && initial) {
 				value = {
@@ -75,6 +84,9 @@
 		) {
 			value = { image: detail, mask: null };
 		} else {
+			if (prevValue === "") {
+				prevValue = detail;
+			}
 			value = detail;
 		}
 		await tick();
@@ -108,6 +120,8 @@
 		await tick();
 		value = null;
 		static_image = undefined;
+		prevValue = "";
+		isUpload = false;
 	}
 
 	let img_height = 0;
@@ -209,7 +223,9 @@
 					<img
 						bind:this={value_img}
 						class="absolute-img"
-						src={static_image || value?.image || value}
+						src={static_image || value.image || value}
+						data-source={prevValue}
+						data-isupload={isUpload}
 						alt="load-2"
 						on:load={handle_image_load}
 						class:webcam={source === "webcam" && mirror_webcam}
@@ -222,6 +238,7 @@
 						bind:brush_radius
 						bind:brush_color
 						on:change={handle_save}
+						on:redraw={sketch.redraw()}
 						{mode}
 						width={img_width || max_width}
 						height={img_height || max_height}
@@ -239,6 +256,7 @@
 						<SketchSettings
 							bind:brush_radius
 							bind:brush_color
+							on:redraw={sketch.redraw()}
 							container_height={container_height || max_height}
 							img_width={img_width || max_width}
 							img_height={img_height || max_height}
@@ -264,6 +282,7 @@
 			<SketchSettings
 				bind:brush_radius
 				bind:brush_color
+				on:redraw={sketch.redraw()}
 				container_height={container_height || max_height}
 				img_width={img_width || max_width}
 				img_height={img_height || max_height}
@@ -286,7 +305,9 @@
 		{#if source === "webcam" && !static_image}
 			<Webcam
 				on:capture={(e) =>
-					tool === "color-sketch" ? handle_upload(e) : handle_save(e, true)}
+					tool === "color-sketch"
+						? handle_upload(e)
+						: handle_save(e, true, "pizda")}
 				on:stream={handle_save}
 				on:error
 				{streaming}

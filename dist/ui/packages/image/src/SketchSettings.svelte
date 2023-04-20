@@ -4,7 +4,6 @@
 	import { Brush, Color } from "@gradio/icons";
 
 	const dispatch = createEventDispatcher();
-
 	let show_size = false;
 	let show_col = false;
 
@@ -44,7 +43,14 @@
 				on:click={() => (show_col = !show_col)}
 			/>
 			{#if show_col}
-				<input aria-label="Brush color" bind:value={brush_color} type="color" />
+				<input
+					aria-label="Brush color"
+					on:change={() => {
+						dispatch("redraw");
+					}}
+					bind:value={brush_color}
+					type="color"
+				/>
 			{/if}
 		</span>
 	{/if}
