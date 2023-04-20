@@ -46,7 +46,7 @@
 				<input
 					aria-label="Brush color"
 					on:change={() => {
-						dispatch("redraw");
+						if (mode === "mask") dispatch("redraw");
 					}}
 					bind:value={brush_color}
 					type="color"
