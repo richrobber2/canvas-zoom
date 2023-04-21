@@ -20,6 +20,8 @@
 	export let container_height = 200;
 	export let shape;
 	let colorPickerEnabled = localStorage.setItem("colorPickerEnable", false);
+	let posX = 0;
+	let posY = 0;
 
 	$: {
 		if (shape && (width || height)) {
@@ -342,6 +344,8 @@
 	let handle_draw_move = (e) => {
 		e.preventDefault();
 		const { x, y } = get_pointer_pos(e);
+		posX = x;
+		posY = y;
 		handle_pointer_move(x, y);
 	};
 
@@ -629,6 +633,13 @@
 	let draw_interface = (ctx, pointer, brush) => {
 		ctx.clearRect(0, 0, width, height);
 
+		let brushX = brush.x;
+		let brushY = brush.y;
+
+		if (posX && posX) {
+			brushX = posX;
+			brushY = posY;
+		}
 		// brush preview
 		ctx.beginPath();
 		ctx.fillStyle = brush_color;
@@ -636,20 +647,20 @@
 		const brushOutlineEnabled = localStorage.getItem("brushOutline") === "true";
 		if (brushOutlineEnabled && mode === "mask") {
 			ctx.strokeStyle = "white";
-			ctx.lineWidth = 2; // Измените значение, чтобы управлять толщиной границы
+			ctx.lineWidth = 2; // Change the value to control the thickness of the border
 		}
 
-		ctx.arc(brush.x, brush.y, brush_radius / 2, 0, Math.PI * 2, true);
-		ctx.fill(); // Заливка основной точки
+		ctx.arc(brushX, brushY, brush_radius / 2, 0, Math.PI * 2, true);
+		ctx.fill(); // Filling the main point
 
 		if (brushOutlineEnabled && mode === "mask") {
-			ctx.stroke(); // Граница основной точки
+			ctx.stroke(); // Main Point Boundary
 		}
 
 		// tiny brush point dot
 		ctx.beginPath();
 		ctx.fillStyle = catenary_color;
-		ctx.arc(brush.x, brush.y, brush_dot, 0, Math.PI * 2, true);
+		ctx.arc(brushX, brushY, brush_dot, 0, Math.PI * 2, true);
 		ctx.fill();
 	};
 
