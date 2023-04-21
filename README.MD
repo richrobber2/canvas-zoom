@@ -50,7 +50,7 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 **V** - Toggle brush transparency mode ( Works only in Inpaint )
 
-You can't draw in transparency mode, otherwise there is a chance that one of the lines will be cancelled. Turn off mask transparency mode when you draw. This mode is not stable yet, work will be done to improve it.
+In transparency mode, you can paint but the effect will not be what you expect, this mode is useful to see how the mask fits on the picture.
 
 ## Features
 
@@ -124,7 +124,7 @@ You can't draw in transparency mode, otherwise there is a chance that one of the
 
 **V** - Переключить режим прозрачности кисти ( Работает только в Inpaint )
 
-В режиме прозрачности нельзя рисовать, иначе есть шанс что одна из линий отменится. Отключайте режим прозрачности маски когда рисуете. Данный режим пока работает не стабильно, введется работа по улучшению.
+В режиме прозрачности, вы можете рисовать но эфект будет не такой какой вы ожидаете, этот режим удобен для просмотра того, как лежит маска на картинке.
 
 ## Фичи
 
