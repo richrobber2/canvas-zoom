@@ -321,6 +321,8 @@
 		e.preventDefault();
 		const { x, y } = get_pointer_pos(e);
 
+		if (e.button !== 0) return;
+
 		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
 
 		if (colorPickerEnabled && mode !== "mask") {
@@ -630,8 +632,19 @@
 		// brush preview
 		ctx.beginPath();
 		ctx.fillStyle = brush_color;
+
+		const brushOutlineEnabled = localStorage.getItem("brushOutline") === "true";
+		if (brushOutlineEnabled && mode === "mask") {
+			ctx.strokeStyle = "white";
+			ctx.lineWidth = 2; // Измените значение, чтобы управлять толщиной границы
+		}
+
 		ctx.arc(brush.x, brush.y, brush_radius / 2, 0, Math.PI * 2, true);
-		ctx.fill();
+		ctx.fill(); // Заливка основной точки
+
+		if (brushOutlineEnabled && mode === "mask") {
+			ctx.stroke(); // Граница основной точки
+		}
 
 		// tiny brush point dot
 		ctx.beginPath();

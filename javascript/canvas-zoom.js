@@ -123,6 +123,7 @@
 
   // Load hotkeys configuration from localStorage or use default configuration
   let hotkeysConfig = getConfigFromLocalStorage() || defaultHotkeysConfig;
+  localStorage.setItem("brushOutline", hotkeysConfig.brushOutline);
 
   // Save the default configuration to localStorage if it's not already saved
   const sketchID = "#img2img_sketch";
@@ -151,11 +152,6 @@
     document.querySelector(img2imgPromptId),
     document.querySelector(img2imgNegPromptId),
   ]);
-
-  // Create a div element for the cursor circle
-  const cursorCircle = document.createElement("div");
-  cursorCircle.classList.add("cursor-circle");
-  document.body.appendChild(cursorCircle);
 
   /**
    * Prompts the user to enter a valid hotkey and returns the corresponding key code.
@@ -281,9 +277,10 @@ The higher the transparency level, the more transparent your mask will be:
     contextMenu.style.display = "none";
     hotkeysConfig.brushOutline = brushOutline;
     updateConfigAndSave("brushOutline", brushOutline);
+    localStorage.setItem("brushOutline", true);
 
     if (!brushOutline) {
-      cursorCircle.style.display = "none";
+      localStorage.setItem("brushOutline", false);
     }
   }
 
@@ -692,61 +689,6 @@ The higher the transparency level, the more transparent your mask will be:
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
 
-    // Change cursor position on mousemove
-    function changeCursorCords(e) {
-      if (getTabId() !== inpaintID || !hotkeysConfig.brushOutline) {
-        cursorCircle.style.display = "none";
-        cursorCircle.classList.remove("enabled");
-        return;
-      }
-
-      const { clientX, clientY } = e;
-      cursorCircle.style.left = `${clientX}px`;
-      cursorCircle.style.top = `${clientY + window.scrollY}px`;
-
-      cursorCircle.style.display = "block";
-      cursorCircle.classList.add("enabled");
-    }
-
-    // Remove cursor display on mouseout
-    function removeCursorDisplay() {
-      cursorCircle.style.display = "none";
-      cursorCircle.classList.remove("enabled");
-    }
-
-    function attachEventListeners(canvas, input) {
-      canvas.addEventListener("mousemove", changeCursorCords);
-      canvas.addEventListener("mouseout", removeCursorDisplay);
-      input.addEventListener("change", () => {
-        setCircleSize(elemId);
-      });
-    }
-
-    targetElement.addEventListener("mousemove", (e) => {
-      const canvas = targetElement.querySelector(`canvas[key="interface"]`);
-      const input = targetElement.querySelector(
-        `${elemId} input[aria-label='Brush radius']`
-      );
-
-      if (getTabId() !== inpaintID || !hotkeysConfig.brushOutline) {
-        cursorCircle.style.display = "none";
-        return;
-      }
-
-      if (!input) {
-        adjustBrushSize(elemId, 0, true);
-      }
-
-      if (!cursorCircle.classList.contains("enabled") && canvas && input) {
-        attachEventListeners(canvas, input);
-      }
-    });
-
-    targetElement.addEventListener("mouseout", () => {
-      if (getTabId() !== inpaintID) return;
-      cursorCircle.style.display = "none";
-    });
-
     // Cancel the traces on all keys except the left one
     function disableCanvasTraces() {
       let cancelTraceHandler = (e) => {
@@ -973,7 +915,6 @@ The higher the transparency level, the more transparent your mask will be:
       panX = 0;
       panY = 0;
 
-      setCircleSize(elemId);
       fixCanvas();
 
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
@@ -1013,76 +954,6 @@ The higher the transparency level, the more transparent your mask will be:
       }
     }
 
-    function calculateCircleSizeAdjustment(circleSizeResult, isHeight = false) {
-      let adjustment;
-
-      if (circleSizeResult > 0.45) {
-        adjustment = isHeight ? 1 - circleSizeResult : 1 - circleSizeResult;
-      } else if (circleSizeResult > 0.35) {
-        adjustment = isHeight ? 0.95 - circleSizeResult : 1 - circleSizeResult;
-      } else if (circleSizeResult > 0.25) {
-        adjustment = isHeight
-          ? 0.85 - circleSizeResult
-          : 0.9 - circleSizeResult;
-      } else if (circleSizeResult > 0.15) {
-        adjustment = isHeight
-          ? 0.8 - circleSizeResult
-          : 0.95 - circleSizeResult;
-      } else if (circleSizeResult > 0.1) {
-        adjustment = isHeight
-          ? 0.8 - circleSizeResult
-          : 0.95 - circleSizeResult;
-      } else {
-        adjustment = isHeight ? 0.8 - circleSizeResult : 1 - circleSizeResult;
-      }
-
-      return adjustment;
-    }
-
-    function setCircleSize(elemId) {
-      const input =
-        document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
-        document.querySelector(`${elemId} button[aria-label="Use brush"]`);
-
-      const canvas = targetElement.querySelector(
-        `${elemId} canvas[key='interface']`
-      );
-
-      if (!input || !canvas) return;
-
-      const brushSize = parseFloat(input.value);
-      const adjustedBrushSize = brushSize >= 50 ? brushSize * 1 : brushSize;
-
-      const canvasWidth = parseFloat(canvas.width);
-      const canvasHeight = parseFloat(canvas.height);
-
-      const canvasWidthOffset = canvas.clientWidth;
-      const canvasHeightOffset = canvas.clientHeight;
-
-      const circleWidthResult = (canvasWidth - canvasWidthOffset) / 1000;
-      const circleHeightResult = (canvasHeight - canvasHeightOffset) / 1000;
-
-      let circleSizeAdjustment = Math.max(
-        circleWidthResult,
-        circleHeightResult
-      );
-
-      if (circleSizeAdjustment === circleHeightResult) {
-        circleSizeAdjustment = calculateCircleSizeAdjustment(
-          circleSizeAdjustment,
-          true
-        );
-      } else {
-        circleSizeAdjustment =
-          calculateCircleSizeAdjustment(circleSizeAdjustment);
-      }
-
-      const circleWidth = circleSizeAdjustment * adjustedBrushSize;
-
-      cursorCircle.style.width = `${zoomLevel * circleWidth}px`;
-      cursorCircle.style.height = `${zoomLevel * circleWidth}px`;
-    }
-
     // Adjust the brush size based on the deltaY value from a mouse wheel event.
     function adjustBrushSize(elemId, deltaY, withotValue = false) {
       // Get brush input element
@@ -1096,8 +967,6 @@ The higher the transparency level, the more transparent your mask will be:
           input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
           input.dispatchEvent(new Event("change"));
         }
-
-        setCircleSize(elemId);
       }
     }
 
@@ -1112,7 +981,6 @@ The higher the transparency level, the more transparent your mask will be:
 
     fileInput.addEventListener("change", (e) => {
       setTimeout(() => {
-        setCircleSize(elemId);
         disableCanvasTraces();
       }, 200);
 
@@ -1147,8 +1015,6 @@ The higher the transparency level, the more transparent your mask will be:
         zoomLevel = updateZoom(
           zoomLevel + (operation === "+" ? delta : -delta)
         );
-
-        setCircleSize(elemId);
       }
     }
 
@@ -1193,8 +1059,6 @@ The higher the transparency level, the more transparent your mask will be:
       zoomLevel = scale;
       panX = offsetX;
       panY = 0;
-
-      setCircleSize(elemId);
       toggleOverlap("off");
     }
 
@@ -1256,7 +1120,6 @@ The higher the transparency level, the more transparent your mask will be:
         (screenHeight - elementHeight * scale - elementY) / 2 +
         originYValue / 2;
 
-      setCircleSize(elemId);
       toggleOverlap("on");
     }
 
@@ -1301,7 +1164,6 @@ The higher the transparency level, the more transparent your mask will be:
         case "NumpadSubtract":
           changeZoomLevel("-", event);
           break;
-
         case hotkeysConfig.togglePipette:
           const colorPickerEnabled =
             localStorage.getItem("colorPickerEnable") === "true";
@@ -1392,6 +1254,7 @@ The higher the transparency level, the more transparent your mask will be:
       // Handle brush size adjustment with ctrl key pressed
       if (e.ctrlKey) {
         e.preventDefault();
+
         // Increase or decrease brush size based on scroll direction
         adjustBrushSize(elemId, e.deltaY);
       }
