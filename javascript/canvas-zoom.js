@@ -664,9 +664,24 @@ The higher the transparency level, the more transparent your mask will be:
   }
 
   // Apply functionality to the range inputs
-  rangeGroup.querySelectorAll("input").forEach((input) => {
-    input.addEventListener("input", restoreImgRedMask);
-  });
+  if (rangeGroup) {
+    rangeGroup.querySelectorAll("input").forEach((input) => {
+      input.addEventListener("input", restoreImgRedMask);
+    });
+  } else {
+    // For vlad webui
+    const img2ImgWidth = document.querySelector(
+      "#img2img_width input[type='range']"
+    );
+    const img2ImgHeight = document.querySelector(
+      "#img2img_height input[type='range']"
+    );
+
+    if (img2ImgWidth && img2ImgHeight) {
+      img2ImgWidth.addEventListener("input", restoreImgRedMask);
+      img2ImgHeight.addEventListener("input", restoreImgRedMask);
+    }
+  }
 
   /**
    * Apply zoom and pan functionality to a target element.
@@ -914,19 +929,13 @@ The higher the transparency level, the more transparent your mask will be:
       const isCtrlPressed = e.ctrlKey;
 
       const activeTab = getTabId();
-      const activeMainTab = getActiveMainTab();
 
       if (canvasOpacity < 1 && "Inpaint" === getActiveTab().innerText) {
         setCanvasOpacity(1, elemId);
         canvasOpacity = 1;
       }
 
-      if (
-        isUndoKey &&
-        isCtrlPressed &&
-        activeMainTab &&
-        activeMainTab.textContent.trim() === "img2img"
-      ) {
+      if (isUndoKey && isCtrlPressed && activeTab) {
         e.preventDefault();
         const undoBtn = document.querySelector(
           `${elemId} button[aria-label="Undo"]`
