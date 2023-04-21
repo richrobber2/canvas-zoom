@@ -6,7 +6,7 @@ import gradio
 canvasZoomPath = sys.path[0]
 gradioPath = os.path.dirname(gradio.__file__)
 
-source_dir = os.path.join(canvasZoomPath, 'dist/templates')
+source_dir = os.path.join(canvasZoomPath, 'dist','templates')
 destination_dir = os.path.join(gradioPath, 'templates')
 
 # Deleting the existing "templates" folder in the gradio folder, if it exists
