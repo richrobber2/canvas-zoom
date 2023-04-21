@@ -1,9 +1,10 @@
 import sys
 import os
 import shutil
+import gradio
 
 canvasZoomPath = sys.path[0]
-gradioPath = sys.path[7] + "\gradio"
+gradioPath = os.path.dirname(gradio.__file__)
 
 source_dir = os.path.join(canvasZoomPath, 'dist/templates')
 destination_dir = os.path.join(gradioPath, 'templates')
