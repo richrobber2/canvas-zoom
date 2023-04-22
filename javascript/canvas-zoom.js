@@ -955,7 +955,12 @@ The higher the transparency level, the more transparent your mask will be:
     }
 
     // Adjust the brush size based on the deltaY value from a mouse wheel event.
-    function adjustBrushSize(elemId, deltaY, withotValue = false) {
+    function adjustBrushSize(
+      elemId,
+      deltaY,
+      withoutValue = false,
+      percentage = 4
+    ) {
       // Get brush input element
       const input =
         document.querySelector(`${elemId} input[aria-label='Brush radius']`) ||
@@ -963,8 +968,16 @@ The higher the transparency level, the more transparent your mask will be:
 
       if (input) {
         input.click();
-        if (!withotValue) {
-          input.value = parseFloat(input.value) + (deltaY > 0 ? -3 : 3);
+        if (!withoutValue) {
+          const maxValue = parseFloat(input.getAttribute("max")) || 100;
+          const changeAmount = maxValue * (percentage / 100);
+          const newValue =
+            parseFloat(input.value) +
+            (deltaY > 0 ? -changeAmount : changeAmount);
+
+          // Make sure the new value is within the allowed range (0, maxValue)
+          input.value = Math.min(Math.max(newValue, 0), maxValue);
+
           input.dispatchEvent(new Event("change"));
         }
       }
@@ -990,7 +1003,7 @@ The higher the transparency level, the more transparent your mask will be:
     // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables.
     function updateZoom(newZoomLevel) {
       // Clamp the zoom level between 0.5 and 10
-      newZoomLevel = Math.max(0.5, Math.min(newZoomLevel, 10));
+      newZoomLevel = Math.max(0.5, Math.min(newZoomLevel, 15));
 
       targetElement.style.transform = `scale(${newZoomLevel}) translate(${panX}px, ${panY}px)`;
 
@@ -1007,7 +1020,14 @@ The higher the transparency level, the more transparent your mask will be:
         // Calculate the delta based on the current zoom level
         // - Use 0.1 if the zoom level is below 3
         // - Use 0.5 if the zoom level is 3 or above
-        const delta = zoomLevel >= 3 ? 0.5 : 0.1;
+        // - Use 0.7 if the zoom level is 7 or above
+        let delta = 0.1;
+        if (zoomLevel > 7) {
+          delta = 0.7;
+        } else if (zoomLevel > 3) {
+          delta = 0.5;
+        }
+        // const delta = zoomLevel >= 3 ? 0.5 : 0.1;
 
         // Update the zoom level based on the operation
         // - Add the delta if the operation is "+"
