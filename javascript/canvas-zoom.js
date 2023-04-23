@@ -688,6 +688,7 @@ The higher the transparency level, the more transparent your mask will be:
 
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
+    let fullScreenMode = false;
 
     // Cancel the traces on all keys except the left one
     function disableCanvasTraces() {
@@ -869,6 +870,7 @@ The higher the transparency level, the more transparent your mask will be:
       // document.addEventListener("keydown", (e) => {
       const isUndoKey = e.code === hotkeysConfig.undo;
       const isCtrlPressed = e.ctrlKey;
+      const isAuxButton = e.button >= 3;
 
       const activeTab = getTabId();
 
@@ -877,7 +879,7 @@ The higher the transparency level, the more transparent your mask will be:
         canvasOpacity = 1;
       }
 
-      if (isUndoKey && isCtrlPressed && activeTab) {
+      if (((isUndoKey && isCtrlPressed) || isAuxButton) && activeTab) {
         e.preventDefault();
         const undoBtn = document.querySelector(
           `${elemId} button[aria-label="Undo"]`
@@ -916,7 +918,6 @@ The higher the transparency level, the more transparent your mask will be:
       panY = 0;
 
       fixCanvas();
-
       targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
 
       // If the canvas is wider than 860px, fit it to the element
@@ -925,6 +926,7 @@ The higher the transparency level, the more transparent your mask will be:
       );
 
       toggleOverlap("off");
+      fullScreenMode = false;
 
       if (
         canvas &&
@@ -1032,6 +1034,7 @@ The higher the transparency level, the more transparent your mask will be:
         // Update the zoom level based on the operation
         // - Add the delta if the operation is "+"
         // - Subtract the delta if the operation is "-"
+        fullScreenMode = false;
         zoomLevel = updateZoom(
           zoomLevel + (operation === "+" ? delta : -delta)
         );
@@ -1083,8 +1086,6 @@ The higher the transparency level, the more transparent your mask will be:
     }
 
     function fitToScreen() {
-      resetZoom();
-
       const canvas = document.querySelector(
         `${elemId} canvas[key="interface"]`
       );
@@ -1094,6 +1095,14 @@ The higher the transparency level, the more transparent your mask will be:
       if (canvas.offsetWidth > 862) {
         targetElement.style.width = canvas.offsetWidth + "px";
       }
+
+      if (fullScreenMode) {
+        resetZoom();
+        fullScreenMode = false;
+        return;
+      }
+
+      resetZoom();
 
       // Get element and screen dimensions
       const elementWidth = targetElement.offsetWidth;
@@ -1141,6 +1150,7 @@ The higher the transparency level, the more transparent your mask will be:
         originYValue / 2;
 
       toggleOverlap("on");
+      fullScreenMode = true;
     }
 
     // Blur prompt Textarea
@@ -1225,6 +1235,7 @@ The higher the transparency level, the more transparent your mask will be:
       mouseY = e.offsetY;
     }
 
+    targetElement.addEventListener("auxclick", undoLastAction);
     targetElement.addEventListener("mousemove", getMousePosition);
     //Handle events only inside the targetElement
     function handleMouseEnter() {

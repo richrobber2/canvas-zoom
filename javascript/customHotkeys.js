@@ -40,8 +40,8 @@ const customHotkeys = {
   toggleCanvasOpacity: "KeyC",
   toggleBrushOpacity: "KeyV",
   togglePipette: "KeyA",
-  brushOpacity: 0.6,
-  canvasOpacity: 0.3,
+  brushOpacity: 0.5,
+  canvasOpacity: 0.4,
   brushOutline: false,
 };
 
