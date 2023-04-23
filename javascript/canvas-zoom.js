@@ -824,7 +824,7 @@ The higher the transparency level, the more transparent your mask will be:
     }
 
     // Toggle the brush panel's visibility and optionally position it under the mouse cursor.
-    function toggleBrushPanel(openUnderMouse = false) {
+    function toggleBrushPanel(openUnderMouse = false, openColorMenu = true) {
       const colorID = getTabId();
 
       const colorBtn = document.querySelector(
@@ -849,7 +849,7 @@ The higher the transparency level, the more transparent your mask will be:
           positionColorInputUnderMouse(colorInput);
         }
 
-        colorInput && colorInput.click();
+        if (openColorMenu) colorInput && colorInput.click();
       }, 0);
     }
     //Restore undo func
@@ -1201,6 +1201,7 @@ The higher the transparency level, the more transparent your mask will be:
             localStorage.setItem("colorPickerEnable", false);
           } else {
             localStorage.setItem("colorPickerEnable", true);
+            toggleBrushPanel(false, false);
           }
           break;
 

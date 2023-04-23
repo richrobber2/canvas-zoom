@@ -2,7 +2,6 @@
 	import { createEventDispatcher } from "svelte";
 	import { IconButton } from "@gradio/atoms";
 	import { Undo, Clear, Copy } from "@gradio/icons";
-
 	const dispatch = createEventDispatcher();
 </script>
 

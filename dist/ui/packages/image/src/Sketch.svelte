@@ -4,6 +4,7 @@
 	import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
 	import { fade } from "svelte/transition";
 	import { LazyBrush } from "lazy-brush/src";
+	import { brush_color_store } from "./Brushcolor";
 	import ResizeObserver from "resize-observer-polyfill";
 
 	const dispatch = createEventDispatcher();
@@ -329,6 +330,8 @@
 
 		if (colorPickerEnabled && mode !== "mask") {
 			brush_color = getPixelColor(x, y);
+			const brush_color_hex = rgbToHex(brush_color);
+			brush_color_store.set(brush_color_hex);
 			localStorage.setItem("colorPickerEnable", "false");
 			return;
 		}
@@ -548,11 +551,31 @@
 		ctx.temp_fake.stroke();
 	};
 
+	// help funcs
+
 	function getPixelColor(x, y) {
 		const imageData = ctx.drawing.getImageData(x, y, 1, 1);
 		const [r, g, b, a] = imageData.data;
 		return `rgb(${r}, ${g}, ${b})`;
 	}
+
+	function rgbToHex(rgbString) {
+		// Extracting r, g, b values from a string
+		const [r, g, b] = rgbString
+			.match(/\d+/g) // Find all the numbers in the string
+			.map(Number); // Convert each group of digits to a numeric value
+
+		// Function to convert a number to a two-digit hexadecimal value
+		function toHex(num) {
+			const hex = num.toString(16);
+			return hex.length === 1 ? `0${hex}` : hex;
+		}
+
+		// Convert each r, g, b value to hexadecimal format and combine them
+		return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+	}
+
+	// end
 
 	let save_mask_line = () => {
 		if (points.length < 1) return;
@@ -636,7 +659,7 @@
 		let brushX = brush.x;
 		let brushY = brush.y;
 
-		if (posX && posX) {
+		if (posX && posY) {
 			brushX = posX;
 			brushY = posY;
 		}
@@ -693,6 +716,11 @@
 			on:mousemove={name === "interface" ? handle_draw_move : undefined}
 			on:mouseup={name === "interface" ? handle_draw_end : undefined}
 			on:mouseout={name === "interface" ? handle_draw_end : undefined}
+			on:mouseout={name === "interface"
+				? () => {
+						posX = posY = 0;
+				  }
+				: undefined}
 			on:blur={name === "interface" ? handle_draw_end : undefined}
 			on:touchstart={name === "interface" ? handle_draw_start : undefined}
 			on:touchmove={name === "interface" ? handle_draw_move : undefined}
