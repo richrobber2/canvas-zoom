@@ -553,10 +553,30 @@
 
 	// help funcs
 
+	function getBrightness(hexColor) {
+		const rgbColor = hexToRgb(hexColor);
+		if (rgbColor) {
+			const { r, g, b } = rgbColor;
+			return (r * 299 + g * 587 + b * 114) / 1000;
+		}
+		return 0;
+	}
+
 	function getPixelColor(x, y) {
 		const imageData = ctx.drawing.getImageData(x, y, 1, 1);
 		const [r, g, b, a] = imageData.data;
 		return `rgb(${r}, ${g}, ${b})`;
+	}
+
+	function hexToRgb(hex) {
+		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+		return result
+			? {
+					r: parseInt(result[1], 16),
+					g: parseInt(result[2], 16),
+					b: parseInt(result[3], 16)
+			  }
+			: null;
 	}
 
 	function rgbToHex(rgbString) {
@@ -668,15 +688,16 @@
 		ctx.fillStyle = brush_color;
 
 		const brushOutlineEnabled = localStorage.getItem("brushOutline") === "true";
-		if (brushOutlineEnabled && mode === "mask") {
-			ctx.strokeStyle = "white";
+		if (brushOutlineEnabled) {
+			const brightness = getBrightness(brush_color);
+			ctx.strokeStyle = brightness > 128 ? "black" : "white"; // Change the strokeStyle based on brightness
 			ctx.lineWidth = 2; // Change the value to control the thickness of the border
 		}
 
 		ctx.arc(brushX, brushY, brush_radius / 2, 0, Math.PI * 2, true);
 		ctx.fill(); // Filling the main point
 
-		if (brushOutlineEnabled && mode === "mask") {
+		if (brushOutlineEnabled) {
 			ctx.stroke(); // Main Point Boundary
 		}
 
