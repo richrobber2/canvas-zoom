@@ -728,18 +728,18 @@ The higher the transparency level, the more transparent your mask will be:
       }
 
       if (canvas || img || imgUpload) {
-        const rangeWidth = rangeGroup.querySelector(
+        const rangeWidth = document.querySelector(
           "#img2img_width input[type='range']"
         );
-        const rangeHeight = rangeGroup.querySelector(
+        const rangeHeight = document.querySelector(
           "#img2img_height input[type='range']"
         );
 
-        const inputWidth = rangeGroup.querySelector(
+        const inputWidth = document.querySelector(
           "#img2img_width input[type='number']"
         );
 
-        const inputHeight = rangeGroup.querySelector(
+        const inputHeight = document.querySelector(
           "#img2img_height input[type='number']"
         );
 
