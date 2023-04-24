@@ -130,9 +130,10 @@
   const inpaintID = "#img2maskimg";
   const inpaintSketchID = "#inpaint_sketch";
   const img2imgTabsID = "#mode_img2img .tab-nav";
-  const rangeGroupId = "#img2img_column_size";
-  const img2imgPromptId = "#img2img_prompt textarea";
-  const img2imgNegPromptId = "#img2img_neg_prompt textarea";
+  const rangeGroupID = "#img2img_column_size";
+  const img2imgPromptID = "#img2img_prompt textarea";
+  const img2imgNegPromptID = "#img2img_neg_prompt textarea";
+  const img2imgDemRawID = "#img2img_dimensions_row";
 
   // Wait for the elements to be loaded
   const [
@@ -143,14 +144,16 @@
     rangeGroup,
     img2imgPrompt,
     img2imgNegPrompt,
+    img2imgDemRaw,
   ] = await Promise.all([
     document.querySelector(sketchID),
     document.querySelector(inpaintID),
     document.querySelector(inpaintSketchID),
     document.querySelector(img2imgTabsID),
-    document.querySelector(rangeGroupId),
-    document.querySelector(img2imgPromptId),
-    document.querySelector(img2imgNegPromptId),
+    document.querySelector(rangeGroupID),
+    document.querySelector(img2imgPromptID),
+    document.querySelector(img2imgNegPromptID),
+    document.querySelector(img2imgDemRawID),
   ]);
 
   /**
@@ -686,9 +689,79 @@ The higher the transparency level, the more transparent your mask will be:
    * @param {string} elemId - The ID of the element to target.
    */
 
+  // Add button to img2img to get width and height
+  const clonedDiv = img2imgDemRaw.children[0].cloneNode(true);
+  const getImgDataBtn = clonedDiv.querySelector("button");
+  getImgDataBtn.innerText = "📏";
+  getImgDataBtn.id = "img2img_res_get_btn";
+  getImgDataBtn.title = "Get the width and height from the picture";
+  img2imgDemRaw.appendChild(clonedDiv);
+
+  // Zoom And Pan
+
   function applyZoomAndPan(targetElement, elemId) {
     let [zoomLevel, panX, panY] = [1, 0, 0];
     let fullScreenMode = false;
+
+    // Enable img2img img data
+    getImgDataBtn.addEventListener("click", (e) => {
+      const tabID = getTabId();
+      const canvas = document.querySelector(`${tabID} canvas`);
+      const img = document.querySelector("#img2img_image img");
+      const imgUpload = document.querySelector("#img_inpaint_base img");
+
+      let rightWidth, rightHeight;
+
+      if (img) {
+        rightWidth = img.naturalWidth;
+        rightHeight = img.naturalHeight;
+      }
+
+      if (canvas && tabID) {
+        rightWidth = canvas.width;
+        rightHeight = canvas.height;
+      }
+
+      if (getActiveTab().innerText === "Inpaint upload") {
+        rightWidth = imgUpload.naturalWidth;
+        rightHeight = imgUpload.naturalHeight;
+      }
+
+      if (canvas || img || imgUpload) {
+        const rangeWidth = rangeGroup.querySelector(
+          "#img2img_width input[type='range']"
+        );
+        const rangeHeight = rangeGroup.querySelector(
+          "#img2img_height input[type='range']"
+        );
+
+        const inputWidth = rangeGroup.querySelector(
+          "#img2img_width input[type='number']"
+        );
+
+        const inputHeight = rangeGroup.querySelector(
+          "#img2img_height input[type='number']"
+        );
+
+        rangeWidth.value = rightWidth;
+        rangeHeight.value = rightHeight;
+
+        inputWidth.value = rightWidth;
+        inputHeight.value = rightHeight;
+
+        // Создание и отправка события изменения (change) для элементов rangeWidth и rangeHeight
+        const changeEvent = new Event("change");
+
+        rangeWidth.dispatchEvent(changeEvent);
+        rangeHeight.dispatchEvent(changeEvent);
+
+        // Создание и отправка события ввода (input) для элементов inputWidth и inputHeight
+        const inputEvent = new Event("input");
+
+        inputWidth.dispatchEvent(inputEvent);
+        inputHeight.dispatchEvent(inputEvent);
+      }
+    });
 
     // Cancel the traces on all keys except the left one
     function disableCanvasTraces() {
