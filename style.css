@@ -124,3 +124,7 @@
 button[aria-label="Redraw"] {
   display:none
 }
+
+.get-img-dem #img2img_ratio{
+  display: none;
+}

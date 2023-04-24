@@ -691,6 +691,7 @@ The higher the transparency level, the more transparent your mask will be:
 
   // Add button to img2img to get width and height
   const clonedDiv = img2imgDemRaw.children[0].cloneNode(true);
+  clonedDiv.classList.add("get-img-dem");
   const getImgDataBtn = clonedDiv.querySelector("button");
   getImgDataBtn.innerText = "📏";
   getImgDataBtn.id = "img2img_res_get_btn";
