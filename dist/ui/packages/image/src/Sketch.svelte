@@ -691,7 +691,15 @@
 		if (brushOutlineEnabled) {
 			const brightness = getBrightness(brush_color);
 			ctx.strokeStyle = brightness > 128 ? "black" : "white"; // Change the strokeStyle based on brightness
-			ctx.lineWidth = 2; // Change the value to control the thickness of the border
+			if (brush_radius > 180) {
+				ctx.lineWidth = 4;
+			} else if (brush_radius > 80) {
+				ctx.lineWidth = 3; // Change the value to control the thickness of the border
+			} else if (brush_radius > 20) {
+				ctx.lineWidth = 2; // Change the value to control the thickness of the border
+			} else {
+				ctx.lineWidth = 1;
+			}
 		}
 
 		ctx.arc(brushX, brushY, brush_radius / 2, 0, Math.PI * 2, true);
