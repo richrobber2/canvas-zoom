@@ -27,8 +27,8 @@ if is_right_version:
   canvasZoomPath = sys.path[0]
   gradioPath = os.path.dirname(gradio.__file__)
   
-  source_dir = os.path.join(canvasZoomPath, 'dist','templates')
-  destination_dir = os.path.join(gradioPath, 'templates')
+  source_dir = os.path.join(canvasZoomPath, 'dist','templates',"frontend")
+  destination_dir = os.path.join(gradioPath, 'templates',"frontend")
   
   # Deleting the existing "templates" folder in the gradio folder, if it exists
   if os.path.exists(destination_dir):
