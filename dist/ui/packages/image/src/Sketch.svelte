@@ -21,6 +21,7 @@
 	export let container_height = 200;
 	export let shape;
 	let colorPickerEnabled = localStorage.setItem("colorPickerEnable", false);
+	let transparentMask = localStorage.setItem("transparentMask", false);
 	let posX = 0;
 	let posY = 0;
 
@@ -264,12 +265,12 @@
 			draw_cropped_image();
 		}
 
-		draw_lines({ lines: lines }, true);
-		line_count = lines.length;
-
 		if (lines.length == 0) {
 			dispatch("clear");
 		}
+
+		line_count = lines.length;
+		draw_lines({ lines: lines }, true);
 
 		trigger_on_change();
 	}
@@ -323,7 +324,6 @@
 	let handle_draw_start = (e) => {
 		e.preventDefault();
 		const { x, y } = get_pointer_pos(e);
-
 		if (e.button !== 0) return;
 
 		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
@@ -340,6 +340,7 @@
 		if (e.touches && e.touches.length > 0) {
 			lazy.update({ x, y }, { both: true });
 		}
+
 		handle_pointer_move(x, y);
 		line_count += 1;
 	};
@@ -358,6 +359,11 @@
 		is_drawing = false;
 		is_pressing = false;
 		saveLine();
+
+		transparentMask = localStorage.getItem("transparentMask") === "true";
+		if (transparentMask) {
+			redraw();
+		}
 
 		if (mode === "mask") {
 			save_mask_line();
