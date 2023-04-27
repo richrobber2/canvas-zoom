@@ -1077,14 +1077,18 @@ The higher the transparency level, the more transparent your mask will be:
     });
 
     // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables.
-    function updateZoom(newZoomLevel) {
-      // Clamp the zoom level between 0.5 and 10
+    function updateZoom(newZoomLevel, mouseX, mouseY) {
+      // Clamp the zoom level between 0.5 and 15
       newZoomLevel = Math.max(0.5, Math.min(newZoomLevel, 15));
 
-      targetElement.style.transform = `scale(${newZoomLevel}) translate(${panX}px, ${panY}px)`;
+      // Calculate the new panX and panY based on the mouse position
+      panX += mouseX - (mouseX * newZoomLevel) / zoomLevel;
+      panY += mouseY - (mouseY * newZoomLevel) / zoomLevel;
+
+      targetElement.style.transformOrigin = "0 0";
+      targetElement.style.transform = `translate(${panX}px, ${panY}px) scale(${newZoomLevel})`;
 
       // Update the target element's transform property to apply the new zoom level
-
       toggleOverlap("on");
       return newZoomLevel;
     }
@@ -1093,24 +1097,21 @@ The higher the transparency level, the more transparent your mask will be:
       // Check if the shift key is pressed
       if (e.shiftKey) {
         e.preventDefault();
+
         // Calculate the delta based on the current zoom level
-        // - Use 0.1 if the zoom level is below 3
-        // - Use 0.5 if the zoom level is 3 or above
-        // - Use 0.7 if the zoom level is 7 or above
-        let delta = 0.1;
+        let delta = 0.3;
         if (zoomLevel > 7) {
-          delta = 0.7;
+          delta = 1;
         } else if (zoomLevel > 3) {
-          delta = 0.5;
+          delta = 0.7;
         }
-        // const delta = zoomLevel >= 3 ? 0.5 : 0.1;
 
         // Update the zoom level based on the operation
-        // - Add the delta if the operation is "+"
-        // - Subtract the delta if the operation is "-"
         fullScreenMode = false;
         zoomLevel = updateZoom(
-          zoomLevel + (operation === "+" ? delta : -delta)
+          zoomLevel + (operation === "+" ? delta : -delta),
+          e.clientX - targetElement.getBoundingClientRect().left,
+          e.clientY - targetElement.getBoundingClientRect().top
         );
       }
     }
@@ -1146,16 +1147,21 @@ The higher the transparency level, the more transparent your mask will be:
         window.getComputedStyle(targetElement).transformOrigin;
       const [originX, originY] = transformOrigin.split(" ");
       const originXValue = parseFloat(originX);
+      const originYValue = parseFloat(originY);
 
       const offsetX =
         (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
+      const offsetY =
+        (screenHeight - elementHeight * scale) / 2.5 -
+        originYValue * (1 - scale);
+
       // Apply scale and offsets to the element
-      targetElement.style.transform = `translate(${offsetX}px, 0px) scale(${scale})`;
+      targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 
       // Update global variables
       zoomLevel = scale;
       panX = offsetX;
-      panY = 0;
+      panY = offsetY;
       toggleOverlap("off");
     }
 
@@ -1216,12 +1222,8 @@ The higher the transparency level, the more transparent your mask will be:
 
       // Update global variables
       zoomLevel = scale;
-      panX =
-        (screenWidth - elementWidth * scale - elementX) / 2 +
-        originXValue / 2.5;
-      panY =
-        (screenHeight - elementHeight * scale - elementY) / 2 +
-        originYValue / 2;
+      panX = offsetX;
+      panY = offsetY;
 
       toggleOverlap("on");
       fullScreenMode = true;
@@ -1385,11 +1387,23 @@ The higher the transparency level, the more transparent your mask will be:
     document.addEventListener("keydown", handleMoveKeyDown);
     document.addEventListener("keyup", handleMoveKeyUp);
 
+    function updatePanPosition(movementX, movementY) {
+      let panSpeed = 1.5;
+
+      if (zoomLevel > 8) {
+        panSpeed = 2.5;
+      }
+
+      panX = panX + movementX * panSpeed;
+      panY = panY + movementY * panSpeed;
+
+      targetElement.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+      toggleOverlap("on");
+    }
+
     function handleMoveByKey(e) {
       if (isMoving) {
-        panX += e.movementX;
-        panY += e.movementY;
-        targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+        updatePanPosition(e.movementX, e.movementY);
         targetElement.style.pointerEvents = "none";
       } else {
         targetElement.style.pointerEvents = "auto";
@@ -1399,9 +1413,7 @@ The higher the transparency level, the more transparent your mask will be:
     function handleMoveByMouse(e) {
       if (e.shiftKey) {
         e.preventDefault();
-        panX += e.movementX;
-        panY += e.movementY;
-        targetElement.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+        updatePanPosition(e.movementX, e.movementY);
         targetElement.style.pointerEvents = "none";
 
         disableCanvasTraces();

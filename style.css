@@ -128,3 +128,7 @@ button[aria-label="Redraw"] {
 .get-img-dem #img2img_ratio{
   display: none;
 }
+
+#img2img_sketch, #img2maskimg, #inpaint_sketch{
+  transform-origin: 0px 0px;
+}
