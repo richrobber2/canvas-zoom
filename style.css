@@ -122,13 +122,21 @@
 }
 
 button[aria-label="Redraw"] {
-  display:none
+  display: none
 }
 
-.get-img-dem #img2img_ratio{
+.get-img-dem #img2img_ratio {
   display: none;
 }
 
-#img2img_sketch, #img2maskimg, #inpaint_sketch{
+#img2img_res_get_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#img2img_sketch,
+#img2maskimg,
+#inpaint_sketch {
   transform-origin: 0px 0px;
 }
