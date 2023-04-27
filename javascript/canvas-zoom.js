@@ -958,6 +958,15 @@ The higher the transparency level, the more transparent your mask will be:
           if (openColorMenu) colorInput && colorInput.click();
         }, 0);
       }
+      //Fix white canvas when change width
+      function setImgDisplayToNone() {
+        const img = targetElement.querySelector(`${elemId} img`);
+
+        if (img) {
+          img.style.display = "none";
+        }
+      }
+
       //Restore undo func
       function restoreUndo() {
         const img = targetElement.querySelector(`${elemId} img`);
@@ -1130,6 +1139,7 @@ The higher the transparency level, the more transparent your mask will be:
         targetElement.style.transform = `translate(${panX}px, ${panY}px) scale(${newZoomLevel})`;
 
         // Update the target element's transform property to apply the new zoom level
+        setImgDisplayToNone();
         toggleOverlap("on");
         return newZoomLevel;
       }
