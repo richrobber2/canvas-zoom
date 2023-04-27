@@ -1,4 +1,5 @@
 // Main
+onUiLoaded(() => {
 (async () => {
   // Wait for the specified delay
   await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -1442,3 +1443,4 @@ The higher the transparency level, the more transparent your mask will be:
   applyZoomAndPan(inpaintEl, inpaintID);
   applyZoomAndPan(inpaintSketchEl, inpaintSketchID);
 })();
+});
