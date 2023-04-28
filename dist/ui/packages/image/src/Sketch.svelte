@@ -482,12 +482,6 @@
 	let handle_pointer_move = (x, y) => {
 		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
 		toggleColorPicker();
-
-		let minX = 1;
-		let maxX = width - 2;
-
-		x = Math.max(minX, Math.min(x, maxX));
-
 		if (colorPickerEnabled && mode !== "mask") {
 			return;
 		}
