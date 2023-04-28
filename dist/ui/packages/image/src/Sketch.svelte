@@ -324,7 +324,8 @@
 	let handle_draw_start = (e) => {
 		e.preventDefault();
 		const { x, y } = get_pointer_pos(e);
-		if (e.button !== 0) return;
+
+		if (!e.touches && e.button !== 0) return;
 
 		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
 
@@ -481,6 +482,11 @@
 	let handle_pointer_move = (x, y) => {
 		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
 		toggleColorPicker();
+
+		let minX = 1;
+		let maxX = width - 2;
+
+		x = Math.max(minX, Math.min(x, maxX));
 
 		if (colorPickerEnabled && mode !== "mask") {
 			return;
