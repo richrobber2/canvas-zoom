@@ -138,6 +138,7 @@ onUiLoaded(() => {
     const img2imgPromptID = "#img2img_prompt textarea";
     const img2imgNegPromptID = "#img2img_neg_prompt textarea";
     const img2imgDemRawID = "#img2img_dimensions_row";
+    const sendToInpainBtnID = "#image_buttons_img2img #inpaint_tab";
 
     // Wait for the elements to be loaded
     const [
@@ -149,6 +150,7 @@ onUiLoaded(() => {
       img2imgPrompt,
       img2imgNegPrompt,
       img2imgDemRaw,
+      sendToInpainBtn,
     ] = await Promise.all([
       document.querySelector(sketchID),
       document.querySelector(inpaintID),
@@ -158,6 +160,7 @@ onUiLoaded(() => {
       document.querySelector(img2imgPromptID),
       document.querySelector(img2imgNegPromptID),
       document.querySelector(img2imgDemRawID),
+      document.querySelector(sendToInpainBtnID),
     ]);
 
     /**
@@ -1215,6 +1218,16 @@ The higher the transparency level, the more transparent your mask will be:
         panY = offsetY;
         toggleOverlap("off");
       }
+
+      sendToInpainBtn.addEventListener("click", (e) => {
+        const closeBtn = document.querySelector(
+          "#img2maskimg button[aria-label='Clear']"
+        );
+
+        if (closeBtn) {
+          closeBtn.click();
+        }
+      });
 
       function fitToScreen() {
         const canvas = document.querySelector(
