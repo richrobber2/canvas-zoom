@@ -66,6 +66,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 4. You can select the color of the mask in Inpaint and the color of all your lines will change to the color of the mask
 
+5. In img2img in all tabs a new button "📏" has been added next to the width and height sliders. This button allows you to get the real width and height of the picture in 1 click.
+
 ## Known bugs:
 
 1. If a white image appears when you cancel on the Hotkey, press the cancel hotkey again and the image will return.
@@ -139,6 +141,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 3. Вы можете добавить кисти белую обводку, что бы лучше видеть её границы. Включить можно в контекстном меню. Работает только в Inpaint.
 
 4. Вы можете выбрать цвет маски в Inpaint, и цвет всех ваших линий изменится на цвет маски
+
+5. В img2img во всех вкладках добавилась новая кнопка "📏", которая находится рядом с ползунками width и height. Это кнопка позволяет получить ширину и высоту картинки в 1 клик.
 
 ## Известные баги:
 
