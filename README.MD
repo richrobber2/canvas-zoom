@@ -42,7 +42,7 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 **Q** - Open/Close color panel
 
-**T** - Open color panel right above the mouse. The mouse should be in the image area
+**T** - Open color panel right above the mouse.
 
 **A** - Toggle dropper ( Works in Sketch and Inpaint Sketch )
 
@@ -118,7 +118,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 **Q** - Открыть/Закрыть выбор цвета
 
-**T** - Открыть выбор цвета прямо над мышкой. Мышка должна быть в области изображения
+**T** - Открыть выбор цвета прямо над мышкой.
 
 **A** - Включить пипетку ( Работает в Sketch и Inpaint Sketch )
 
