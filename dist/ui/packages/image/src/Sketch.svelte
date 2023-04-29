@@ -352,6 +352,7 @@
 		posX = x;
 		posY = y;
 		handle_pointer_move(x, y);
+		localStorage.setItem("overCanvas", "true");
 	};
 
 	let handle_draw_end = (e) => {
@@ -754,6 +755,7 @@
 			on:mouseout={name === "interface"
 				? () => {
 						posX = posY = 0;
+						localStorage.setItem("overCanvas", "false");
 				  }
 				: undefined}
 			on:blur={name === "interface" ? handle_draw_end : undefined}

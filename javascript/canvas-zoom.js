@@ -881,13 +881,7 @@ The higher the transparency level, the more transparent your mask will be:
           `${elemId} canvas[key="interface"]`
         );
 
-        canvas.addEventListener("mousemove", () => {
-          isMouseOverCanvas = true;
-        });
-
-        canvas.addEventListener("mouseleave", () => {
-          isMouseOverCanvas = false;
-        });
+        const isMouseOverCanvas = localStorage.getItem("overCanvas") === "true";
 
         const style = window.getComputedStyle(canvas);
         let marginLeft = style.getPropertyValue("margin-left");
