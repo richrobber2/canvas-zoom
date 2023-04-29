@@ -225,8 +225,15 @@
 		canvas_observer.unobserve(canvas_container);
 	});
 
-	export function undo() {
-		const _lines = lines.slice(0, -1);
+	export function undo(removeLinesAll = false) {
+		let _lines = lines.slice(0, -1);
+
+		if (removeLinesAll) {
+			_lines = [];
+			lines = [];
+			line_count = 0;
+			localStorage.setItem("resetLines", "false");
+		}
 
 		clear_canvas();
 
@@ -348,6 +355,14 @@
 
 	let handle_draw_move = (e) => {
 		e.preventDefault();
+
+		if (localStorage.getItem("resetLines") === "true" && lines.length > 0) {
+			console.log(lines);
+			undo(true);
+		} else {
+			localStorage.setItem("resetLines", "false");
+		}
+
 		const { x, y } = get_pointer_pos(e);
 		posX = x;
 		posY = y;

@@ -52,6 +52,7 @@
 		}
 		isUpload = true;
 		console.log(1);
+		localStorage.setItem("resetLines", "true");
 		dispatch("upload", detail);
 	}
 

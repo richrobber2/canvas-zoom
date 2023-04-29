@@ -1,4 +1,4 @@
-# Canvas Zoom 
+# Canvas Zoom
 
 An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
 
