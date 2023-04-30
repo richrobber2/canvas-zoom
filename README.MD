@@ -26,6 +26,8 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 ## Default hotkeys:
 
+### Important hotkeys: Zoom (Shift+wheel) , Move Canvas (F) , Full Screen (S), and Reset Zoom (R).
+
 **Shift + click or wheel (hold)** - Move canvas
 
 **F (hold)** - Move canvas
@@ -101,6 +103,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 Горячие клавиши работают только в области изображения, мышка должна быть на этой области , за исключением горячей клавиши для перемещения
 
 ## Горячие клавиши по умолчанию:
+
+### Важные горячие клавиши: Зум (Shift+колесо), Перемещение (F), Полноэкранный режим (S) и Сброс зума (R).
 
 **Shift + левая кнопка или колесо (удерживать)** - Переместить холст
 

@@ -1146,6 +1146,8 @@ The higher the transparency level, the more transparent your mask will be:
         if (e.shiftKey) {
           e.preventDefault();
 
+          let zoomPosX, zoomPosY;
+
           // Calculate the delta based on the current zoom level
           let delta = 0.3;
           if (zoomLevel > 7) {
@@ -1154,12 +1156,20 @@ The higher the transparency level, the more transparent your mask will be:
             delta = 0.7;
           }
 
+          if (e.clientX && e.clientY) {
+            zoomPosX = e.clientX;
+            zoomPosY = e.clientY;
+          } else {
+            zoomPosX = 0;
+            zoomPosY = 0;
+          }
+
           // Update the zoom level based on the operation
           fullScreenMode = false;
           zoomLevel = updateZoom(
             zoomLevel + (operation === "+" ? delta : -delta),
-            e.clientX - targetElement.getBoundingClientRect().left,
-            e.clientY - targetElement.getBoundingClientRect().top
+            zoomPosX - targetElement.getBoundingClientRect().left,
+            zoomPosY - targetElement.getBoundingClientRect().top
           );
         }
       }
