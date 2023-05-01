@@ -4,13 +4,13 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
+**The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
+
 https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-bd14-c352c0635522.mp4
 
 ## Important Notes
 
-**This version of canvas-zoom only works with the March 25th and later versions of the WebUI.**
-
-**This extension also works with the May 1st version of the WebUI, and will no longer support the March 25th version in the future**
+**Webui versions earlier than March 25th are not supported**
 
 **If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
@@ -85,6 +85,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 5. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser scale to 100% and everything will be fine.
 
 # RU
+
+**Расширение поддерживает webui версии [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0) и [Версия от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
 ## Важные замечания
 
