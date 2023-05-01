@@ -1,3 +1,5 @@
+## A fix for the new version of auto1111 will be introduced, it will be ready soon
+
 # Canvas Zoom
 
 An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
