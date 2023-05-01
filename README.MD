@@ -72,6 +72,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 5. In img2img in all tabs a new button "📏" has been added next to the width and height sliders. This button allows you to get the real width and height of the picture in 1 click.
 
+6. You can fill the canvas with any color, so choose "Fill the canvas with the color of the brush" in the context menu and the canvas will be painted with the color of the brush.
+
 ## Known bugs:
 
 1. If a white image appears when you cancel on the Hotkey, press the cancel hotkey again and the image will return.
@@ -151,6 +153,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 4. Вы можете выбрать цвет маски в Inpaint, и цвет всех ваших линий изменится на цвет маски
 
 5. В img2img во всех вкладках добавилась новая кнопка "📏", которая находится рядом с ползунками width и height. Это кнопка позволяет получить ширину и высоту картинки в 1 клик.
+
+6. Вы можете залить canvas любым цветом, для этого в контекстном меню выберете "Fill the canvas with the color of the brush" и canvas окрасится цветом кисти.
 
 ## Известные баги:
 
