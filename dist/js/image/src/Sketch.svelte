@@ -365,6 +365,11 @@
       localStorage.setItem("resetLines", "false");
     }
 
+    if (localStorage.getItem("fillCanvasWhite") === "true") {
+      fill_canvas_white();
+      localStorage.setItem("fillCanvasWhite", false);
+    }
+
     const { x, y } = get_pointer_pos(e);
     posX = x;
     posY = y;
@@ -678,6 +683,21 @@
       ctx.mask.fillStyle = "#000";
       ctx.mask.fillRect(0, 0, width, height);
     }
+  }
+
+  function fill_canvas_white() {
+    if (mode === "mask") {
+      return;
+    }
+
+    ctx.temp.fillStyle = "#FFFFFF";
+    ctx.temp.fillRect(0, 0, width, height);
+
+    ctx.drawing.fillStyle = "#FFFFFF";
+    ctx.drawing.fillRect(0, 0, width, height);
+
+    lines = [];
+    line_count = 0;
   }
 
   let loop = ({ once = false } = {}) => {

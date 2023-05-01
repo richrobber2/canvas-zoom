@@ -261,6 +261,11 @@ The higher the transparency level, the more transparent your mask will be:
       alert("Custom hotkeys successfully loaded");
     }
 
+    function fillCanasWithWhite() {
+      localStorage.setItem("fillCanvasWhite", "true");
+      contextMenu.style.display = "none";
+    }
+
     /**
      * An object containing several functions that update the hotkey configuration and save it when called.
      * Includes functions for undo, resetting zoom, overlapping images, opening brush settings and panels, and setting the move key.
@@ -287,6 +292,7 @@ The higher the transparency level, the more transparent your mask will be:
       loadCustomHotkeys: () => loadCustomHotkeys(),
       toggleBrushOutline: () => toggleBrushOutline(),
       togglePipette: () => updateHotkeyAndSave("togglePipette", askForHotkey()),
+      fillCanvasWhiteColor: () => fillCanasWithWhite(),
     };
 
     // This code creates a context menu as a div element and appends it to the body of the document,
@@ -321,7 +327,7 @@ The higher the transparency level, the more transparent your mask will be:
       const groupedItems = [
         {
           title: "Canvas Moving",
-          items: [items[9]],
+          items: [items[10]],
         },
         {
           title: "Control",
@@ -329,19 +335,27 @@ The higher the transparency level, the more transparent your mask will be:
         },
         {
           title: "Color panel",
-          items: items.slice(5, 9),
+          items: items.slice(6, 10),
         },
         {
           title: "Mask transparency",
-          items: items.slice(10),
+          items: items.slice(11),
         },
       ];
 
-      const loadCustomHotkeysItem = `<li data-action="${items[4].action}">
+      const loadCustomHotkeysItem =
+        `<li data-action="${items[4].action}">
                <span><b>${items[4].hotkey.charAt(
                  items[4].hotkey.length - 1
                )}</b></span><b>
                ${items[4].label}
+               </b>
+             </li>` +
+        `<li data-action="${items[5].action}">
+               <span><b>${items[5].hotkey.charAt(
+                 items[5].hotkey.length - 1
+               )}</b></span><b>
+               ${items[5].label}
                </b>
              </li><hr>`;
 
@@ -432,6 +446,11 @@ The higher the transparency level, the more transparent your mask will be:
             action: "loadCustomHotkeys",
             hotkey: "",
             label: "Load custom hotkeys from customHotkeys.js file",
+          },
+          {
+            action: "fillCanvasWhiteColor",
+            hotkey: "",
+            label: "Fill canvas with white color",
           },
           {
             action: "openBrushSetting",
