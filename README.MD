@@ -1,5 +1,3 @@
-## A fix for the new version of auto1111 will be introduced, it will be ready soon
-
 # Canvas Zoom
 
 An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
@@ -10,7 +8,10 @@ https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-
 
 ## Important Notes
 
+
 **This version of canvas-zoom only works with the March 25th and later versions of the WebUI.**
+
+**This extension also works with the May 1st version of the WebUI, and will no longer support the March 25th version in the future
 
 **If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
