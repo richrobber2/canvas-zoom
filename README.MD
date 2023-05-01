@@ -8,7 +8,6 @@ https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-
 
 ## Important Notes
 
-
 **This version of canvas-zoom only works with the March 25th and later versions of the WebUI.**
 
 **This extension also works with the May 1st version of the WebUI, and will no longer support the March 25th version in the future**
