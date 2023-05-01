@@ -1,7 +1,7 @@
+/* Context Menu */
 .context-menu {
   display: none;
   position: absolute;
-  background-color: #ffffff;
   border: 1px solid #ccc;
   padding: 8px;
   z-index: 1000;
@@ -15,7 +15,7 @@
 }
 
 .context-menu li {
-  font-size: 12px;
+  font-size: 13px;
   padding: 4px 6px;
   cursor: pointer;
 }
@@ -26,8 +26,26 @@
   padding: 4px 8px;
 }
 
-.context-menu li:hover {
+/* Light Theme Options */
+.cm-light {
+  background-color: #fff;
+  color: #000;
+}
+
+.cm-light li:hover {
   background-color: #f1f1f1;
+  color: #000;
+}
+
+/* dark theme options */
+.cm-dark {
+  background-color: #4d5967;
+  color: #d9d6d1
+}
+
+.cm-dark li:hover {
+  background-color: #3f4955;
+  color: #d9d6d1
 }
 
 /* Modal overlay */

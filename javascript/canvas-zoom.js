@@ -348,10 +348,19 @@ The higher the transparency level, the more transparent your mask will be:
 
     // This code creates a context menu as a div element and appends it to the body of the document,
     // and returns the resulting menu element.
+
+    /* the light theme uses rgba while dark uses rgb, this is absolutely a hack */
+    const themeName = getComputedStyle(
+      document.querySelector("body")
+    ).backgroundColor.includes("rgba")
+      ? "cm-light"
+      : "cm-dark";
+
     contextMenu = (() => {
       const menu = document.createElement("div");
       menu.style.listStyleType = "None";
-      menu.className = "context-menu";
+      /* the light theme uses rgba while dark uses rgb, this is absolutely a hack */
+      menu.className = "context-menu " + themeName;
       menu.style.zIndex = "999";
       document.body.appendChild(menu);
       return menu;
