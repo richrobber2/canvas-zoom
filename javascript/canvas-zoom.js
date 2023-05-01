@@ -1,63 +1,6 @@
 // Main
 onUiLoaded(() => {
   (async () => {
-    // Wait for the specified delay
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    class Toast {
-      constructor(message, duration) {
-        this.message = message;
-        this.duration = duration;
-        this.id = Toast.instances.length;
-        this.toast = document.createElement("div");
-        this.toast.className = "toast";
-        this.toast.setAttribute("data-id", this.id);
-        this.toast.innerText = this.message;
-        this.body = document.body;
-        this.body.appendChild(this.toast);
-        Toast.instances.push(this);
-      }
-
-      setMessage(message) {
-        this.message = message;
-        this.toast.innerText = this.message;
-        this.show();
-      }
-
-      show(duration = this.duration) {
-        this.toast.classList.add("show");
-
-        // Calculate the bottom position of the toast
-        const toasts = document.querySelectorAll(".toast.show");
-        const numToasts = toasts.length;
-        const offset = numToasts * (this.toast.offsetHeight + 10) + 20;
-        this.toast.style.bottom = `${offset}px`;
-
-        setTimeout(() => {
-          this.hide();
-        }, duration);
-      }
-
-      hide() {
-        this.toast.classList.remove("show");
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            this.toast.remove();
-            Toast.instances.splice(this.id, 1);
-          }, 500);
-        });
-      }
-    }
-
-    Toast.instances = [];
-
-    // toast to tell the user that the extentions is loaded
-    const toast = new Toast("Canvas Zoom is loaded", 3000);
-    toast.show();
-    // timout
-    setTimeout(() => {
-      toast.setMessage("reuse the toast");
-    }, 3000);
-
     // LocalStorage functions
     // Save the config to localStorage
     function saveConfigToLocalStorage(config) {
@@ -359,7 +302,6 @@ The higher the transparency level, the more transparent your mask will be:
     contextMenu = (() => {
       const menu = document.createElement("div");
       menu.style.listStyleType = "None";
-      /* the light theme uses rgba while dark uses rgb, this is absolutely a hack */
       menu.className = "context-menu " + themeName;
       menu.style.zIndex = "999";
       document.body.appendChild(menu);
