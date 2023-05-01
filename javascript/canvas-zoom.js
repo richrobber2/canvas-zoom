@@ -729,26 +729,6 @@ The higher the transparency level, the more transparent your mask will be:
         }
       });
 
-      // Cancel the traces on all keys except the left one
-      function disableCanvasTraces() {
-        let cancelTraceHandler = (e) => {
-          if (e.button !== 0) {
-            e.stopImmediatePropagation();
-          }
-        };
-
-        let canvas = targetElement.querySelector(`canvas[key="interface"]`);
-
-        if (canvas) {
-          if (!canvas.classList.contains("disableTrace")) {
-            canvas.addEventListener("mousedown", cancelTraceHandler, true);
-            canvas.classList.add("disableTrace");
-          }
-        }
-      }
-
-      targetElement.addEventListener("mousedown", disableCanvasTraces, true);
-
       // Manipulation with canvas , opacity mode
 
       // Simulate clicking and releasing the mouse on the canvas
@@ -1008,7 +988,10 @@ The higher the transparency level, the more transparent your mask will be:
         }
 
         targetElement.style.width = "";
-        targetElement.style.height = "";
+
+        if (canvas) {
+          targetElement.style.height = canvas.style.height;
+        }
       }
 
       // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
@@ -1064,14 +1047,6 @@ The higher the transparency level, the more transparent your mask will be:
 
       fileInput.addEventListener("click", function () {
         resetZoom();
-      });
-
-      fileInput.addEventListener("change", (e) => {
-        setTimeout(() => {
-          disableCanvasTraces();
-        }, 200);
-
-        isMouseOverCanvas = true;
       });
 
       // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables.
@@ -1352,28 +1327,6 @@ The higher the transparency level, the more transparent your mask will be:
       // Reset zoom when click on another tab
       img2imgTabs.addEventListener("click", (e) => {
         resetZoom();
-        if (e.target.classList.contains("svelte-1g805jl")) {
-          setTimeout(() => {
-            resetZoom();
-            disableCanvasTraces();
-
-            const canvas = document.querySelector(
-              `${elemId} canvas[key="interface"]`
-            );
-
-            if (canvas) {
-              canvas.addEventListener("mousemove", () => {
-                isMouseOverCanvas = true;
-              });
-
-              canvas.addEventListener("mouseleave", () => {
-                isMouseOverCanvas = false;
-              });
-            } else {
-              isMouseOverCanvas = true;
-            }
-          }, 0);
-        }
       });
 
       targetElement.addEventListener("wheel", (e) => {
@@ -1437,8 +1390,6 @@ The higher the transparency level, the more transparent your mask will be:
           e.preventDefault();
           updatePanPosition(e.movementX, e.movementY);
           targetElement.style.pointerEvents = "none";
-
-          disableCanvasTraces();
         }
       }
 
