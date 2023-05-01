@@ -261,8 +261,8 @@ The higher the transparency level, the more transparent your mask will be:
       alert("Custom hotkeys successfully loaded");
     }
 
-    function fillCanasWithWhite() {
-      localStorage.setItem("fillCanvasWhite", "true");
+    function fillCanasWithColor() {
+      localStorage.setItem("fillCanvasBrushColor", "true");
       contextMenu.style.display = "none";
     }
 
@@ -292,7 +292,7 @@ The higher the transparency level, the more transparent your mask will be:
       loadCustomHotkeys: () => loadCustomHotkeys(),
       toggleBrushOutline: () => toggleBrushOutline(),
       togglePipette: () => updateHotkeyAndSave("togglePipette", askForHotkey()),
-      fillCanvasWhiteColor: () => fillCanasWithWhite(),
+      fillCanvasColor: () => fillCanasWithColor(),
     };
 
     // This code creates a context menu as a div element and appends it to the body of the document,
@@ -448,9 +448,9 @@ The higher the transparency level, the more transparent your mask will be:
             label: "Load custom hotkeys from customHotkeys.js file",
           },
           {
-            action: "fillCanvasWhiteColor",
+            action: "fillCanvasColor",
             hotkey: "",
-            label: "Fill canvas with white color",
+            label: "Fill the canvas with the color of the brush",
           },
           {
             action: "openBrushSetting",

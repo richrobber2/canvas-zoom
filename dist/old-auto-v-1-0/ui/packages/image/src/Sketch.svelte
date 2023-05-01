@@ -362,9 +362,9 @@
 			localStorage.setItem("resetLines", "false");
 		}
 
-    if (localStorage.getItem("fillCanvasWhite") === "true") {
-      fill_canvas_white();
-      localStorage.setItem("fillCanvasWhite", false);
+    if (localStorage.getItem("fillCanvasBrushColor") === "true") {
+      fill_canvas_color();
+      localStorage.setItem("fillCanvasBrushColor", false);
     }
 
 		const { x, y } = get_pointer_pos(e);
@@ -682,15 +682,15 @@
 		}
 	}
 
-  function fill_canvas_white() {
+  function fill_canvas_color() {
     if (mode === "mask") {
       return;
     }
 
-    ctx.temp.fillStyle = "#FFFFFF";
+    ctx.temp.fillStyle = brush_color;
     ctx.temp.fillRect(0, 0, width, height);
 
-    ctx.drawing.fillStyle = "#FFFFFF";
+    ctx.drawing.fillStyle = brush_color;
     ctx.drawing.fillRect(0, 0, width, height);
 
     lines = [];
