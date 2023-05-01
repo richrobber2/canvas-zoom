@@ -40,7 +40,7 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 **Ctr + wheel** - Change brush size
 
-**S** - Zoom in on the canvas so that it fits into the screen
+**S** - Fullscreen mode, zoom in on the canvas so that it fits into the screen.
 
 **R** - Reset Zoom.
 
@@ -72,7 +72,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 5. In img2img in all tabs a new button "📏" has been added next to the width and height sliders. This button allows you to get the real width and height of the picture in 1 click.
 
-6. You can fill the canvas with any color, so choose "Fill the canvas with the color of the brush" in the context menu and the canvas will be painted with the color of the brush.
+6. You can fill the canvas with any color, so choose "Fill the canvas with the color of the brush" in the context menu and the canvas will be painted with the color of the brush. Works in Sketch and Inpaint Sketch
 
 ## Known bugs:
 
@@ -122,7 +122,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 **Ctr + колесо** - Изменить размер кисти
 
-**S** - Максимально увеличить холст так, чтобы он поместился на экране
+**S** - Полноэкранный режим. Максимально увеличить холст так, чтобы он поместился на экране
 
 **R** - Сброс зума.
 
@@ -154,7 +154,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 5. В img2img во всех вкладках добавилась новая кнопка "📏", которая находится рядом с ползунками width и height. Это кнопка позволяет получить ширину и высоту картинки в 1 клик.
 
-6. Вы можете залить canvas любым цветом, для этого в контекстном меню выберете "Fill the canvas with the color of the brush" и canvas окрасится цветом кисти.
+6. Вы можете залить canvas любым цветом, для этого в контекстном меню выберете "Fill the canvas with the color of the brush" и canvas окрасится цветом кисти. Работает в Sketch и Inpaint Sketch
 
 ## Известные баги:
 
