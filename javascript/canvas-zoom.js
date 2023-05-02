@@ -748,6 +748,68 @@ The higher the transparency level, the more transparent your mask will be:
         }
       });
 
+      // Improve work with images, clear browser cash
+      function getTabElFromText(tabName) {
+        tabName = tabName.trim().toLowerCase();
+        switch (tabName) {
+          case "inpaint":
+            return inpaintID;
+          case "sketch":
+            return sketchID;
+          case "inpaint sketch":
+            return inpaintSketchID;
+        }
+      }
+
+      // Get Send buttons by elemId
+      function getSendButtons(elemId) {
+        let tabString;
+
+        switch (elemId) {
+          case inpaintID:
+            tabString = "inpaint";
+            break;
+          case sketchID:
+            tabString = "sketch";
+            break;
+          case inpaintSketchID:
+            tabString = "inpaint_sketch";
+            break;
+        }
+
+        const queryString = "#img2img_copy_to_" + tabString;
+        return document.querySelectorAll(queryString + " button");
+      }
+
+      // Get sendBtn on every ApplyZoomAndPan
+      const sendButtons = getSendButtons(elemId);
+
+      // Set EventListener to clear cash every time when click buttons
+      sendButtons.forEach((button) => {
+        if (button.innerText === "img2img") return;
+
+        button.addEventListener("click", (e) => {
+          const sendToTabName = getTabElFromText(button.innerText);
+
+          if (sendToTabName) {
+            const closeBtn = document.querySelector(
+              `${sendToTabName} button[aria-label='Remove Image']`
+            );
+            if (closeBtn) {
+              closeBtn.click();
+            } else {
+              const oldCloseBtn = document.querySelector(
+                `${sendToTabName} button[aria-label='Clear']`
+              );
+
+              if (oldCloseBtn) {
+                oldCloseBtn.click();
+              }
+            }
+          }
+        });
+      });
+
       // Manipulation with canvas , opacity mode
 
       // Simulate clicking and releasing the mouse on the canvas
