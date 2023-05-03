@@ -34,7 +34,7 @@ if is_right_version:
     source_dir = os.path.join(canvasZoomPath,"dist", source_dir_name, 'templates', 'frontend')
     if not os.path.exists(source_dir):
         canvasZoomPath = os.path.dirname(os.path.realpath(__file__))
-        source_dir = os.path.join(canvasZoomPath, source_dir_name, 'templates', 'frontend')
+        source_dir = os.path.join(canvasZoomPath,"dist", source_dir_name, 'templates', 'frontend')
     
     destination_dir = os.path.join(gradioPath, 'templates', 'frontend')
     
