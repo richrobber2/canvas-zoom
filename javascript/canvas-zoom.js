@@ -112,20 +112,8 @@ onUiLoaded(() => {
      * Returns null if the user cancels the prompt.
      */
 
-    function askForHotkey() {
+    function askForHotkey(currentAction) {
       const validKeys = /^[A-Za-zА]{1}$/; // A regex pattern to match a string containing 'Key' followed by a single alphabetical character
-      const reservedKeys = [
-        hotkeysConfig.resetZoom,
-        hotkeysConfig.overlap,
-        hotkeysConfig.openBrushSetting,
-        hotkeysConfig.openBrushPanelUnderMouse,
-        hotkeysConfig.undo,
-        hotkeysConfig.moveKey,
-        hotkeysConfig.toggleCanvasOpacity,
-        hotkeysConfig.toggleBrushOpacity,
-        hotkeysConfig.fitToScreen,
-        hotkeysConfig.togglePipette,
-      ];
 
       let hotkey = "";
       let hotkeyCode = "";
@@ -149,12 +137,27 @@ onUiLoaded(() => {
         } else {
           hotkeyCode = "Key" + hotkey.toUpperCase();
 
-          if (reservedKeys.includes(hotkeyCode)) {
+          // Check for conflicts
+          const conflictingAction = Object.entries(hotkeysConfig).find(
+            ([action, key]) => action !== currentAction && key === hotkeyCode
+          );
+
+          if (conflictingAction) {
+            const [conflictingActionName, conflictingKey] = conflictingAction;
+            const currentActionKey = hotkeysConfig[currentAction];
+
             window.alert(
-              "This hotkey is not able to be used. Please enter a different hotkey."
+              `Hotkey conflict detected: '${hotkey.toUpperCase()}' is already assigned to '${conflictingActionName}'. The hotkeys will be swapped.`
             );
-            hotkey = "";
-            hotkeyCode = "";
+
+            // Swap hotkeys
+            hotkeysConfig[currentAction] = hotkeyCode;
+            hotkeysConfig[conflictingActionName] = currentActionKey;
+            updateConfigAndSave(currentAction, hotkeyCode);
+            updateConfigAndSave(conflictingActionName, currentActionKey);
+
+            contextMenu.style.display = "none";
+            return;
           }
         }
       }
@@ -266,6 +269,22 @@ The higher the transparency level, the more transparent your mask will be:
       contextMenu.style.display = "none";
     }
 
+    function toggleIntegrationWithControlNet() {
+      const isIntegrated =
+        localStorage.getItem("integrationCanvasZoomInControlNet") === "true";
+
+      console.log(isIntegrated);
+      if (!isIntegrated || isIntegrated === "false") {
+        alert("ControlNet Integration Enabled");
+        localStorage.setItem("integrationCanvasZoomInControlNet", true);
+        contextMenu.style.display = "none";
+      } else {
+        alert("ControlNet Integration Disabled");
+        localStorage.setItem("integrationCanvasZoomInControlNet", false);
+        contextMenu.style.display = "none";
+      }
+    }
+
     /**
      * An object containing several functions that update the hotkey configuration and save it when called.
      * Includes functions for undo, resetting zoom, overlapping images, opening brush settings and panels, and setting the move key.
@@ -273,26 +292,42 @@ The higher the transparency level, the more transparent your mask will be:
      */
 
     const actions = {
-      undo: () => updateHotkeyAndSave("undo", askForHotkey()),
-      resetZoom: () => updateHotkeyAndSave("resetZoom", askForHotkey()),
-      overlap: () => updateHotkeyAndSave("overlap", askForHotkey()),
-      fitToScreen: () => updateHotkeyAndSave("fitToScreen", askForHotkey()),
+      undo: () => updateHotkeyAndSave("undo", askForHotkey("undo")),
+      resetZoom: () =>
+        updateHotkeyAndSave("resetZoom", askForHotkey("resetZoom")),
+      overlap: () => updateHotkeyAndSave("overlap", askForHotkey("overlap")),
+      fitToScreen: () =>
+        updateHotkeyAndSave("fitToScreen", askForHotkey("fitToScreen")),
       openBrushSetting: () =>
-        updateHotkeyAndSave("openBrushSetting", askForHotkey()),
+        updateHotkeyAndSave(
+          "openBrushSetting",
+          askForHotkey("openBrushSetting")
+        ),
       openBrushPanelUnderMouse: () => {
-        updateHotkeyAndSave("openBrushPanelUnderMouse", askForHotkey());
+        updateHotkeyAndSave(
+          "openBrushPanelUnderMouse",
+          askForHotkey("openBrushPanelUnderMouse")
+        );
       },
-      setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey()),
+      setMoveKey: () => updateHotkeyAndSave("moveKey", askForHotkey("moveKey")),
       changeCanvasOpacityKey: () =>
-        updateHotkeyAndSave("toggleCanvasOpacity", askForHotkey()),
+        updateHotkeyAndSave(
+          "toggleCanvasOpacity",
+          askForHotkey("toggleCanvasOpacity")
+        ),
       changeBrushOpacityKey: () =>
-        updateHotkeyAndSave("toggleBrushOpacity", askForHotkey()),
+        updateHotkeyAndSave(
+          "toggleBrushOpacity",
+          askForHotkey("toggleBrushOpacity")
+        ),
       changeCanvasOpacityLevel: () => changeCanvasOpacityLevel(),
       changeBrushOpacityLevel: () => changeBrushOpacityLevel(),
       loadCustomHotkeys: () => loadCustomHotkeys(),
       toggleBrushOutline: () => toggleBrushOutline(),
-      togglePipette: () => updateHotkeyAndSave("togglePipette", askForHotkey()),
+      togglePipette: () =>
+        updateHotkeyAndSave("togglePipette", askForHotkey("togglePipette")),
       fillCanvasColor: () => fillCanasWithColor(),
+      toggleIntegration: () => toggleIntegrationWithControlNet(),
     };
 
     // This code creates a context menu as a div element and appends it to the body of the document,
@@ -327,7 +362,7 @@ The higher the transparency level, the more transparent your mask will be:
       const groupedItems = [
         {
           title: "Canvas Moving",
-          items: [items[10]],
+          items: [items[11]],
         },
         {
           title: "Control",
@@ -335,11 +370,11 @@ The higher the transparency level, the more transparent your mask will be:
         },
         {
           title: "Color panel",
-          items: items.slice(6, 10),
+          items: items.slice(7, 11),
         },
         {
           title: "Mask transparency",
-          items: items.slice(11),
+          items: items.slice(12),
         },
       ];
 
@@ -356,6 +391,13 @@ The higher the transparency level, the more transparent your mask will be:
                  items[5].hotkey.length - 1
                )}</b></span><b>
                ${items[5].label}
+               </b>
+             </li>` +
+        `<li data-action="${items[6].action}">
+               <span><b>${items[6].hotkey.charAt(
+                 items[6].hotkey.length - 1
+               )}</b></span><b>
+               ${items[6].label}
                </b>
              </li><hr>`;
 
@@ -374,10 +416,8 @@ The higher the transparency level, the more transparent your mask will be:
 
                 if (typeof item.hotkey === "boolean") {
                   return `<li data-action="${item.action}">
-               <span> Outline at Brush now  <b>${
-                 hotkeysConfig["brushOutline"] ? "Enabled" : "Disabled"
-               }</b> </span> 
-               Click to toggle outline
+                  <b>${hotkeysConfig["brushOutline"] ? "Disable" : "Enable"}</b>
+               <span>Brush Outline </span> 
              </li>`;
                 }
 
@@ -441,6 +481,12 @@ The higher the transparency level, the more transparent your mask will be:
             action: "fitToScreen",
             hotkey: hotkeysConfig.fitToScreen,
             label: "Fit to screen",
+          },
+          {
+            action: "toggleIntegration",
+            hotkey: "",
+            label:
+              "Enable integration with ControlNet (after enabling, reload the page)",
           },
           {
             action: "loadCustomHotkeys",
@@ -1393,16 +1439,24 @@ The higher the transparency level, the more transparent your mask will be:
       targetElement.addEventListener("auxclick", undoLastAction);
       targetElement.addEventListener("mousemove", getMousePosition);
       //Handle events only inside the targetElement
-      function handleMouseEnter() {
-        document.addEventListener("keydown", handleKeyDown);
+      let isKeyDownHandlerAttached = false;
+
+      function handleMouseOver() {
+        if (!isKeyDownHandlerAttached) {
+          document.addEventListener("keydown", handleKeyDown);
+          isKeyDownHandlerAttached = true;
+        }
       }
 
       function handleMouseLeave() {
-        document.removeEventListener("keydown", handleKeyDown);
+        if (isKeyDownHandlerAttached) {
+          document.removeEventListener("keydown", handleKeyDown);
+          isKeyDownHandlerAttached = false;
+        }
       }
 
       // Add mouse event handlers
-      targetElement.addEventListener("mouseenter", handleMouseEnter);
+      targetElement.addEventListener("mouseover", handleMouseOver);
       targetElement.addEventListener("mouseleave", handleMouseLeave);
 
       // Reset zoom when click on another tab
@@ -1495,5 +1549,45 @@ The higher the transparency level, the more transparent your mask will be:
     applyZoomAndPan(sketchEl, sketchID);
     applyZoomAndPan(inpaintEl, inpaintID);
     applyZoomAndPan(inpaintSketchEl, inpaintSketchID);
+
+    // Integration ControlNet
+    const integrateControlNet = localStorage.getItem(
+      "integrationCanvasZoomInControlNet"
+    );
+    if (integrateControlNet === "true") {
+      const contolNetMainID = "#controlnet";
+      const contolNetMainEl = document.querySelector(contolNetMainID);
+
+      contolNetMainEl.addEventListener(
+        "click",
+        async () => {
+          const maxElements = 5;
+          for (let i = 0; i < maxElements; i++) {
+            const ControlNetElID = `#txt2img_controlnet_ControlNet-${i}_input_image`;
+            const ControlNetEl = await waitForElement(ControlNetElID);
+            if (ControlNetEl) {
+              applyZoomAndPan(ControlNetEl, ControlNetElID);
+            }
+          }
+        },
+        { once: true }
+      );
+    }
   })();
+
+  // help func
+  // The function that returns the promis, which is resolved after the element appears on the page
+  function waitForElement(id) {
+    return new Promise((resolve) => {
+      const checkForElement = () => {
+        const element = document.querySelector(id);
+        if (element) {
+          resolve(element);
+        } else {
+          setTimeout(checkForElement, 100); // Checking every 100 ms
+        }
+      };
+      checkForElement();
+    });
+  }
 });

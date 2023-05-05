@@ -74,6 +74,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 6. You can fill the canvas with any color, so choose "Fill the canvas with the color of the brush" in the context menu and the canvas will be painted with the color of the brush. Works in Sketch and Inpaint Sketch
 
+7. If you are using ControlNet, you can enable integration with the extension in the context menu. After enabling it, reload the page
+
 ## Known bugs:
 
 1. If a white image appears when you cancel on the Hotkey, press the cancel hotkey again and the image will return.
@@ -159,6 +161,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 6. Вы можете залить canvas любым цветом, для этого в контекстном меню выберете "Fill the canvas with the color of the brush" и canvas окрасится цветом кисти. Работает в Sketch и Inpaint Sketch
 
+7. Если вы используете СontrolNet, вы можете включить интеграцию с расширением в контекстном меню. После включения перезагрузите страницу
+
 ## Известные баги:
 
 1. Если при отмене на горячей клавише появляется белое изображение, нажмите горячую клавишу отмены еще раз, и изображение вернется.
@@ -171,4 +175,4 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 5. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера до 100% и все будет отлично.
 
-6. Это не мой баг, проблема связана с webui automatic1111. Если не закрыть изображение в inpaint и перенести его в inpaint снова любым способом, маска остается.  **Проблема решена в последним обновлении**
+6. Это не мой баг, проблема связана с webui automatic1111. Если не закрыть изображение в inpaint и перенести его в inpaint снова любым способом, маска остается. **Проблема решена в последним обновлении**
