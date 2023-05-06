@@ -273,7 +273,6 @@ The higher the transparency level, the more transparent your mask will be:
       const isIntegrated =
         localStorage.getItem("integrationCanvasZoomInControlNet") === "true";
 
-      console.log(isIntegrated);
       if (!isIntegrated || isIntegrated === "false") {
         alert("ControlNet Integration Enabled");
         localStorage.setItem("integrationCanvasZoomInControlNet", true);
@@ -1441,7 +1440,7 @@ The higher the transparency level, the more transparent your mask will be:
       //Handle events only inside the targetElement
       let isKeyDownHandlerAttached = false;
 
-      function handleMouseOver() {
+      function handleMouseMove() {
         if (!isKeyDownHandlerAttached) {
           document.addEventListener("keydown", handleKeyDown);
           isKeyDownHandlerAttached = true;
@@ -1456,7 +1455,7 @@ The higher the transparency level, the more transparent your mask will be:
       }
 
       // Add mouse event handlers
-      targetElement.addEventListener("mouseover", handleMouseOver);
+      targetElement.addEventListener("mousemove", handleMouseMove);
       targetElement.addEventListener("mouseleave", handleMouseLeave);
 
       // Reset zoom when click on another tab
