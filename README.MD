@@ -14,7 +14,7 @@ https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-
 
 **If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
-**You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/daswer123/canvas-zoom-showcase)**
+**You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/richrobber2/canvas-zoom/wiki/Functionality)**
 
 **The extension description also available in <a href="#ru"> RU </a> language:**
 
