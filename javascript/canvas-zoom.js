@@ -868,15 +868,23 @@ onUiLoaded(() => {
        * zoomLevel, panX, and panY to reflect the new state.
        */
 
-      function fitElement(isFullScreen) {
-        resetZoom();
+      function fitToElement() {
+        //Reset Zoom
+        targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
 
+        // Get element and screen dimensions
         const elementWidth = targetElement.offsetWidth;
         const elementHeight = targetElement.offsetHeight;
+        const parentElement = targetElement.parentElement;
+        const screenWidth = parentElement.clientWidth;
+        const screenHeight = parentElement.clientHeight;
 
-        const screenWidth = isFullScreen ? window.innerWidth : targetElement.parentElement.clientWidth;
-        const screenHeight = isFullScreen ? window.innerHeight : targetElement.parentElement.clientHeight;
+        // Get element's coordinates relative to the parent element
+        const elementRect = targetElement.getBoundingClientRect();
+        const parentRect = parentElement.getBoundingClientRect();
+        const elementX = elementRect.x - parentRect.x;
 
+        // Calculate scale and offsets
         const scaleX = screenWidth / elementWidth;
         const scaleY = screenHeight / elementHeight;
         const scale = Math.min(scaleX, scaleY);
@@ -886,23 +894,17 @@ onUiLoaded(() => {
         const originXValue = parseFloat(originX);
         const originYValue = parseFloat(originY);
 
-        const elementRect = targetElement.getBoundingClientRect();
-        const elementX = isFullScreen ? elementRect.x : elementRect.x - targetElement.parentElement.getBoundingClientRect().x;
-        const elementY = elementRect.y;
+        const offsetX = (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
+        const offsetY = (screenHeight - elementHeight * scale) / 2.5 - originYValue * (1 - scale);
 
-        const offsetX = (screenWidth - elementWidth * scale) / 2 - elementX - originXValue * (1 - scale);
-        const offsetY = (screenHeight - elementHeight * scale) / (isFullScreen ? 2 : 2.5) - elementY - originYValue * (1 - scale);
-
+        // Apply scale and offsets to the element
         targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 
+        // Update global variables
         zoomLevel = scale;
         panX = offsetX;
         panY = offsetY;
-        toggleOverlap(isFullScreen ? "on" : "off");
-      }
-
-      function fitToElement() {
-        fitElement(false);
+        toggleOverlap("off");
       }
 
       function fitToScreen() {
@@ -920,7 +922,44 @@ onUiLoaded(() => {
           return;
         }
 
-        fitElement(true);
+        resetZoom();
+
+        // Get element and screen dimensions
+        const elementWidth = targetElement.offsetWidth;
+        const elementHeight = targetElement.offsetHeight;
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        // Get element's coordinates relative to the page
+        const elementRect = targetElement.getBoundingClientRect();
+        const elementY = elementRect.y;
+        const elementX = elementRect.x;
+
+        // Calculate scale and offsets
+        const scaleX = screenWidth / elementWidth;
+        const scaleY = screenHeight / elementHeight;
+        const scale = Math.min(scaleX, scaleY);
+
+        // Get the current transformOrigin
+        const computedStyle = window.getComputedStyle(targetElement);
+        const transformOrigin = computedStyle.transformOrigin;
+        const [originX, originY] = transformOrigin.split(" ");
+        const originXValue = parseFloat(originX);
+        const originYValue = parseFloat(originY);
+
+        // Calculate offsets with respect to the transformOrigin
+        const offsetX = (screenWidth - elementWidth * scale) / 2 - elementX - originXValue * (1 - scale);
+        const offsetY = (screenHeight - elementHeight * scale) / 2 - elementY - originYValue * (1 - scale);
+
+        // Apply scale and offsets to the element
+        targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+
+        // Update global variables
+        zoomLevel = scale;
+        panX = offsetX;
+        panY = offsetY;
+
+        toggleOverlap("on");
         fullScreenMode = true;
       }
 
