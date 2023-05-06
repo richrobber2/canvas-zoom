@@ -579,40 +579,39 @@ onUiLoaded(() => {
       let [zoomLevel, panX, panY] = [1, 0, 0];
       let fullScreenMode = false;
 
-      getImgDataBtn.addEventListener("click", (e) => {
+      getImgDataBtn.addEventListener("click", () => {
         const tabID = getTabId();
-        const [canvas, img, imgUpload] = [
-          document.querySelector(`${tabID} canvas`),
-          elements.img2imgImage.querySelector("img"),
-          elements.imgInpaintBase.querySelector("img"),
-        ];
+        const canvas = document.querySelector(`${tabID} canvas`);
+        const img = document.querySelector("#img2img_image img");
+        const imgUpload = document.querySelector("#img_inpaint_base img");
 
-        const [rangeWidth, rangeHeight, inputWidth, inputHeight] = [
-          document.querySelector("#img2img_width input[type='range']"),
-          document.querySelector("#img2img_height input[type='range']"),
-          document.querySelector("#img2img_width input[type='number']"),
-          document.querySelector("#img2img_height input[type='number']"),
-        ];
+        let rightWidth, rightHeight;
 
-        const [rightWidth, rightHeight] = (() => {
-          if (img) return [img.naturalWidth, img.naturalHeight];
-          if (canvas) return [canvas.width, canvas.height];
-          if (getActiveTab().innerText === "Inpaint upload") return [imgUpload.naturalWidth, imgUpload.naturalHeight];
-          return [null, null];
-        })();
+        if (img) {
+          rightWidth = img.naturalWidth;
+          rightHeight = img.naturalHeight;
+        } else if (canvas && tabID) {
+          rightWidth = canvas.width;
+          rightHeight = canvas.height;
+        } else if (getActiveTab().innerText === "Inpaint upload") {
+          rightWidth = imgUpload.naturalWidth;
+          rightHeight = imgUpload.naturalHeight;
+        }
 
-        if (rightWidth !== null && rightHeight !== null) {
-          [rangeWidth.value, rangeHeight.value, inputWidth.value, inputHeight.value] = [rightWidth, rightHeight];
+        if (rightWidth && rightHeight) {
+          const [rangeWidth, rangeHeight] = document.querySelectorAll("#img2img_width input[type='range'], #img2img_height input[type='range']");
+          const [inputWidth, inputHeight] = document.querySelectorAll("#img2img_width input[type='number'], #img2img_height input[type='number']");
 
-          // Создание и отправка события изменения (change) для элементов rangeWidth и rangeHeight
+          rangeWidth.value = inputWidth.value = rightWidth;
+          rangeHeight.value = inputHeight.value = rightHeight;
+
           const changeEvent = new Event("change");
-          rangeWidth.dispatchEvent(changeEvent);
-          rangeHeight.dispatchEvent(changeEvent);
-
-          // Создание и отправка события ввода (input) для элементов inputWidth и inputHeight
           const inputEvent = new Event("input");
-          inputWidth.dispatchEvent(inputEvent);
-          inputHeight.dispatchEvent(inputEvent);
+
+          for (const el of [rangeWidth, rangeHeight, inputWidth, inputHeight]) {
+            el.dispatchEvent(changeEvent);
+            el.dispatchEvent(inputEvent);
+          }
         }
       });
 
