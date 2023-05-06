@@ -14,7 +14,7 @@ https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-
 
 **If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
-**You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/daswer123/canvas-zoom-showcase)**
+**You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/richrobber2/canvas-zoom/wiki/Functionality)**
 
 **The extension description also available in <a href="#ru"> RU </a> language:**
 
@@ -86,7 +86,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 4. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
 
-5. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser scale to 100% and everything will be fine.
+5. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser and windows scale to 100% and everything will be fine.
 
 6. This is not my bug, the problem is with webui automatic1111. If you don't close the image in inpaint and transfer it to inpaint again in any way, the mask remains. **The problem was solved in the latest update**
 
@@ -173,6 +173,6 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 4. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
 
-5. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера до 100% и все будет отлично.
+5. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера и windows до 100% и все будет отлично.
 
 6. Это не мой баг, проблема связана с webui automatic1111. Если не закрыть изображение в inpaint и перенести его в inpaint снова любым способом, маска остается. **Проблема решена в последним обновлении**
