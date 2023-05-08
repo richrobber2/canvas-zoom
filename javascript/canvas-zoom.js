@@ -1154,12 +1154,17 @@ onUiLoaded(() => {
       contolNetMainEl.addEventListener(
         "click",
         async () => {
-          const maxElements = 5;
+          const maxElements = 10;
           for (let i = 0; i < maxElements; i++) {
-            const ControlNetElID = `#txt2img_controlnet_ControlNet-${i}_input_image`;
-            const ControlNetEl = await waitForElement(ControlNetElID);
-            if (ControlNetEl) {
-              applyZoomAndPan(ControlNetEl, ControlNetElID);
+            const t2iControlNetElID = `#txt2img_controlnet_ControlNet-${i}_input_image`;
+            const t2iControlNetEl = await waitForElement(t2iControlNetElID);
+            if (t2iControlNetEl) {
+              applyZoomAndPan(t2iControlNetEl, t2iControlNetElID);
+            }
+            const i2iControlNetElID = `#img2img_controlnet_ControlNet-${i}_input_image`;
+            const i2iControlNetEl = await waitForElement(i2iControlNetElID);
+            if (i2iControlNetEl) {
+              applyZoomAndPan(i2iControlNetEl, i2iControlNetElID);
             }
           }
         },
