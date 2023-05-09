@@ -1160,11 +1160,17 @@ onUiLoaded(() => {
             const t2iControlNetEl = await waitForElement(t2iControlNetElID);
             if (t2iControlNetEl) {
               applyZoomAndPan(t2iControlNetEl, t2iControlNetElID);
+            } else {
+              break;
             }
+          }
+          for (let i = 0; i < maxElements; i++) {
             const i2iControlNetElID = `#img2img_controlnet_ControlNet-${i}_input_image`;
             const i2iControlNetEl = await waitForElement(i2iControlNetElID);
             if (i2iControlNetEl) {
               applyZoomAndPan(i2iControlNetEl, i2iControlNetElID);
+            } else {
+              break;
             }
           }
         },
