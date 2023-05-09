@@ -1148,10 +1148,12 @@ onUiLoaded(() => {
     // Integration ControlNet
     const integrateControlNet = localStorage.getItem("integrationCanvasZoomInControlNet");
     if (integrateControlNet === "true") {
-      const contolNetMainID = "#controlnet";
-      const contolNetMainEl = document.querySelector(contolNetMainID);
+      const t2icontolNetMainID = "#txt2img_controlnet";
+      const t2icontolNetMainEl = document.querySelector(t2icontolNetMainID);
+      const i2icontolNetMainID = "#img2img_controlnet";
+      const i2icontolNetMainEl = document.querySelector(i2icontolNetMainID);
 
-      contolNetMainEl.addEventListener(
+      t2icontolNetMainEl.addEventListener(
         "click",
         async () => {
           const maxElements = 10;
@@ -1164,6 +1166,14 @@ onUiLoaded(() => {
               break;
             }
           }
+        },
+        { once: true }
+      );
+
+      i2icontolNetMainEl.addEventListener(
+        "click",
+        async () => {
+          const maxElements = 10;
           for (let i = 0; i < maxElements; i++) {
             const i2iControlNetElID = `#img2img_controlnet_ControlNet-${i}_input_image`;
             const i2iControlNetEl = await waitForElement(i2iControlNetElID);
