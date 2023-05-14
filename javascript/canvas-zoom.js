@@ -381,7 +381,7 @@ onUiLoaded(() => {
         {
           action: "toggleIntegration",
           hotkey: "",
-          label: "Enable integration with ControlNet (after enabling, reload the page)",
+          label: "Enable integration with ControlNet and Regional Prompter (after enabling, reload the page)",
         },
         {
           action: "loadCustomHotkeys",
@@ -1182,6 +1182,25 @@ onUiLoaded(() => {
             } else {
               break;
             }
+          }
+        },
+        { once: true }
+      );
+    }
+
+    // Integration with Regional Prompter
+    if (integrateControlNet === "true") {
+      const RPId = "#RP_main";
+      const RPEl = document.querySelector(RPId);
+
+      RPEl.addEventListener(
+        "click",
+        async (e) => {
+          const RPMaskId = "#polymask";
+          const RPMaskEl = await waitForElement(RPMaskId);
+
+          if (RPMaskEl) {
+            applyZoomAndPan(RPMaskEl, RPMaskId);
           }
         },
         { once: true }
