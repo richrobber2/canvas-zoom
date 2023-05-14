@@ -4,7 +4,7 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
-**The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
+**The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0)  And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
 https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-bd14-c352c0635522.mp4
 
@@ -92,7 +92,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 # RU
 
-**Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
+**Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
 ## Важные замечания
 
