@@ -7,7 +7,9 @@
 
 <div>
   <IconButton Icon={Undo} label="Undo" on:click={() => dispatch("undo")} />
-  <IconButton Icon={Copy} label="Redraw" on:click={() => dispatch("redraw")} />
+  <span class="hide_redraw">
+    <IconButton Icon={Copy} label="Redraw" on:click={() => dispatch("redraw")} />
+  </span>
 
   {#if true}
     <IconButton
@@ -41,7 +43,7 @@
     z-index: var(--layer-5);
   }
 
-  button[aria-label="Redraw"] {
+  .hide_redraw {
     display: none;
   }
 </style>

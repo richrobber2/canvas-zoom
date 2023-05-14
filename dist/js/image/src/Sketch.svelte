@@ -407,11 +407,7 @@
       add_lr_border = shape_ratio < container_ratio;
     }
 
-    if (
-      width === old_width &&
-      height === old_height &&
-      old_container_height === container_height
-    ) {
+    if (width === old_width && height === old_height && old_container_height === container_height) {
       return;
     }
     const dimensions = { width: width, height: height };
@@ -592,7 +588,7 @@
   }
 
   function getPixelColor(x, y) {
-    const imageData = ctx.drawing.getImageData(x, y, 1, 1);
+    const imageData = ctx.drawing.getImageData(x - 1, y, 1, 1);
     const [r, g, b, a] = imageData.data;
     return `rgb(${r}, ${g}, ${b})`;
   }
@@ -673,12 +669,7 @@
     ctx.temp.fillRect(0, 0, width, height);
 
     if (mode === "mask") {
-      ctx.temp_fake.clearRect(
-        0,
-        0,
-        canvas.temp_fake.width,
-        canvas.temp_fake.height
-      );
+      ctx.temp_fake.clearRect(0, 0, canvas.temp_fake.width, canvas.temp_fake.height);
       ctx.mask.clearRect(0, 0, width, height);
       ctx.mask.fillStyle = "#000";
       ctx.mask.fillRect(0, 0, width, height);
@@ -693,11 +684,32 @@
     ctx.temp.fillStyle = brush_color;
     ctx.temp.fillRect(0, 0, width, height);
 
-    ctx.drawing.fillStyle = brush_color;
-    ctx.drawing.fillRect(0, 0, width, height);
+    var startX = 0; // start point of the line (x-coordinate)
+    var startY = height / 2; // start point of the line (y-coordinate)
+    var endX = width; // end point of the line (x-coordinate)
+    var endY = height / 2; // end point of the line (y-coordinate)
 
-    lines = [];
-    line_count = 0;
+    ctx.drawing.beginPath();
+    ctx.drawing.moveTo(startX, startY);
+    ctx.drawing.lineTo(endX, endY);
+    ctx.drawing.strokeStyle = brush_color;
+    ctx.drawing.lineWidth = height; // make the line height of the canvas
+    ctx.drawing.stroke();
+
+    // Save line as two points in the lines array
+    lines = [
+      {
+        points: [
+          { x: startX, y: startY },
+          { x: endX, y: endY },
+        ],
+        brush_color: brush_color,
+        brush_radius: height,
+      },
+    ];
+    line_count = 1;
+
+    saveLine();
   }
 
   let loop = ({ once = false } = {}) => {
@@ -761,22 +773,13 @@
   };
 
   export function get_image_data() {
-    return mode === "mask"
-      ? canvas.mask.toDataURL("image/jpg")
-      : canvas.drawing.toDataURL("image/jpg");
+    return mode === "mask" ? canvas.mask.toDataURL("image/jpg") : canvas.drawing.toDataURL("image/jpg");
   }
 </script>
 
-<div
-  class="wrap"
-  bind:this={canvas_container}
-  bind:offsetWidth={canvas_width}
-  bind:offsetHeight={canvas_height}
->
+<div class="wrap" bind:this={canvas_container} bind:offsetWidth={canvas_width} bind:offsetHeight={canvas_height}>
   {#if line_count === 0}
-    <div transition:fade={{ duration: 50 }} class="start-prompt">
-      Start drawing
-    </div>
+    <div transition:fade={{ duration: 50 }} class="start-prompt">Start drawing</div>
   {/if}
   {#each canvas_types as { name, zIndex }}
     <canvas
