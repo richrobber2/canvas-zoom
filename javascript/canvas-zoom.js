@@ -566,19 +566,24 @@ onUiLoaded(() => {
     //Apply zoom and pan functionality to a target element
 
     // Add button to img2img to get width and height
-    const clonedDiv = elements.img2imgDemRaw.children[0].cloneNode(true);
-    clonedDiv.classList.add("get-img-dem");
-    const getImgDataBtn = clonedDiv.querySelector("button");
-    getImgDataBtn.innerHTML = "<i>📏</i>";
-    getImgDataBtn.id = "img2img_res_get_btn";
-    getImgDataBtn.title = "Get the width and height from the picture";
-    elements.img2imgDemRaw.appendChild(clonedDiv);
+    const isGetSizeImgBtnExists = document.querySelector("#img2img_detect_image_size_btn");
 
+    if(!isGetSizeImgBtnExists){
+      const clonedDiv = elements.img2imgDemRaw.children[0].cloneNode(true);
+      clonedDiv.classList.add("get-img-dem");
+      const getImgDataBtn = clonedDiv.querySelector("button");
+      getImgDataBtn.innerHTML = "<i>📏</i>";
+      getImgDataBtn.id = "img2img_res_get_btn";
+      getImgDataBtn.title = "Get the width and height from the picture";
+      elements.img2imgDemRaw.appendChild(clonedDiv);
+    }
+    
     // Zoom And Pan
     function applyZoomAndPan(targetElement, elemId) {
       let [zoomLevel, panX, panY] = [1, 0, 0];
       let fullScreenMode = false;
 
+      if(!isGetSizeImgBtnExists){
       getImgDataBtn.addEventListener("click", () => {
         const tabID = getTabId();
         const canvas = document.querySelector(`${tabID} canvas`);
@@ -614,6 +619,7 @@ onUiLoaded(() => {
           }
         }
       });
+    }
 
       function getTabElFromText(tabName) {
         const tabMap = {
