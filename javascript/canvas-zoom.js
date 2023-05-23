@@ -730,7 +730,7 @@ onUiLoaded(() => {
       // Undo last action
       function undoLastAction(e) {
         const isUndoKey = e.code === hotkeysConfig.undo;
-        const isCtrlPressed = e.ctrlKey;
+        const isCtrlPressed = e.ctrlKey || e.metaKey;
         const isAuxButton = e.button >= 3;
         const activeTab = getTabId();
 
@@ -1051,7 +1051,7 @@ onUiLoaded(() => {
         changeZoomLevel(operation, e);
 
         // Handle brush size adjustment with ctrl key pressed
-        if (e.ctrlKey) {
+        if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
 
           // Increase or decrease brush size based on scroll direction
@@ -1087,7 +1087,7 @@ onUiLoaded(() => {
        */
       function handleMoveKeyDown(e) {
         if (e.code === hotkeysConfig.moveKey) {
-          if(!e.ctrlKey){
+          if(!e.ctrlKey  && !e.metaKey){
             isMoving = true;
           }
         }
