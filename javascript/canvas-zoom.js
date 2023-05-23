@@ -1087,7 +1087,9 @@ onUiLoaded(() => {
        */
       function handleMoveKeyDown(e) {
         if (e.code === hotkeysConfig.moveKey) {
-          isMoving = true;
+          if(!e.ctrlKey){
+            isMoving = true;
+          }
         }
       }
 
