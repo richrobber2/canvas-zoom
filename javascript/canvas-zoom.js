@@ -1162,6 +1162,7 @@ onUiLoaded(() => {
       const i2icontolNetMainID = "#img2img_controlnet";
       const i2icontolNetMainEl = document.querySelector(i2icontolNetMainID);
 
+      if(t2icontolNetMainEl){
       t2icontolNetMainEl.addEventListener(
         "click",
         async () => {
@@ -1177,8 +1178,9 @@ onUiLoaded(() => {
           }
         },
         { once: true }
-      );
+      )};
 
+      if(i2icontolNetMainEl){
       i2icontolNetMainEl.addEventListener(
         "click",
         async () => {
@@ -1195,13 +1197,14 @@ onUiLoaded(() => {
         },
         { once: true }
       );
-    }
+      }}
 
     // Integration with Regional Prompter
     if (integrateControlNet === "true") {
       const RPId = "#RP_main";
       const RPEl = document.querySelector(RPId);
 
+      if(RPEl){
       RPEl.addEventListener(
         "click",
         async (e) => {
@@ -1216,6 +1219,8 @@ onUiLoaded(() => {
       );
     }
   }
+}
+  
 
   init();
 });
