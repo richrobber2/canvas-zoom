@@ -6,7 +6,7 @@ That's why it turns out that the extension weighs so much ~140mb.
 35mb new version, 35 mb old version, and git folder another 70mb. 
 
 # Folder Assignment
-- **templates** ( Modified Gradio 3.28.1 )
+- **templates** ( Modified Gradio 3.31.0 )
 - **old-auto-v-1-0** ( Modified Gradio 3.23 )  For those who don't want to upgrade
 - **js** ( The original gradio files I changed )
 
@@ -22,7 +22,7 @@ scripts\build_frontend.sh
 4) After you are done, go to gradio folder inside of the gradio source code and copy templates folder to dist folder inside of the extension
 5) Restart webui extension will replace the files by itself and you will see the change
 
-The folder where you work with the canvas : gradio-3.28.1\js\image\src
+The folder where you work with the canvas : gradio-3.31.0\js\image\src
 
 https://user-images.githubusercontent.com/22278673/236323481-e60c5043-e07e-44dc-949d-b2f7163fc408.mp4
 
