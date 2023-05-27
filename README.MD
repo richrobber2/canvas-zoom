@@ -12,6 +12,8 @@ https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-
 
 **Webui versions earlier than March 25th are not supported**
 
+**After installation, be sure to restart webui**
+
 **If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
 **You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/richrobber2/canvas-zoom/wiki/Functionality)**
@@ -70,7 +72,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 4. You can select the color of the mask in Inpaint and the color of all your lines will change to the color of the mask
 
-5. In img2img in all tabs a new button "📏" has been added next to the width and height sliders. This button allows you to get the real width and height of the picture in 1 click.
+5. In img2img in all tabs a new button "📏" has been added next to the width and height sliders. This button allows you to get the real width and height of the picture in 1 click. Removed from webui 1.3 and higher because a native solution is now available.
 
 6. You can fill the canvas with any color, so choose "Fill the canvas with the color of the brush" in the context menu and the canvas will be painted with the color of the brush. Works in Sketch and Inpaint Sketch
 
@@ -95,6 +97,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 **Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
 ## Важные замечания
+
+**После установки обязательно перезапустите webui**
 
 **Если расширение не работает проверьте страницу с решением частых проблем https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
@@ -157,7 +161,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 4. Вы можете выбрать цвет маски в Inpaint, и цвет всех ваших линий изменится на цвет маски
 
-5. В img2img во всех вкладках добавилась новая кнопка "📏", которая находится рядом с ползунками width и height. Это кнопка позволяет получить ширину и высоту картинки в 1 клик.
+5. В img2img во всех вкладках добавилась новая кнопка "📏", которая находится рядом с ползунками width и height. Это кнопка позволяет получить ширину и высоту картинки в 1 клик. Удалено из webui 1.3 и выше, поскольку теперь доступно нативное решение
 
 6. Вы можете залить canvas любым цветом, для этого в контекстном меню выберете "Fill the canvas with the color of the brush" и canvas окрасится цветом кисти. Работает в Sketch и Inpaint Sketch
 
