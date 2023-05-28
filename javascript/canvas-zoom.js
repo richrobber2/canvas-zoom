@@ -911,6 +911,8 @@ onUiLoaded(() => {
         zoomLevel = scale;
         panX = offsetX;
         panY = offsetY;
+
+        fullScreenMode = false;
         toggleOverlap("off");
       }
 
@@ -929,7 +931,8 @@ onUiLoaded(() => {
           return;
         }
 
-        resetZoom();
+        //Reset Zoom
+        targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
 
         // Get element and screen dimensions
         const elementWidth = targetElement.offsetWidth;
@@ -1044,6 +1047,12 @@ onUiLoaded(() => {
 
       // Reset zoom when click on another tab
       elements.img2imgTabs.addEventListener("click", resetZoom);
+      elements.img2imgTabs.addEventListener("click", () => {
+        // targetElement.style.width = "";
+        if (parseInt(targetElement.style.width) > 865) {
+            setTimeout(fitToElement, 0);
+        }
+    });
 
       targetElement.addEventListener("wheel", (e) => {
         // change zoom level
