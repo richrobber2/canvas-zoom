@@ -48,6 +48,7 @@ onUiLoaded(() => {
     let isMoving = false;
     let contextMenu;
     let mouseX, mouseY;
+    let inpaintBrushColor = localStorage.getItem("brush_color")
 
     // Variables for canvas and brush opacity
     let canvasOpacity = 1;
@@ -200,6 +201,29 @@ onUiLoaded(() => {
       contextMenu.style.display = "none";
     }
 
+    function setDefaultInpaintColor(){
+
+      function isValidHexColor(hex) {
+        const regex = /^#([0-9A-Fa-f]{3}){1,2}$/;
+        return regex.test(hex);
+      }
+
+      const defaultInpaintBrushColor = prompt(`
+        Enter the color that will be in inpaint by default.
+        Enter the color in HEX format, 
+        for example white color will be: "#FFFFFF". 
+      `, "#FFFFFF")
+
+      if (!isValidHexColor(defaultInpaintBrushColor)) {
+        alert("Invalid HEX color code! Please try again.");
+        return;
+      }
+
+      inpaintBrushColor = defaultInpaintBrushColor;
+      localStorage.setItem("brush_color", defaultInpaintBrushColor);
+
+    }
+
     function toggleIntegrationWithControlNet() {
       const isIntegrated = localStorage.getItem("integrationCanvasZoomInControlNet") === "true";
 
@@ -237,6 +261,7 @@ onUiLoaded(() => {
       togglePipette: () => updateHotkeyAndSave("togglePipette", askForHotkey("togglePipette")),
       fillCanvasColor: fillCanvasWithColor,
       toggleIntegration: toggleIntegrationWithControlNet,
+      setDefaultInpaintColor: setDefaultInpaintColor
     };
 
     // This code creates a context menu as a div element and appends it to the body of the document,
@@ -268,7 +293,7 @@ onUiLoaded(() => {
       const groupedItems = [
         {
           title: "Canvas Moving",
-          items: [fakeItems[11]],
+          items: [fakeItems[12]],
         },
         {
           title: "Control",
@@ -276,11 +301,11 @@ onUiLoaded(() => {
         },
         {
           title: "Color panel",
-          items: fakeItems.slice(7, 11),
+          items: fakeItems.slice(7, 12),
         },
         {
           title: "Mask transparency",
-          items: fakeItems.slice(12),
+          items: fakeItems.slice(13),
         },
       ];
 
@@ -319,6 +344,13 @@ onUiLoaded(() => {
                   <b>${hotkeysConfig["brushOutline"] ? "Disable" : "Enable"}</b>
                <span>Brush Outline </span> 
              </li>`;
+                }
+
+                if(item.hotkey === "Custom"){
+                return  `<li data-action="${item.action}">
+                        <span><b>Set default inpaint brush color </b></span> 
+                        ${item.label}
+                    </li>`;
                 }
 
                 return `<li data-action="${item.action}">
@@ -412,6 +444,11 @@ onUiLoaded(() => {
           action: "toggleBrushOutline",
           hotkey: hotkeysConfig.brushOutline,
           label: " .Click to toggle brush outline",
+        },
+        {
+          action: "setDefaultInpaintColor",
+          hotkey: "Custom",
+          label: `<span style='background: ${inpaintBrushColor}'>ㅤㅤ</span>`,
         },
         {
           action: "setMoveKey",
