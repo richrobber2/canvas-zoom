@@ -201,28 +201,49 @@ onUiLoaded(() => {
       contextMenu.style.display = "none";
     }
 
-    function setDefaultInpaintColor(){
-
+    function setDefaultInpaintColor(event) {
       function isValidHexColor(hex) {
         const regex = /^#([0-9A-Fa-f]{3}){1,2}$/;
         return regex.test(hex);
       }
+    
+      // Create an input element for color selection
+      let colorInput = document.createElement('input');
+      colorInput.type = 'color';
+      colorInput.value = inpaintBrushColor; 
+    
+      // Placing the input under the mouse cursor
+      colorInput.style.position = 'fixed';
+      colorInput.style.left = `${event.clientX-5}px`;
+      colorInput.style.top = `${event.clientY-30}px`;
+      colorInput.style.visibility = 'hidden'
+    
+      // When you change the color, check its validity and save it
+      colorInput.addEventListener('change', function() {
+        let color = this.value;
+        inpaintBrushColor = color;
 
-      const defaultInpaintBrushColor = prompt(`
-        Enter the color that will be in inpaint by default.
-        Enter the color in HEX format, 
-        for example white color will be: "#FFFFFF". 
-      `, "#FFFFFF")
-
-      if (!isValidHexColor(defaultInpaintBrushColor)) {
-        alert("Invalid HEX color code! Please try again.");
-        return;
-      }
-
-      inpaintBrushColor = defaultInpaintBrushColor;
-      localStorage.setItem("brush_color", defaultInpaintBrushColor);
-
+        if (!isValidHexColor(color)) {
+          alert("Invalid HEX color code! Please try again.");
+          return;
+        }
+    
+        alert(`You have successfully changed the color to ${color}`)
+        localStorage.setItem("brush_color", color);
+    
+        // Removing the input element after selecting a color
+        this.remove();
+      });
+    
+      // Add an input to the body of the document so the user can see it
+      document.body.appendChild(colorInput);
+    
+      setTimeout(() => {
+        colorInput.click();
+      }, 0)
     }
+    
+    
 
     function toggleIntegrationWithControlNet() {
       const isIntegrated = localStorage.getItem("integrationCanvasZoomInControlNet") === "true";
@@ -261,7 +282,7 @@ onUiLoaded(() => {
       togglePipette: () => updateHotkeyAndSave("togglePipette", askForHotkey("togglePipette")),
       fillCanvasColor: fillCanvasWithColor,
       toggleIntegration: toggleIntegrationWithControlNet,
-      setDefaultInpaintColor: setDefaultInpaintColor
+      setDefaultInpaintColor: (e) => setDefaultInpaintColor(e)
     };
 
     // This code creates a context menu as a div element and appends it to the body of the document,
@@ -353,6 +374,13 @@ onUiLoaded(() => {
                     </li>`;
                 }
 
+                if(item.action === "undo"){
+                  return  `<li data-action="${item.action}">
+                        <span><b>Ctr +  ${item.hotkey.charAt(item.hotkey.length - 1)} - </b></span> 
+                        ${item.label}
+                    </li>`;
+                }
+
                 return `<li data-action="${item.action}">
                <span><b>${item.hotkey.charAt(item.hotkey.length - 1)} - </b></span> 
                ${item.label}
@@ -393,7 +421,7 @@ onUiLoaded(() => {
         {
           action: "undo",
           hotkey: hotkeysConfig.undo,
-          label: "Undo",
+          label: "Undo last action",
         },
         {
           action: "resetZoom",
@@ -418,12 +446,12 @@ onUiLoaded(() => {
         {
           action: "loadCustomHotkeys",
           hotkey: "",
-          label: "Load custom hotkeys from customHotkeys.js file",
+          label: "Load custom hotkey config from customHotkeys.js file",
         },
         {
           action: "fillCanvasColor",
           hotkey: "",
-          label: "Fill the canvas with the color of the brush",
+          label: "Fill the canvas with the color of the brush ( Works in sketch and inpaint/sketch )",
         },
         {
           action: "openBrushSetting",
@@ -438,7 +466,7 @@ onUiLoaded(() => {
         {
           action: "togglePipette",
           hotkey: hotkeysConfig.togglePipette,
-          label: "Toggle Pipette",
+          label: "Toggle Pipette ( works in sketch and inpaint/sketch )",
         },
         {
           action: "toggleBrushOutline",
@@ -448,7 +476,7 @@ onUiLoaded(() => {
         {
           action: "setDefaultInpaintColor",
           hotkey: "Custom",
-          label: `<span style='background: ${inpaintBrushColor}'>ㅤㅤ</span>`,
+          label: `<span style='border:black 1px solid; background: ${inpaintBrushColor}'>ㅤㅤ</span>`,
         },
         {
           action: "setMoveKey",
@@ -480,8 +508,8 @@ onUiLoaded(() => {
       e.preventDefault();
       contextMenu.innerHTML = generateContextMenuItems(menuItems);
       contextMenu.style.display = "block";
-      contextMenu.style.left = `${e.pageX}px`;
-      contextMenu.style.top = `${e.pageY}px`;
+      contextMenu.style.left = `${e.pageX-10}px`;
+      contextMenu.style.top = `${e.pageY-5}px`;
 
       timeoutId = setTimeout(() => {
         contextMenu.style.display = "none";
@@ -493,7 +521,7 @@ onUiLoaded(() => {
       if (!listItem) return;
 
       const action = listItem.dataset.action;
-      if (actions.hasOwnProperty(action)) actions[action]();
+      if (actions.hasOwnProperty(action)) actions[action](e);
     });
 
     document.addEventListener("click", (e) => {
@@ -503,7 +531,7 @@ onUiLoaded(() => {
     contextMenu.addEventListener("mouseleave", () => {
       timeoutId = setTimeout(() => {
         contextMenu.style.display = "none";
-      }, 300);
+      }, 500);
     });
 
     contextMenu.addEventListener("mouseenter", () => {
@@ -971,10 +999,13 @@ onUiLoaded(() => {
         //Reset Zoom
         targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
 
+        // Get scrollbar width to right-align the image
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
         // Get element and screen dimensions
         const elementWidth = targetElement.offsetWidth;
         const elementHeight = targetElement.offsetHeight;
-        const screenWidth = window.innerWidth;
+        const screenWidth = window.innerWidth - scrollbarWidth;
         const screenHeight = window.innerHeight;
 
         // Get element's coordinates relative to the page
