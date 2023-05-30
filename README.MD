@@ -4,7 +4,7 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
-There is a light version of the extension, which contains only the essentials. Zoom and pan, full screen mode and brush adjust. [canvas-zoom-lite](https://github.com/daswer123/canvas-zoom-lite)
+There is a lite version of the extension, which contains only the essentials. Zoom and pan, full screen mode and brush adjust. [canvas-zoom-lite](https://github.com/daswer123/canvas-zoom-lite)
 
 **The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
@@ -96,7 +96,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 **Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
-Существует облегченная версия расширения, которая содержит только самое необходимое. Масштабирование, перемещение, полноэкранный режим и регулировка кисти. [canvas-zoom-light](https://github.com/daswer123/canvas-zoom-light)
+Существует облегченная версия расширения, которая содержит только самое необходимое. Масштабирование, перемещение, полноэкранный режим и регулировка кисти. [canvas-zoom-lite](https://github.com/daswer123/canvas-zoom-lite)
 
 ## Важные замечания
 
