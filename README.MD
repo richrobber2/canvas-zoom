@@ -4,6 +4,8 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
+There is a light version of the extension, which contains only the essentials. Zoom and pan, full screen mode and brush adjust. [canvas-zoom-light](https://github.com/daswer123/canvas-zoom-light)
+
 **The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
 https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-bd14-c352c0635522.mp4
@@ -82,19 +84,19 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 1. If a white image appears when you cancel on the Hotkey, press the cancel hotkey again and the image will return.
 
-2. If you constantly switch Sketch, Inpaint, Inpaint Sketch at different zoom levels via the lower buttons, the picture may be cropped. To solve this problem, just delete the picture through the cross and reset through the buttons or manually
+2. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste. **The problem is solved in the latest update, but only works on hotkeys ( Ctr+Z )**
 
-3. This is not my bug, the problem is related to webui automatic1111. If you send a picture to Sketch or Inpaint Sketch via buttons, the undo last action on the hotkey and on the button breaks. What to avoid this problem: you can load the picture directly, via drag and drop or via copy and paste. **The problem is solved in the latest update, but only works on hotkeys ( Ctr+Z )**
+3. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
 
-4. This is not my bug, the problem is with webui automatic1111. If you draw something in Sketch, Inpaint, Inpaint Sketch and then switch to another tab, when you go back and what else you draw, undo will undo on the previous 2 actions, the last one before the switch and the last one after.
+4. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser and windows scale to 100% and everything will be fine.
 
-5. This is not my bug, the problem is with webui automatic1111. When the browser scale is more or less than 100%, Sketch and Inpaint Sketch break if you send an image to them via buttons. Change the browser and windows scale to 100% and everything will be fine.
-
-6. This is not my bug, the problem is with webui automatic1111. If you don't close the image in inpaint and transfer it to inpaint again in any way, the mask remains. **The problem was solved in the latest update**
+5. This is not my bug, the problem is with webui automatic1111. If you don't close the image in inpaint and transfer it to inpaint again in any way, the mask remains. **The problem was solved in the latest update**
 
 # RU
 
 **Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
+
+Существует облегченная версия расширения, которая содержит только самое необходимое. Масштабирование, перемещение, полноэкранный режим и регулировка кисти. [canvas-zoom-light](https://github.com/daswer123/canvas-zoom-light)
 
 ## Важные замечания
 
@@ -171,12 +173,10 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 1. Если при отмене на горячей клавише появляется белое изображение, нажмите горячую клавишу отмены еще раз, и изображение вернется.
 
-2. Если постоянно переключать Sketch, Inpaint, Inpaint Sketch на разных уровнях зума через нижние кнопки, то картинка может обрезаться. Что бы решить эту проблему просто удалите картинку через крестик и снова перекиньте через кнопки или вручную.
+2. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку. **Проблема решена в последнем обновлении, но работает только на горячих клавишах ( Ctr+Z )**
 
-3. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку. **Проблема решена в последнем обновлении, но работает только на горячих клавишах ( Ctr+Z )**
+3. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
 
-4. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
+4. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера и windows до 100% и все будет отлично.
 
-5. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера и windows до 100% и все будет отлично.
-
-6. Это не мой баг, проблема связана с webui automatic1111. Если не закрыть изображение в inpaint и перенести его в inpaint снова любым способом, маска остается. **Проблема решена в последним обновлении**
+5. Это не мой баг, проблема связана с webui automatic1111. Если не закрыть изображение в inpaint и перенести его в inpaint снова любым способом, маска остается. **Проблема решена в последним обновлении**
