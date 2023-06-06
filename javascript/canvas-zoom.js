@@ -197,7 +197,7 @@ onUiLoaded(async () => {
   const hotkeysConfigOpts = await waitForOpts();
 
   // Default config
-  const defaultHotkeysConfig = {
+const defaultHotkeysConfig = {
     canvas_hotkey_reset: "KeyR",
     canvas_hotkey_fullscreen: "KeyS",
     canvas_hotkey_move: "KeyF",
@@ -889,7 +889,13 @@ onUiLoaded(async () => {
     function fillCanvasWithColor() {
       openBrushPanel(false, false);
       localStorage.setItem("fillCanvasBrushColor", "true");
+
+      const canvas = document.querySelector(
+        `${elemId} canvas[key="interface"]`
+      );
+      canvas.dispatchEvent(new MouseEvent('mousemove', {clientX: 1, clientY: 1}));
     }
+    
 
     // Handle keydown events
     function handleKeyDown(event) {
