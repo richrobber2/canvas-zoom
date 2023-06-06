@@ -16,6 +16,7 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_zoom_mask_clear": shared.OptionInfo(True, "Enable mask clearing in inpaint after any picture is moved in inpaint via buttons"),
     "canvas_zoom_brush_outline": shared.OptionInfo(False, "Enable outline for the brush"),
     "canvas_zoom_enable_integration": shared.OptionInfo(False, "Enable integration with ControlNet and Regional Prompter"),
+    "canvas_zoom_add_buttons": shared.OptionInfo(False, "Add buttons for fullscreen and reset. May be useful for devices without keyboard"),
     "canvas_zoom_inpaint_brushcolor": shared.OptionInfo("#000000", 'Change the default inpaint brush color.',gr.ColorPicker),
     "canvas_zoom_transparency_level": shared.OptionInfo(60, "Transparency level, in transparency mode. The more, the more transparent the lines will be", gr.Slider, {"minimum": 10, "maximum": 70, "step": 5}),
 }))

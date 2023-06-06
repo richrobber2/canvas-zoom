@@ -3,7 +3,7 @@
   top: 10px;
   left: 10px;
   cursor: help;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.5);
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -39,7 +39,7 @@
   border: 1px solid #ddd;
   padding: 15px; 
   position: absolute;
-  top: 30px;
+  top: 50px;
   left: 10px;
   width: 250px;
   font-size: 14px;
@@ -59,6 +59,31 @@
 @keyframes fadeIn {
   from {opacity: 0;}
   to {opacity: 1;}
+}
+
+.fullscreen-btn-main{
+  position: absolute;
+  top: 40px;
+  left: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; 
+}
+
+.fullscreen-btn{
+  cursor: pointer;
+  font-style: normal;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+.fullscreen-btn:hover{
+  background-color: rgba(22, 22, 22, 0.5);
 }
 
 /* Light Theme Options */
