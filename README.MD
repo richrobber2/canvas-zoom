@@ -24,11 +24,9 @@ https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-
 
 # EN
 
-You can edit the hotkeys as you want, to do this, you need to get into the context menu, you need to **right clicking** on the **Inpaint , Sketch and Inpaint Sketch tab, on the image area** and a context me opens where you can configure the hotkeys as you want.
+You can edit the hotkeys as you want, to do this you need to go into the settings.
 
-Now you can customize the hotkeys in the customHotkeys.js file, and then load them in the context menu. You can pass this file to anyone and they will be able to use your hotkeys settings. After changing customHotkeys,js, refresh the page.
-
-The hotkeys only work in the image area, except for the hotkey for moving
+The hotkeys only work in the image area
 
 ## Default hotkeys:
 
@@ -52,6 +50,8 @@ The hotkeys only work in the image area, except for the hotkey for moving
 
 **T** - Open color panel right above the mouse.
 
+**H** - Fill the entire canvas with brush color ( Works in Sketch and Inpaint Sketch )
+
 **A** - Toggle dropper ( Works in Sketch and Inpaint Sketch )
 
 **O** - Overlap all elements and back
@@ -59,8 +59,6 @@ The hotkeys only work in the image area, except for the hotkey for moving
 **Ctr-Z** - Undo last action
 
 **C** - Toggle mask transparency mode ( Works only in Inpaint )
-
-**V** - Toggle brush transparency mode ( Works only in Inpaint )
 
 In transparency mode, you can paint but the effect will not be what you expect, this mode is useful to see how the mask fits on the picture.
 
@@ -70,15 +68,13 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar.
 
-3. You can add a white outline to the brush to better see its borders. You can turn it on in the context menu. It works only in Inpaint.
+3. You can add a white outline to the brush to better see its borders. You can turn it on in the settings. It works only in Inpaint.
 
 4. You can select the color of the mask in Inpaint and the color of all your lines will change to the color of the mask
 
 5. In img2img in all tabs a new button "📏" has been added next to the width and height sliders. This button allows you to get the real width and height of the picture in 1 click. Removed from webui 1.3 and higher because a native solution is now available.
 
-6. You can fill the canvas with any color, so choose "Fill the canvas with the color of the brush" in the context menu and the canvas will be painted with the color of the brush. Works in Sketch and Inpaint Sketch
-
-7. If you are using ControlNet, you can enable integration with the extension in the context menu. After enabling it, reload the page
+6. If you are using ControlNet, you can enable integration with the extension in the settings. After enabling it, reload the page
 
 ## Known bugs:
 
@@ -113,11 +109,9 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 Добавляет возможность зума в Inpaint, Sketch и Inpaint Sketch и горячие клавиши для удобства в работе.
 Так же модифицирует возможности рисования в Sketch и Inpaint Sketch.
 
-Вы можете редактировать горячие клавиши по своему усмотрению, для этого нужно попасть в контекстное меню, нужно **щелкнув правой кнопкой мыши** в **Inpaint , Sketch и Inpaint Sketch, на области изображения**, и откроется контекстное меню, где вы можете настроить горячие клавиши по своему усмотрению.
+Вы можете изменить горячие клавиши по своему усмотрению, для этого необходимо зайти в настройки.
 
-Теперь вы можете настроить хоткеи в файле customHotkeys,js, после чего в контекстном меню, загрузить их. Вы можете передать этот файл любому человеку, и он сможет воспользоватся вашими настройками горячих клавиш. После того как измените customHotkeys,js, обновите страницу.
-
-Горячие клавиши работают только в области изображения, мышка должна быть на этой области , за исключением горячей клавиши для перемещения
+Горячие клавиши работают только в области изображения, мышка должна быть на этой области
 
 ## Горячие клавиши по умолчанию:
 
@@ -141,6 +135,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 **T** - Открыть выбор цвета прямо над мышкой.
 
+**H** - Заполнить весь холст цветом кисти ( Работает в Sketch и Inpaint Sketch )
+
 **A** - Включить пипетку ( Работает в Sketch и Inpaint Sketch )
 
 **O** - Перекрыть все элементы и обратно
@@ -148,8 +144,6 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 **Ctr-Z** - Отменить последнее действие
 
 **C** - Переключение режима прозрачности маски ( Работает только в Inpaint )
-
-**V** - Переключить режим прозрачности кисти ( Работает только в Inpaint )
 
 В режиме прозрачности, вы можете рисовать но эфект будет не такой какой вы ожидаете, этот режим удобен для просмотра того, как лежит маска на картинке.
 
@@ -159,15 +153,13 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 2. Если вы увеличите картинку с большой шириной, которая не помещается в окно, то при нажатии на "S" вы получите увеличенную во весь экран картинку в полную ширину без полосы прокрутки
 
-3. Вы можете добавить кисти белую обводку, что бы лучше видеть её границы. Включить можно в контекстном меню. Работает только в Inpaint.
+3. Вы можете добавить кисти белую обводку, что бы лучше видеть её границы. Включить можно в настройках. Работает только в Inpaint.
 
-4. Вы можете выбрать цвет маски в Inpaint, и цвет всех ваших линий изменится на цвет маски
+4. Вы можете выбрать цвет маски в Inpaint, и цвет всех ваших линий изменится на цвет маски. Цвет можно изменить в настройках.
 
 5. В img2img во всех вкладках добавилась новая кнопка "📏", которая находится рядом с ползунками width и height. Это кнопка позволяет получить ширину и высоту картинки в 1 клик. Удалено из webui 1.3 и выше, поскольку теперь доступно нативное решение
 
-6. Вы можете залить canvas любым цветом, для этого в контекстном меню выберете "Fill the canvas with the color of the brush" и canvas окрасится цветом кисти. Работает в Sketch и Inpaint Sketch
-
-7. Если вы используете СontrolNet, вы можете включить интеграцию с расширением в контекстном меню. После включения перезагрузите страницу
+6. Если вы используете СontrolNet, вы можете включить интеграцию с расширением в настройках. После включения перезагрузите страницу
 
 ## Известные баги:
 
