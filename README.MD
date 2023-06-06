@@ -10,6 +10,9 @@ There is a lite version of the extension, which contains only the essentials. Zo
 
 https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-bd14-c352c0635522.mp4
 
+The video is a little outdated, all the settings are now in the settings tab and the context menu has been removed.
+I will redo it soon.
+
 ## Important Notes
 
 **Webui versions earlier than March 25th are not supported**
