@@ -390,7 +390,14 @@ const defaultHotkeysConfig = {
 
     // Create tooltip
     function createTooltip() {
-      const toolTipElemnt = targetElement.querySelector(".image-container");
+      let toolTipElemnt
+      if(targetElement.querySelector(".image-container")){
+        toolTipElemnt = targetElement.querySelector(".image-container");
+      } else {
+        toolTipElemnt = targetElement.querySelector("div[data-testid='image']");
+      }
+
+      // const toolTipElemnt = targetElement.querySelector(".image-container");
       const tooltip = document.createElement("div");
       tooltip.className = "tooltip";
 
@@ -477,7 +484,14 @@ const defaultHotkeysConfig = {
 
     // Create button for devices without keyboard
     function createFuncButtons() {
-      const buttonContainer = targetElement.querySelector(".image-container");
+      let buttonContainer;
+      if(targetElement.querySelector(".image-container")){
+        buttonContainer = targetElement.querySelector(".image-container");
+      } else {
+        buttonContainer = targetElement.querySelector("div[data-testid='image']");
+      }
+
+
       const button = document.createElement("button");
       button.className = "fullscreen-btn-main";
       button.innerHTML = `<i class="fullscreen-btn">F</i>`;
