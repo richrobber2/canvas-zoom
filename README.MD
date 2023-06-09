@@ -91,6 +91,16 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 5. This is not my bug, the problem is with webui automatic1111. If you don't close the image in inpaint and transfer it to inpaint again in any way, the mask remains. **The problem was solved in the latest update**
 
+## Credits
+
+Thanks to everyone who supported this extension, everyone who gave ideas for this project. 
+
+Special thanks to [richrobber2](https://github.com/richrobber2) for his idea, which later I ([daswer123](https://github.com/daswer123)) was able to strongly develop. 
+
+I would also like to thank separately the author of popular models: Deliberate and Reliberate, the person under the nickname [XpucT](https://www.youtube.com/@XpucT) for supporting the project at an early stage of development.
+
+Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for support.
+
 # RU
 
 **Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
@@ -175,3 +185,13 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 4. Это не мой баг, проблема связана с webui automatic1111. При масштабе браузера больше или меньше 100%, Sketch и Inpaint Sketch ломаются, если отправить на них изображение через кнопки. Измените масштабе браузера и windows до 100% и все будет отлично.
 
 5. Это не мой баг, проблема связана с webui automatic1111. Если не закрыть изображение в inpaint и перенести его в inpaint снова любым способом, маска остается. **Проблема решена в последним обновлении**
+
+## Благодарность
+
+Спасибо всем, кто поддержал это расширение, всем, кто подал идеи для этого проекта. 
+
+Отдельное спасибо [richrobber2](https://github.com/richrobber2) за его изначальную идею, которую позже я ([daswer123](https://github.com/daswer123)) смог сильно развить. 
+
+Отдельно хочу поблагодарить автора популярных моделей: Deliberate и Reliberate, человека под ником [XpucT](https://www.youtube.com/@XpucT) за поддержку расширения на ранней стадии развития.
+
+Спасибо сообществу [AI Diffusion](https://discord.gg/xpuct) на discord за поддержку.
