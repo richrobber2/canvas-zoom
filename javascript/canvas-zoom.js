@@ -399,16 +399,16 @@ const defaultHotkeysConfig = {
 
       // const toolTipElemnt = targetElement.querySelector(".image-container");
       const tooltip = document.createElement("div");
-      tooltip.className = "tooltip";
+      tooltip.className = "tooltip--extension";
 
       // Creating an item of information
       const info = document.createElement("i");
-      info.className = "tooltip-info";
+      info.className = "tooltip-info--extension";
       info.textContent = "";
 
       // Create a container for the contents of the tooltip
       const tooltipContent = document.createElement("div");
-      tooltipContent.className = "tooltip-content";
+      tooltipContent.className = "tooltip-content--extension";
 
       // Add info about hotkeys
       const zoomKey = hotkeysConfig.canvas_swap_controls ? "Ctrl" : "Shift";

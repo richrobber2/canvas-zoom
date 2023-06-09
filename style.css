@@ -1,4 +1,8 @@
-.tooltip-info {
+.tooltip{
+  display: none;
+}
+
+.tooltip-info--extension {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -15,7 +19,7 @@
   z-index: 100;
 }
 
-.tooltip-info::after {
+.tooltip-info--extension::after {
   content: '';
   display: block;
   width: 2px;
@@ -24,7 +28,7 @@
   margin-top: 2px; 
 }
 
-.tooltip-info::before {
+.tooltip-info--extension::before {
   content: '';
   display: block;
   width: 2px;
@@ -32,7 +36,7 @@
   background-color: white;
 }
 
-.tooltip-content {
+.tooltip-content--extension {
   display: none;
   background-color: #f9f9f9; 
   color: #333; 
@@ -50,7 +54,7 @@
   z-index: 100;
 }
 
-.tooltip:hover .tooltip-content {
+.tooltip--extension:hover .tooltip-content--extension {
   display: block;
   animation: fadeIn 0.5s; 
   opacity: 1;
