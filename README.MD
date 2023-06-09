@@ -190,8 +190,8 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 
 Спасибо всем, кто поддержал это расширение, всем, кто подал идеи для этого проекта. 
 
-Отдельное спасибо [richrobber2](https://github.com/richrobber2) за его изначальную идею, которую позже я ([daswer123](https://github.com/daswer123)) смог сильно развить. 
+Отдельное спасибо [richrobber2](https://github.com/richrobber2) за его первоначальную идею, которую мне, [daswer123](https://github.com/daswer123), удалось значительно расширить и усовершенствовать.
 
-Отдельно хочу поблагодарить автора популярных моделей: Deliberate и Reliberate, человека под ником [XpucT](https://www.youtube.com/@XpucT) за поддержку расширения на ранней стадии развития.
+Также особую благодарность хочется выразить автору популярных моделей Deliberate и Reliberate - [XpucT](https://www.youtube.com/@XpucT), за его поддержку проекта в начальный период его развития.
 
-Спасибо сообществу [AI Diffusion](https://discord.gg/xpuct) на discord за поддержку.
+И наконец, спасибо всему сообществу [AI Diffusion](https://discord.gg/xpuct) в discord за их поддержку 
