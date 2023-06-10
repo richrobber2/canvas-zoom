@@ -35,7 +35,7 @@ The hotkeys only work in the image area
 
 ### Important hotkeys: Zoom (Shift+wheel) , Move Canvas (F) , Full Screen (S), and Reset Zoom (R).
 
-**Shift + click or wheel (hold)** - Move canvas
+**Shift + wheel (hold)** - Move canvas
 
 **F (hold)** - Move canvas
 
@@ -78,6 +78,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 5. In img2img in all tabs a new button "📏" has been added next to the width and height sliders. This button allows you to get the real width and height of the picture in 1 click. Removed from webui 1.3 and higher because a native solution is now available.
 
 6. If you are using ControlNet, you can enable integration with the extension in the settings. After enabling it, reload the page
+
+7. You can choose the default color of the mask in Inpaint, you can change the color of the mask in the settings.
 
 ## Known bugs:
 
@@ -130,7 +132,7 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 
 ### Важные горячие клавиши: Зум (Shift+колесо), Перемещение (F), Полноэкранный режим (S) и Сброс зума (R).
 
-**Shift + левая кнопка или колесо (удерживать)** - Переместить холст
+**Shift + колесо (удерживать)** - Переместить холст
 
 **F (удерживать)** - Перемещение холста
 
@@ -173,6 +175,9 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 5. В img2img во всех вкладках добавилась новая кнопка "📏", которая находится рядом с ползунками width и height. Это кнопка позволяет получить ширину и высоту картинки в 1 клик. Удалено из webui 1.3 и выше, поскольку теперь доступно нативное решение
 
 6. Если вы используете СontrolNet, вы можете включить интеграцию с расширением в настройках. После включения перезагрузите страницу
+
+
+7. Вы можете выбрать цвет маски в Inpaint по умолчанию, цвет маски можно изменить в настройках.
 
 ## Известные баги:
 
