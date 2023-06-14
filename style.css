@@ -1,8 +1,13 @@
+/* temp propperty */
 .image-container .tooltip{
   display: none;
 }
 
-.tooltip-info--extension {
+.canvas-tooltip{
+  display: none;
+}
+
+.canvas-tooltip-info--extension {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -19,7 +24,7 @@
   z-index: 100;
 }
 
-.tooltip-info--extension::after {
+.canvas-tooltip-info--extension::after {
   content: '';
   display: block;
   width: 2px;
@@ -28,7 +33,7 @@
   margin-top: 2px; 
 }
 
-.tooltip-info--extension::before {
+.canvas-tooltip-info--extension::before {
   content: '';
   display: block;
   width: 2px;
@@ -36,14 +41,14 @@
   background-color: white;
 }
 
-.tooltip-content--extension {
+.canvas-tooltip-content--extension {
   display: none;
   background-color: #f9f9f9; 
   color: #333; 
   border: 1px solid #ddd;
   padding: 15px; 
   position: absolute;
-  top: 50px;
+  top: 30px;
   left: 10px;
   width: 250px;
   font-size: 14px;
@@ -51,10 +56,10 @@
   border-radius: 8px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); 
 
-  z-index: 100;
+  z-index: 101;
 }
 
-.tooltip--extension:hover .tooltip-content--extension {
+.canvas-tooltip--extension:hover .canvas-tooltip-content--extension {
   display: block;
   animation: fadeIn 0.5s; 
   opacity: 1;
@@ -67,7 +72,7 @@
 
 .fullscreen-btn-main{
   position: absolute;
-  top: 40px;
+  top: 45px;
   left: 10px;
 
   display: flex;
@@ -87,6 +92,31 @@
 }
 
 .fullscreen-btn:hover{
+  background-color: rgba(22, 22, 22, 0.5);
+}
+
+.dropper-btn-main{
+  position: absolute;
+  top: 80px;
+  left: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; 
+}
+
+.dropper-btn{
+  cursor: pointer;
+  font-style: normal;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+.dropper-btn:hover{
   background-color: rgba(22, 22, 22, 0.5);
 }
 
