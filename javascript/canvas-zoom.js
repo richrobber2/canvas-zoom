@@ -18,6 +18,37 @@ onUiLoaded(async () => {
   };
 
   // Helper functions
+
+  function zoomFakeWheelEvent(targetElement, sign,oldEvent) {
+    const rect = targetElement.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+  
+    const event = new WheelEvent("wheel", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      detail: sign === "-" ? 1 : -1,
+      screenX: centerX,
+      screenY: centerY,
+      clientX: centerX,
+      clientY: centerY,
+      ctrlKey: oldEvent.ctrlKey,
+      altKey: oldEvent.altKey,
+      shiftKey: oldEvent.shiftKey,
+      metaKey: oldEvent.ctrlKey,
+      button: 0,
+      buttons: 0,
+      relatedTarget: null,
+      deltaMode: sign === "-" ? 1 : -1,
+      deltaX: 0,
+      deltaY: sign === "-" ? 1 : -1,
+      deltaZ: 0
+    });
+
+    targetElement.dispatchEvent(event);
+  }
+
     // Get active tab
     function getActiveTab(elements, all = false) {
       const tabs = elements.img2imgTabs.querySelectorAll("button");
@@ -657,52 +688,51 @@ const defaultHotkeysConfig = {
     );
     fileInput.addEventListener("click", resetZoom);
 
+
     // Update the zoom level and pan position of the target element based on the values of the zoomLevel, panX and panY variables
     function updateZoom(newZoomLevel, mouseX, mouseY) {
       newZoomLevel = Math.max(0.5, Math.min(newZoomLevel, 15));
 
       elemData[elemId].panX +=
-        mouseX - (mouseX * newZoomLevel) / elemData[elemId].zoomLevel;
+          mouseX - (mouseX * newZoomLevel) / elemData[elemId].zoomLevel;
       elemData[elemId].panY +=
-        mouseY - (mouseY * newZoomLevel) / elemData[elemId].zoomLevel;
+          mouseY - (mouseY * newZoomLevel) / elemData[elemId].zoomLevel;
 
       targetElement.style.transformOrigin = "0 0";
       targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${newZoomLevel})`;
 
-      setImgDisplayToNone();
       toggleOverlap("on");
+      setImgDisplayToNone();
       return newZoomLevel;
-    }
+  }
 
-    // Change the zoom level based on user interaction
-    function changeZoomLevel(operation, e) {
+  // Change the zoom level based on user interaction
+  function changeZoomLevel(operation, e) {
+
       if (isModifierKey(e, hotkeysConfig.canvas_hotkey_zoom)) {
-        e.preventDefault();
+          e.preventDefault();
 
-        let zoomPosX, zoomPosY;
-        let delta = 0.2;
-        if (elemData[elemId].zoomLevel > 7) {
-          delta = 0.9;
-        } else if (elemData[elemId].zoomLevel > 2) {
-          delta = 0.6;
-        }
+          let zoomPosX, zoomPosY;
+          let delta = 0.2;
 
-        if (e.clientX && e.clientY) {
+          if (elemData[elemId].zoomLevel > 7) {
+              delta = 0.9;
+          } else if (elemData[elemId].zoomLevel > 2) {
+              delta = 0.6;
+          }
+
           zoomPosX = e.clientX;
           zoomPosY = e.clientY;
-        } else {
-          zoomPosX = 0;
-          zoomPosY = 0;
-        }
 
-        fullScreenMode = false;
-        elemData[elemId].zoomLevel = updateZoom(
-          elemData[elemId].zoomLevel + (operation === "+" ? delta : -delta),
-          zoomPosX - targetElement.getBoundingClientRect().left,
-          zoomPosY - targetElement.getBoundingClientRect().top
-        );
+          fullScreenMode = false;
+          elemData[elemId].zoomLevel = updateZoom(
+              elemData[elemId].zoomLevel +
+                  (operation === "+" ? delta : -delta),
+              zoomPosX - targetElement.getBoundingClientRect().left,
+              zoomPosY - targetElement.getBoundingClientRect().top
+          );
       }
-    }
+  }
 
     /**
      * This function fits the target element to the screen by calculating
@@ -979,10 +1009,9 @@ const defaultHotkeysConfig = {
         ["Equal", "NumpadAdd", "Minus", "NumpadSubtract"].includes(event.code)
       ) {
         event.preventDefault();
-        changeZoomLevel(
-          event.code === "Minus" || event.code === "NumpadSubtract" ? "-" : "+",
-          event
-        );
+
+        const operationKey = event.code === "Minus" || event.code === "NumpadSubtract" ? "-" : "+"
+        zoomFakeWheelEvent(targetElement, operationKey,event)
       }
 
       if (
@@ -1038,8 +1067,10 @@ const defaultHotkeysConfig = {
 
     targetElement.addEventListener("wheel", (e) => {
       // change zoom level
-      const operation = e.deltaY > 0 ? "-" : "+";
-      changeZoomLevel(operation, e);
+      if(!window.applyZoomAndPan){
+        const operation = e.deltaY > 0 ? "-" : "+";
+        changeZoomLevel(operation, e);
+      }
 
       // Handle brush size adjustment with ctrl key pressed
       if (isModifierKey(e, hotkeysConfig.canvas_hotkey_adjust)) {
@@ -1131,9 +1162,6 @@ const defaultHotkeysConfig = {
   applyZoomAndPan(elementIDs.sketch);
   applyZoomAndPan(elementIDs.inpaint);
   applyZoomAndPan(elementIDs.inpaintSketch);
-
-  // Make the function global so that other extensions can take advantage of this solution
-  window.applyZoomAndPan = applyZoomAndPan;
 
   //Enable ControlNet Integration
   // Integration ControlNet
