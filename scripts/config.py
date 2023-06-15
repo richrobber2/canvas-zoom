@@ -2,8 +2,8 @@ import gradio as gr
 from modules import shared
 
 shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Zoom"), {
-    "canvas_hotkey_zoom": shared.OptionInfo("Shift", "Zoom canvas", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]}).info("If you choose 'Shift' you cannot scroll horizontally, 'Alt' can cause a little trouble in firefox"),
-    "canvas_hotkey_adjust": shared.OptionInfo("Ctrl", "Adjust brush size", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]}).info("If you choose 'Shift' you cannot scroll horizontally, 'Alt' can cause a little trouble in firefox"),
+    "canvas_hotkey_zoom": (shared.OptionInfo("Alt", "Zoom canvas", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]}).info("If you choose 'Shift' you cannot scroll horizontally, 'Alt' can cause a little trouble in firefox") if (info := getattr(shared.OptionInfo("Alt", "Zoom canvas", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]}), 'info', None)) else shared.OptionInfo("Alt", "Zoom canvas", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]})),
+    "canvas_hotkey_adjust": (shared.OptionInfo("Ctrl", "Adjust brush size", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]}).info("If you choose 'Shift' you cannot scroll horizontally, 'Alt' can cause a little trouble in firefox") if (info := getattr(shared.OptionInfo("Ctrl", "Adjust brush size", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]}), 'info', None)) else shared.OptionInfo("Ctrl", "Adjust brush size", gr.Radio, {"choices": ["Shift","Ctrl", "Alt"]})),
     "canvas_hotkey_move": shared.OptionInfo("F", "Moving the canvas"),
     "canvas_hotkey_fullscreen": shared.OptionInfo("S", "Fullscreen Mode, maximizes the picture so that it fits into the screen and stretches it to its full width "),
     "canvas_hotkey_reset": shared.OptionInfo("R", "Reset zoom and canvas positon"),
@@ -21,4 +21,4 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_zoom_inpaint_brushcolor": shared.OptionInfo("#000000", 'Change the default inpaint brush color.',gr.ColorPicker),
     "canvas_zoom_transparency_level": shared.OptionInfo(60, "Transparency level, in transparency mode. The more, the more transparent the lines will be", gr.Slider, {"minimum": 10, "maximum": 70, "step": 5}),
     "canvas_zoom_disabled_functions": shared.OptionInfo(["Overlap"], "Disable function that you don't use", gr.CheckboxGroup, {"choices": ["Zoom","Adjust brush size", "Moving canvas","Fullscreen","Reset Zoom","Overlap","Open color panel","Pin color panel","Dropper","Fill","Transparency Mode"]}),
-    }))
+}))
