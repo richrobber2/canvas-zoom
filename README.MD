@@ -8,10 +8,7 @@ There is a lite version of the extension, which contains only the essentials. Zo
 
 **The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
-https://user-images.githubusercontent.com/22278673/235007408-d0658b49-7623-4bf1-bd14-c352c0635522.mp4
-
-The video is a little outdated, all the settings are now in the settings tab and the context menu has been removed.
-I will redo it soon.
+https://github.com/richrobber2/canvas-zoom/assets/22278673/1f666443-34bc-421e-8edc-e4eaa22722a6
 
 ## Important Notes
 
@@ -35,15 +32,13 @@ The hotkeys only work in the image area
 
 ### Important hotkeys: Zoom (Shift+wheel) , Move Canvas (F) , Full Screen (S), and Reset Zoom (R).
 
-**Shift + wheel (hold)** - Move canvas
-
-**F (hold)** - Move canvas
-
-**Shift + "+" or Shift + "-"** - Scale canvas ( numpad keys also work )
-
-**Shift + wheel** - Scale canvas
+**Shift + wheel** - Zoom canvas
 
 **Ctr + wheel** - Change brush size
+
+**Ctr-Z** - Undo last action
+
+**F (hold)** - Move canvas
 
 **S** - Fullscreen mode, zoom in on the canvas so that it fits into the screen.
 
@@ -59,11 +54,15 @@ The hotkeys only work in the image area
 
 **O** - Overlap all elements and back
 
-**Ctr-Z** - Undo last action
-
 **C** - Toggle mask transparency mode ( Works only in Inpaint )
 
 In transparency mode, you can paint but the effect will not be what you expect, this mode is useful to see how the mask fits on the picture.
+
+### Additional hotkeys
+
+**Shift + wheel (hold)** - Move canvas
+
+**Shift + "+" or Shift + "-"** - Scale canvas ( numpad keys also work )
 
 ## Features
 
@@ -71,7 +70,7 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 2. If you zoom in on a picture that is too wide to fit in the window, pressing "S" will magnify it to full screen width without the scroll bar.
 
-3. You can add a white outline to the brush to better see its borders. You can turn it on in the settings. It works only in Inpaint.
+3. You can add a white outline to the brush to better see its borders. You can turn it on in the settings
 
 4. You can select the color of the mask in Inpaint and the color of all your lines will change to the color of the mask
 
@@ -80,6 +79,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 6. If you are using ControlNet, you can enable integration with the extension in the settings. After enabling it, reload the page
 
 7. You can choose the default color of the mask in Inpaint, you can change the color of the mask in the settings.
+
+8. In the settings you can turn off the tooltip and functionality that you do not need
 
 ## Known bugs:
 
@@ -132,15 +133,13 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 
 ### Важные горячие клавиши: Зум (Shift+колесо), Перемещение (F), Полноэкранный режим (S) и Сброс зума (R).
 
-**Shift + колесо (удерживать)** - Переместить холст
-
-**F (удерживать)** - Перемещение холста
-
 **Shift + колесо** - Масштабировать холст
 
-**Shift + "+" или Shift + "-"** - масштабирование холста (клавиши нумпада также работают)
-
 **Ctr + колесо** - Изменить размер кисти
+
+**Ctr-Z** - Отменить последнее действие
+
+**F (удерживать)** - Перемещение холста
 
 **S** - Полноэкранный режим. Максимально увеличить холст так, чтобы он поместился на экране
 
@@ -156,11 +155,15 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 
 **O** - Перекрыть все элементы и обратно
 
-**Ctr-Z** - Отменить последнее действие
-
 **C** - Переключение режима прозрачности маски ( Работает только в Inpaint )
 
 В режиме прозрачности, вы можете рисовать но эфект будет не такой какой вы ожидаете, этот режим удобен для просмотра того, как лежит маска на картинке.
+
+### Дополнительные горячие клавиши
+
+**Shift + колесо (удерживать)** - Переместить холст
+
+**Shift + "+" или Shift + "-"** - масштабирование холста (клавиши нумпада также работают)
 
 ## Фичи
 
@@ -168,7 +171,7 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 
 2. Если вы увеличите картинку с большой шириной, которая не помещается в окно, то при нажатии на "S" вы получите увеличенную во весь экран картинку в полную ширину без полосы прокрутки
 
-3. Вы можете добавить кисти белую обводку, что бы лучше видеть её границы. Включить можно в настройках. Работает только в Inpaint.
+3. Вы можете добавить кисти белую обводку, что бы лучше видеть её границы. Включить можно в настройках.
 
 4. Вы можете выбрать цвет маски в Inpaint, и цвет всех ваших линий изменится на цвет маски. Цвет можно изменить в настройках.
 
@@ -176,14 +179,15 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 
 6. Если вы используете СontrolNet, вы можете включить интеграцию с расширением в настройках. После включения перезагрузите страницу
 
-
 7. Вы можете выбрать цвет маски в Inpaint по умолчанию, цвет маски можно изменить в настройках.
+
+8. В настройках вы можете оключить подсказку и функционал который вам не нужен
 
 ## Известные баги:
 
 1. Если при отмене на горячей клавише появляется белое изображение, нажмите горячую клавишу отмены еще раз, и изображение вернется.
 
-2. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку. **Проблема решена в последнем обновлении, но работает только на горячих клавишах ( Ctr+Z )**
+2. Это не мой баг, проблема связана с webui automatic1111. Если вы отправляете картинку в Sketch или Inpaint Sketch через кнопки, то ломается отмена последнего действия на горячую клавишу и на кнопку. Что избежать этой проблемы: вы можете загрузить картинку напрямую, перетащить её из результата или через копирование и вставку. **Проблема решена, но работает только на горячих клавишах ( Ctr+Z )**
 
 3. Это не мой баг, проблема связана с webui automatic1111. Если вы что-то нарисовали в Sketch, Inpaint, Inpaint Sketch, а потом переключили на другую вкладку, когда вы вернетесь, и что ещё нарисуете, то отмена будет отменять по предыдущих 2 действия, последнее до переключения и последнее после.
 
