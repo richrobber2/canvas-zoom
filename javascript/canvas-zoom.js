@@ -19,6 +19,8 @@ onUiLoaded(async () => {
 
   // Helper functions
 
+  
+
   function zoomFakeWheelEvent(targetElement, sign,oldEvent) {
     const rect = targetElement.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -47,6 +49,21 @@ onUiLoaded(async () => {
     });
 
     targetElement.dispatchEvent(event);
+  }
+
+  // The function that returns the promis, which is resolved after the element appears on the page
+  function waitForElement(id) {
+    return new Promise((resolve) => {
+      const checkForElement = () => {
+        const element = document.querySelector(id);
+        if (element) {
+          resolve(element);
+        } else {
+          setTimeout(checkForElement, 100); // Checking every 100 ms
+        }
+      };
+      checkForElement();
+    });
   }
 
     // Get active tab
