@@ -459,7 +459,7 @@ const defaultHotkeysConfig = {
     // Create give size button
     if (!isGetSizeImgBtnExists) {
       getImgDataBtn.addEventListener("click", () => {
-        const tabID = getTabId();
+        const tabID = getTabId(elements);
         const canvas = document.querySelector(`${tabID} canvas`);
         const img = document.querySelector("#img2img_image img");
         const imgUpload = document.querySelector("#img_inpaint_base img");
