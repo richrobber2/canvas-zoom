@@ -1247,5 +1247,27 @@ const defaultHotkeysConfig = {
         );
       }
     }
+
+    // Integration with Latent Couple / twoshot_tabs
+    if (integrateControlNet === true) {
+      const LCID = "#script_twoshot_tabs";
+      const LCEl = document.querySelector(LCID);
+
+      if (LCEl) {
+        LCEl.addEventListener(
+          "click",
+          async (e) => {
+            const LCMaskId = "#twoshot_canvas_sketch";
+            const LCMaskEl = await waitForElement(LCMaskId);
+          
+
+          if (LCMaskEl) {
+            applyZoomAndPan(LCMaskId);
+          }
+        },
+        { once: true }
+        );
+      }
+    }
   }
 });
