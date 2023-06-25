@@ -1235,7 +1235,7 @@ const defaultHotkeysConfig = {
       if (RPEl) {
         RPEl.addEventListener(
           "click",
-          async (e) => {
+          async () => {
             const RPMaskId = "#polymask";
             const RPMaskEl = await waitForElement(RPMaskId);
 
@@ -1246,6 +1246,50 @@ const defaultHotkeysConfig = {
           { once: true }
         );
       }
+    }
+
+    // Integration with Latent Couple / twoshot_tabs
+    if (integrateControlNet === true) {
+      const T2I = "div#tab_txt2img";
+      const I2I = "div#tab_img2img";
+      const Tab = "div#script_twoshot_tabs";
+      const Canvas = "div#twoshot_canvas_sketch";
+    
+    //Text to Image Implementation
+      const LCT2IID = T2I + " " + Tab;
+      const LCT2IEl = document.querySelector(LCT2IID);
+      const LCT2TMaskID = LCT2IID + " " + Canvas;
+
+      if (LCT2IEl) {
+          LCT2IEl.addEventListener(
+            "click",
+            async () => {
+            const LCT2TMaskEl = await waitForElement(LCT2TMaskID);
+            if (LCT2TMaskEl) {
+              applyZoomAndPan(LCT2TMaskID);
+            }
+          },
+          { once: true }
+          );
+      }
+
+      //Image to Image Implementation
+      const LCI2IID = I2I + " " + Tab;
+      const LCI2IEl = document.querySelector(LCI2IID);
+      const LCI2IMaskID = LCI2IID + " " + Canvas;
+
+      if (LCI2IEl) {
+          LCI2IEl.addEventListener(
+          "click",
+          async () => {
+          const LCI2IMaskEl = await waitForElement(LCI2IMaskID);
+          if (LCI2IMaskEl) {
+            applyZoomAndPan(LCI2IMaskID);
+          }
+        },
+        { once: true }
+        );
+    }
     }
   }
 });
