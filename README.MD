@@ -4,9 +4,9 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
-There is a lite version of the extension, which contains only the essentials. Zoom and pan, full screen mode and brush adjust. [canvas-zoom-lite](https://github.com/daswer123/canvas-zoom-lite)
-
 **The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
+
+**The extension is fully compatible with webui version [1.4](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.4.0) and the built-in canvas-zoom-and-pan extension. However, I still recommend that you disable the built-in**
 
 https://github.com/richrobber2/canvas-zoom/assets/22278673/1f666443-34bc-421e-8edc-e4eaa22722a6
 
@@ -108,7 +108,7 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 
 **Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
-Существует облегченная версия расширения, которая содержит только самое необходимое. Масштабирование, перемещение, полноэкранный режим и регулировка кисти. [canvas-zoom-lite](https://github.com/daswer123/canvas-zoom-lite)
+**Расширение полностью совместимо с webui версии [1.4](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.4.0) и встроенным расширением canvas-zoom-and-pan. Тем не менее, я рекомендую отключить встроенное расширение.**
 
 ## Важные замечания
 
