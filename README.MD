@@ -6,15 +6,15 @@ Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
 **The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
-**The extension is fully compatible with webui version [1.4](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.4.0) and the built-in canvas-zoom-and-pan extension. However, I still recommend that you disable the built-in**
+**The extension is fully compatible with webui version [1.4](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.4.0) and the built-in canvas-zoom-and-pan extension. However, I still recommend that you disable the built-in. **
+
+**Found a bug, if you have the built-in extension and canvas-zoom enabled, then the zoom in controlNet does not work. So I strongly recommend to turn off the built-in extension, you won't lose anything.**
 
 https://github.com/richrobber2/canvas-zoom/assets/22278673/1f666443-34bc-421e-8edc-e4eaa22722a6
 
 ## Important Notes
 
 **Webui versions earlier than March 25th are not supported**
-
-**After installation, be sure to restart webui**
 
 **If extension does not work check the troubleshooting page https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
