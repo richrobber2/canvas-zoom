@@ -300,6 +300,7 @@ const defaultHotkeysConfig = {
     canvas_zoom_hotkey_transparency: "KeyC",
     canvas_show_tooltip: true,
     canvas_zoom_mask_clear: true,
+    canvas_zoom_draw_staight_lines: false,
     canvas_zoom_brush_outline: false,
     canvas_zoom_enable_integration: false,
     canvas_zoom_add_buttons: false,
@@ -1048,6 +1049,11 @@ const defaultHotkeysConfig = {
        ) {
         event.preventDefault();
        }
+
+
+       if (event.code === "ShiftLeft" && hotkeysConfig.canvas_zoom_draw_staight_lines){
+        window.drawStraightLine = true;
+       }
     
   }
 
@@ -1135,6 +1141,10 @@ const defaultHotkeysConfig = {
       if (e.code === hotkeysConfig.canvas_hotkey_move) {
         isMoving = false;
       }
+
+      if (e.code === "ShiftLeft"){
+        window.drawStraightLine = false;
+       }
     }
 
     document.addEventListener("keydown", handleMoveKeyDown);
@@ -1156,6 +1166,8 @@ const defaultHotkeysConfig = {
         targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${elemData[elemId].zoomLevel})`;
         toggleOverlap("on");
       });
+
+      
     }
 
     function handleMoveByKey(e) {
@@ -1195,7 +1207,7 @@ const defaultHotkeysConfig = {
     };
 
     gradioApp().addEventListener("mousemove", handleMoveByKey);
-    targetElement.addEventListener("mousedown", targetElementHandler);
+    // targetElement.addEventListener("mousedown", targetElementHandler);
   }
 
   applyZoomAndPan(elementIDs.sketch);
