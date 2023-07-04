@@ -299,6 +299,7 @@ const defaultHotkeysConfig = {
     canvas_show_tooltip: true,
     canvas_zoom_mask_clear: true,
     canvas_zoom_inpaint_warning: true,
+    canvas_blur_prompt: false,
     canvas_zoom_draw_staight_lines: false,
     canvas_zoom_brush_outline: false,
     canvas_zoom_enable_integration: false,
@@ -1006,14 +1007,18 @@ const defaultHotkeysConfig = {
     function handleKeyDown(event) {
       
       // Disable key locks to make pasting from the buffer work correctly
-      if((event.ctrlKey && event.code === 'KeyV') || event.code === "F5") {
+      if((event.ctrlKey && event.code === 'KeyV') || (event.ctrlKey && event.code === 'KeyC') || event.code === "F5") {
+        console.log("work")
         return
       }
 
       // before activating shortcut, ensure user is not actively typing in an input field
-      if(event.target.nodeName === 'TEXTAREA' || event.target.nodeName === 'INPUT') {
-        return
-      } 
+      if(!hotkeysConfig.canvas_blur_prompt){
+        if(event.target.nodeName === 'TEXTAREA' || event.target.nodeName === 'INPUT') {
+          return
+        }
+      }
+       
 
       const hotkeyActions = {
         [hotkeysConfig.canvas_hotkey_reset]: resetZoom,
@@ -1118,13 +1123,16 @@ const defaultHotkeysConfig = {
     // Handle the move event for pan functionality. Updates the panX and panY variables and applies the new transform to the target element.
     function handleMoveKeyDown(e) {
       // Disable key locks to make pasting from the buffer work correctly
-      if ((e.ctrlKey && e.code === 'KeyV') || e.code === "F5") {
+      if ((e.ctrlKey && e.code === 'KeyV')  || (e.ctrlKey && event.code === 'KeyC') || e.code === "F5") {
+        console.log("work")
         return
       }
 
       // before activating shortcut, ensure user is not actively typing in an input field
-      if(e.target.nodeName === 'TEXTAREA' || e.target.nodeName === 'INPUT' ) {
-        return;
+      if(!hotkeysConfig.canvas_blur_prompt){
+        if(e.target.nodeName === 'TEXTAREA' || e.target.nodeName === 'INPUT') {
+          return
+        }
       }
 
       if (e.code === hotkeysConfig.canvas_hotkey_move ) { 

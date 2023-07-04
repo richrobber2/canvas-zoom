@@ -77,10 +77,7 @@ onUiLoaded(async () => {
     const toast = createToast();
     const inpaintingPattern = /(?:inpainting|inpaint)/i;
 
-    console.log(input)
-
     function showToast() {
-        console.log("show toast")
         toast.classList.add("show");
         setTimeout(() => {
             toast.classList.remove("show");
@@ -99,7 +96,6 @@ onUiLoaded(async () => {
 
     // Creating an Observer
     const observer = new MutationObserver((mutations) => {
-        console.log(mutations)
         for (const mutation of mutations) {
             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                 handleInputChange();
