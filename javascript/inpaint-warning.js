@@ -14,6 +14,7 @@ function createInpaintButton() {
     button.style.fontSize = '14px';
     button.style.background = '#1b2636';
     button.style.color = 'white';
+    button.style.border = '1px solid white';
     button.style.minWidth = '1px';
     button.style.display = 'none';
 
@@ -83,7 +84,7 @@ onUiLoaded(async () => {
         toast.classList.add("show");
         setTimeout(() => {
             toast.classList.remove("show");
-        }, 3000);
+        }, 5000);
     }
 
     // The function that will be called when the input value changes

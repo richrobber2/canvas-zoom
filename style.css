@@ -151,17 +151,19 @@ button[aria-label="Redraw"] {
 .toast {
   visibility: hidden;
   position: fixed;
-  bottom: 1rem;
+  bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
   background-color: #0e0e0e;
+  /* background-color: #ff9800; */
   color: white;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   opacity: 0;
   transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
   z-index: 1000;
+  font-size: 20px;
 }
 
 .toast.show {
@@ -184,10 +186,10 @@ button[aria-label="Redraw"] {
 
 .toast-icon {
   display: inline-block;
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>');
+  width: 32px;
+  height: 32px;
+  margin-right: 16px;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" fill="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>');
   background-size: contain;
   background-repeat: no-repeat;
   vertical-align: middle;
