@@ -15,7 +15,7 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_hotkey_overlap": shared.OptionInfo("O", "Toggle overlap ( Technical button, neededs for testing )"),
     "canvas_show_tooltip": shared.OptionInfo(True, "Enable tooltip on the canvas"),
     "canvas_zoom_mask_clear": shared.OptionInfo(True, "Enable mask clearing in inpaint after any picture is moved in inpaint via buttons"),
-    "canvas_zoom_draw_staight_lines": shared.OptionInfo(False, "Enable functionality, when you hold down shift and set dot in different places then a straight line is formed between the dots"),
+    "canvas_zoom_draw_staight_lines": shared.OptionInfo(False, "Enable the function of drawing straight lines between points while holding down the Shift key"),
     "canvas_zoom_brush_outline": shared.OptionInfo(False, "Enable outline for the brush"),
     "canvas_zoom_enable_integration": shared.OptionInfo(False, "Enable integration with ControlNet, Regional Prompter and Latent Couple(Two Shot)"),
     "canvas_zoom_add_buttons": shared.OptionInfo(False, "Add a button to switch to full screen mode. May be useful for devices without keyboard"),
