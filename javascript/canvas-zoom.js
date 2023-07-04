@@ -19,8 +19,6 @@ onUiLoaded(async () => {
 
   // Helper functions
 
-  
-
   function zoomFakeWheelEvent(targetElement, sign,oldEvent) {
     const rect = targetElement.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -300,6 +298,7 @@ const defaultHotkeysConfig = {
     canvas_zoom_hotkey_transparency: "KeyC",
     canvas_show_tooltip: true,
     canvas_zoom_mask_clear: true,
+    canvas_zoom_inpaint_warning: true,
     canvas_zoom_draw_staight_lines: false,
     canvas_zoom_brush_outline: false,
     canvas_zoom_enable_integration: false,

@@ -147,3 +147,48 @@ button[aria-label="Redraw"] {
   transform-origin: 0px 0px;
 }
 
+/* CSS styles for the popup window */
+.toast {
+  visibility: hidden;
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #0e0e0e;
+  color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-20px);
+}
+
+@keyframes fadeInOut {
+  0% {
+      opacity: 0;
+  }
+  10%, 90% {
+      opacity: 1;
+  }
+  100% {
+      opacity: 0;
+  }
+}
+
+.toast-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
