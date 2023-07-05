@@ -154,6 +154,8 @@ onUiLoaded(async () => {
   const inpaintButton = createInpaintButton();
   const toast = createToast();
 
+  const buttons = [txt2imgGenerateBtn, img2imgGenerateBtn];
+
   const enableWarning = config.canvas_zoom_inpaint_warning;
   const enableLabel = config.canvas_zoom_inpaint_label;
   const enableBtnColor = config.canvas_zoom_inpaint_change_btn_color;
@@ -164,9 +166,16 @@ onUiLoaded(async () => {
 
   if (enableLabel) {
     quickSettings.insertAdjacentElement("beforebegin", inpaintButton);
+    handleInputChange(input, inpaintingPattern, inpaintButton)
   }
 
-  const buttons = [txt2imgGenerateBtn, img2imgGenerateBtn];
+  if (enableBtnColor) {
+    if (inpaintingPattern.test(input.value)) {
+      updateButtonColors(buttons, true, normalColor, hoverColor);
+    } 
+  }
+
+  
 
   // Creating an Observer
   const observer = new MutationObserver((mutations) => {
