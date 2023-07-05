@@ -298,7 +298,6 @@ const defaultHotkeysConfig = {
     canvas_zoom_hotkey_transparency: "KeyC",
     canvas_show_tooltip: true,
     canvas_zoom_mask_clear: true,
-    canvas_zoom_inpaint_warning: true,
     canvas_blur_prompt: false,
     canvas_zoom_draw_staight_lines: false,
     canvas_zoom_brush_outline: false,

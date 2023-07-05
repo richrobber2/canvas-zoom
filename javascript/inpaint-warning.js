@@ -195,10 +195,8 @@ onUiLoaded(async () => {
 
   txt2imgGenerateBtn.addEventListener("click", () => {
     const modelClass = input.value;
-    console.log("Not worked?", modelClass);
     if (inpaintingPattern.test(modelClass)) {
       if (enableWarning) {
-        console.log("worked");
         showToast();
       }
     }
