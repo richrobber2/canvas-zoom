@@ -397,11 +397,14 @@ onUiLoaded(async () => {
     "#img2img_detect_image_size_btn"
   );
 
-  const clonedDiv = elements.img2imgDemRaw.children[0].cloneNode(true);
-  clonedDiv.classList.add("get-img-dem");
-  const getImgDataBtn = clonedDiv.querySelector("button");
+  let clonedDiv, getImgDataBtn;
 
   if (!isGetSizeImgBtnExists) {
+    clonedDiv = elements.img2imgDemRaw.children[0].cloneNode(true);
+    clonedDiv.classList.add("get-img-dem");
+    getImgDataBtn = clonedDiv.querySelector("button");
+
+
     getImgDataBtn.innerHTML = "<i>📏</i>";
     getImgDataBtn.id = "img2img_res_get_btn";
     getImgDataBtn.title = "Get the width and height from the picture";
