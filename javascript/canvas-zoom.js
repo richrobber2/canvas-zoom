@@ -19,11 +19,11 @@ onUiLoaded(async () => {
 
   // Helper functions
 
-  function zoomFakeWheelEvent(targetElement, sign,oldEvent) {
+  function zoomFakeWheelEvent(targetElement, sign, oldEvent) {
     const rect = targetElement.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-  
+
     const event = new WheelEvent("wheel", {
       bubbles: true,
       cancelable: true,
@@ -64,131 +64,131 @@ onUiLoaded(async () => {
     });
   }
 
-    // Get active tab
-    function getActiveTab(elements, all = false) {
-      const tabs = elements.img2imgTabs.querySelectorAll("button");
+  // Get active tab
+  function getActiveTab(elements, all = false) {
+    const tabs = elements.img2imgTabs.querySelectorAll("button");
 
-      if (all) return tabs;
+    if (all) return tabs;
 
-      for (let tab of tabs) {
-          if (tab.classList.contains("selected")) {
-              return tab;
-          }
+    for (let tab of tabs) {
+      if (tab.classList.contains("selected")) {
+        return tab;
       }
+    }
   }
 
   // Get tab ID
   function getTabId(elements) {
-      const activeTab = getActiveTab(elements);
-      return tabNameToElementId[activeTab.innerText];
+    const activeTab = getActiveTab(elements);
+    return tabNameToElementId[activeTab.innerText];
   }
 
   // Wait until opts loaded
   async function waitForOpts() {
-      for (;;) {
-          if (window.opts && Object.keys(window.opts).length) {
-              return window.opts;
-          }
-          await new Promise(resolve => setTimeout(resolve, 100));
+    for (; ;) {
+      if (window.opts && Object.keys(window.opts).length) {
+        return window.opts;
       }
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
   }
 
   // Function for defining the "Ctrl", "Shift" and "Alt" keys
   function isModifierKey(event, key) {
-      switch (key) {
+    switch (key) {
       case "Ctrl":
-          return event.ctrlKey;
+        return event.ctrlKey;
       case "Shift":
-          return event.shiftKey;
+        return event.shiftKey;
       case "Alt":
-          return event.altKey;
+        return event.altKey;
       default:
-          return false;
-      }
+        return false;
+    }
   }
 
 
   // Check if hotkey is valid
   function isValidHotkey(value) {
-      const specialKeys = ["Ctrl", "Alt", "Shift", "Disable"];
-      return (
+    const specialKeys = ["Ctrl", "Alt", "Shift", "Disable"];
+    return (
       (typeof value === "string" && value.length === 1 && /[a-z]/i.test(value)) ||
       specialKeys.includes(value)
-      );
+    );
   }
-  
+
   // Normalize hotkey
   function normalizeHotkey(hotkey) {
-      return hotkey.length === 1 ? "Key" + hotkey.toUpperCase() : hotkey;
+    return hotkey.length === 1 ? "Key" + hotkey.toUpperCase() : hotkey;
   }
-  
+
   // Format hotkey for display
   function formatHotkeyForDisplay(hotkey) {
-      return hotkey.startsWith("Key") ? hotkey.slice(3) : hotkey;
+    return hotkey.startsWith("Key") ? hotkey.slice(3) : hotkey;
   }
-  
+
   // Create hotkey configuration with the provided options
   function createHotkeyConfig(defaultHotkeysConfig, hotkeysConfigOpts) {
-      const result = {}; // Resulting hotkey configuration
-      const usedKeys = new Set(); // Set of used hotkeys
-  
-      // Iterate through defaultHotkeysConfig keys
-      for (const key in defaultHotkeysConfig) {
+    const result = {}; // Resulting hotkey configuration
+    const usedKeys = new Set(); // Set of used hotkeys
+
+    // Iterate through defaultHotkeysConfig keys
+    for (const key in defaultHotkeysConfig) {
       const userValue = hotkeysConfigOpts[key]; // User-provided hotkey value
       const defaultValue = defaultHotkeysConfig[key]; // Default hotkey value
-  
+
       // Apply appropriate value for undefined, boolean, or object userValue
       if (
-          userValue === undefined ||
-          typeof userValue === "boolean" ||
-          typeof userValue === "object" ||
-          typeof userValue === "number" ||
-          userValue.startsWith("#",0) ||
-          userValue === "disable"
+        userValue === undefined ||
+        typeof userValue === "boolean" ||
+        typeof userValue === "object" ||
+        typeof userValue === "number" ||
+        userValue.startsWith("#", 0) ||
+        userValue === "disable"
       ) {
-          result[key] = userValue === undefined ? defaultValue : userValue;
+        result[key] = userValue === undefined ? defaultValue : userValue;
       } else if (isValidHotkey(userValue)) {
-          const normalizedUserValue = normalizeHotkey(userValue);
-  
-          // Check for conflicting hotkeys
-          if (!usedKeys.has(normalizedUserValue)) {
+        const normalizedUserValue = normalizeHotkey(userValue);
+
+        // Check for conflicting hotkeys
+        if (!usedKeys.has(normalizedUserValue)) {
           usedKeys.add(normalizedUserValue);
           result[key] = normalizedUserValue;
-          } else {
+        } else {
           console.error(
-              `Hotkey: ${formatHotkeyForDisplay(
+            `Hotkey: ${formatHotkeyForDisplay(
               userValue
-              )} for ${key} is repeated and conflicts with another hotkey. The default hotkey is used: ${formatHotkeyForDisplay(
+            )} for ${key} is repeated and conflicts with another hotkey. The default hotkey is used: ${formatHotkeyForDisplay(
               defaultValue
-              )}`
+            )}`
           );
           result[key] = defaultValue;
-          }
+        }
       } else {
-          console.error(
+        console.error(
           `Hotkey: ${formatHotkeyForDisplay(
-              userValue
+            userValue
           )} for ${key} is not valid. The default hotkey is used: ${formatHotkeyForDisplay(
-              defaultValue
+            defaultValue
           )}`
-          );
-          result[key] = defaultValue;
+        );
+        result[key] = defaultValue;
       }
-      }
-  
-      return result;
+    }
+
+    return result;
   }
 
   function disableFunctions(config, disabledFunctions) {
-      disabledFunctions.forEach((funcName) => {
-        if (functionMap.hasOwnProperty(funcName)) {
-          const key = functionMap[funcName];
-          config[key] = "disable";
-        }
-      });
-    
-      return config;
-    }
+    disabledFunctions.forEach((funcName) => {
+      if (functionMap.hasOwnProperty(funcName)) {
+        const key = functionMap[funcName];
+        config[key] = "disable";
+      }
+    });
+
+    return config;
+  }
 
   // Clear mask when send to inpaint
   function clearMask() {
@@ -284,9 +284,9 @@ onUiLoaded(async () => {
   const hotkeysConfigOpts = await waitForOpts();
 
   // Default config
-const defaultHotkeysConfig = {
-    canvas_hotkey_zoom : "Alt",
-    canvas_hotkey_adjust : "Ctrl",
+  const defaultHotkeysConfig = {
+    canvas_hotkey_zoom: "Alt",
+    canvas_hotkey_adjust: "Ctrl",
     canvas_hotkey_reset: "KeyR",
     canvas_hotkey_fullscreen: "KeyS",
     canvas_hotkey_move: "KeyF",
@@ -296,6 +296,7 @@ const defaultHotkeysConfig = {
     canvas_zoom_hotkey_dropper: "KeyA",
     canvas_zoom_hotkey_fill: "KeyH",
     canvas_zoom_hotkey_transparency: "KeyC",
+    canvas_zoom_hide_btn: true,
     canvas_show_tooltip: true,
     canvas_zoom_mask_clear: true,
     canvas_blur_prompt: false,
@@ -305,7 +306,7 @@ const defaultHotkeysConfig = {
     canvas_zoom_add_buttons: false,
     canvas_zoom_inpaint_brushcolor: "#000000",
     canvas_zoom_transparency_level: 60,
-    canvas_zoom_disabled_functions : [],
+    canvas_zoom_disabled_functions: [],
   };
 
   const functionMap = {
@@ -326,9 +327,9 @@ const defaultHotkeysConfig = {
   const preHotkeysConfig = createHotkeyConfig(
     defaultHotkeysConfig,
     hotkeysConfigOpts
-);
+  );
 
-// Disable functions that are not needed by the user
+  // Disable functions that are not needed by the user
   const hotkeysConfig = disableFunctions(
     preHotkeysConfig,
     preHotkeysConfig.canvas_zoom_disabled_functions
@@ -362,9 +363,9 @@ const defaultHotkeysConfig = {
   const rangeInputs = elements.rangeGroup
     ? Array.from(elements.rangeGroup.querySelectorAll("input"))
     : [
-        gradioApp().querySelector("#img2img_width input[type='range']"),
-        gradioApp().querySelector("#img2img_height input[type='range']"),
-      ];
+      gradioApp().querySelector("#img2img_width input[type='range']"),
+      gradioApp().querySelector("#img2img_height input[type='range']"),
+    ];
 
   for (const input of rangeInputs) {
     input?.addEventListener("input", () => restoreImgRedMask(elements));
@@ -502,7 +503,7 @@ const defaultHotkeysConfig = {
     // Create tooltip
     function createTooltip() {
       let toolTipElemnt
-      if(targetElement.querySelector(".image-container")){
+      if (targetElement.querySelector(".image-container")) {
         toolTipElemnt = targetElement.querySelector(".image-container");
       } else {
         toolTipElemnt = targetElement.querySelector("div[data-testid='image']");
@@ -534,43 +535,43 @@ const defaultHotkeysConfig = {
         { configKey: "canvas_zoom_hotkey_dropper", action: "Toggle dropper" },
         { configKey: "canvas_zoom_hotkey_fill", action: "Fill canvas" },
         { configKey: "canvas_zoom_hotkey_transparency", action: "Transparency mode" },
-    ];
-    
-    // Create hotkeys array with disabled property based on the config values
-    const hotkeys = hotkeysInfo.map((info) => {
+      ];
+
+      // Create hotkeys array with disabled property based on the config values
+      const hotkeys = hotkeysInfo.map((info) => {
         const configValue = hotkeysConfig[info.configKey];
         const key = info.keySuffix
-        ? `${configValue}${info.keySuffix}`
-        : configValue.charAt(configValue.length - 1);
+          ? `${configValue}${info.keySuffix}`
+          : configValue.charAt(configValue.length - 1);
         return {
-        key,
-        action: info.action,
-        disabled: configValue === "disable",
+          key,
+          action: info.action,
+          disabled: configValue === "disable",
         };
-    });
-      
+      });
+
       for (const hotkey of hotkeys) {
         if (hotkey.disabled) {
           continue;
         }
-      
+
         const p = document.createElement("p");
         p.innerHTML = `<b>${hotkey.key}</b> - ${hotkey.action}`;
         tooltipContent.appendChild(p);
       }
 
-    // Add information and content elements to the tooltip element
-    tooltip.appendChild(info);
-    tooltip.appendChild(tooltipContent);
+      // Add information and content elements to the tooltip element
+      tooltip.appendChild(info);
+      tooltip.appendChild(tooltipContent);
 
-    // Add a hint element to the target element
-    toolTipElemnt.appendChild(tooltip);
-}
+      // Add a hint element to the target element
+      toolTipElemnt.appendChild(tooltip);
+    }
 
     // Create button for devices without keyboard
     function createFuncButtons() {
       let buttonContainer;
-      if(targetElement.querySelector(".image-container")){
+      if (targetElement.querySelector(".image-container")) {
         buttonContainer = targetElement.querySelector(".image-container");
       } else {
         buttonContainer = targetElement.querySelector("div[data-testid='image']");
@@ -711,9 +712,9 @@ const defaultHotkeysConfig = {
       newZoomLevel = Math.max(0.5, Math.min(newZoomLevel, 15));
 
       elemData[elemId].panX +=
-          mouseX - (mouseX * newZoomLevel) / elemData[elemId].zoomLevel;
+        mouseX - (mouseX * newZoomLevel) / elemData[elemId].zoomLevel;
       elemData[elemId].panY +=
-          mouseY - (mouseY * newZoomLevel) / elemData[elemId].zoomLevel;
+        mouseY - (mouseY * newZoomLevel) / elemData[elemId].zoomLevel;
 
       targetElement.style.transformOrigin = "0 0";
       targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${newZoomLevel})`;
@@ -721,35 +722,35 @@ const defaultHotkeysConfig = {
       toggleOverlap("on");
       setImgDisplayToNone();
       return newZoomLevel;
-  }
+    }
 
-  // Change the zoom level based on user interaction
-  function changeZoomLevel(operation, e) {
+    // Change the zoom level based on user interaction
+    function changeZoomLevel(operation, e) {
 
       if (isModifierKey(e, hotkeysConfig.canvas_hotkey_zoom)) {
-          e.preventDefault();
+        e.preventDefault();
 
-          let zoomPosX, zoomPosY;
-          let delta = 0.2;
+        let zoomPosX, zoomPosY;
+        let delta = 0.2;
 
-          if (elemData[elemId].zoomLevel > 7) {
-              delta = 0.9;
-          } else if (elemData[elemId].zoomLevel > 2) {
-              delta = 0.6;
-          }
+        if (elemData[elemId].zoomLevel > 7) {
+          delta = 0.9;
+        } else if (elemData[elemId].zoomLevel > 2) {
+          delta = 0.6;
+        }
 
-          zoomPosX = e.clientX;
-          zoomPosY = e.clientY;
+        zoomPosX = e.clientX;
+        zoomPosY = e.clientY;
 
-          fullScreenMode = false;
-          elemData[elemId].zoomLevel = updateZoom(
-              elemData[elemId].zoomLevel +
-                  (operation === "+" ? delta : -delta),
-              zoomPosX - targetElement.getBoundingClientRect().left,
-              zoomPosY - targetElement.getBoundingClientRect().top
-          );
+        fullScreenMode = false;
+        elemData[elemId].zoomLevel = updateZoom(
+          elemData[elemId].zoomLevel +
+          (operation === "+" ? delta : -delta),
+          zoomPosX - targetElement.getBoundingClientRect().left,
+          zoomPosY - targetElement.getBoundingClientRect().top
+        );
       }
-  }
+    }
 
     /**
      * This function fits the target element to the screen by calculating
@@ -936,6 +937,36 @@ const defaultHotkeysConfig = {
       localStorage.setItem("colorPickerEnable", !colorPickerEnabled);
     }
 
+
+    //Hide canvas btns
+    function hideCanvasButtons(hide = false) {
+      const funcBtns = document.querySelector(`${activeElement} button[aria-label='Undo']`).parentElement
+      const artistsBtns = document.querySelector(`${activeElement} .brush`).parentElement
+      const tooltip = document.querySelector(`${activeElement} .canvas-tooltip-info--extension`)
+
+      // const undoBtn = document.querySelector(`${activeElement} button[aria-label='Undo']`)
+      // const clearBtn = document.querySelector(`${activeElement} button[aria-label='Clear']`)
+
+      if (hide) {
+        artistsBtns.classList.add("hidden")
+        funcBtns.classList.add("hidden")
+        tooltip.classList.add("hidden")
+
+        artistsBtns.classList.remove("visible")
+        funcBtns.classList.remove("visible")
+        tooltip.classList.remove("visible")
+      } else {
+        artistsBtns.classList.remove("hidden")
+        funcBtns.classList.remove("hidden")
+        tooltip.classList.remove("hidden")
+
+        artistsBtns.classList.add("visible")
+        funcBtns.classList.add("visible")
+        tooltip.classList.add("visible")
+      }
+
+    }
+
     function pinColorPanelToMouse(colorInput) {
       return new Promise((resolve) => {
         colorInput.style.position = "absolute";
@@ -998,26 +1029,26 @@ const defaultHotkeysConfig = {
       const canvas = document.querySelector(
         `${elemId} canvas[key="interface"]`
       );
-      canvas.dispatchEvent(new MouseEvent('mousemove', {clientX: 1, clientY: 1}));
+      canvas.dispatchEvent(new MouseEvent('mousemove', { clientX: 1, clientY: 1 }));
     }
-    
+
 
     // Handle keydown events
     function handleKeyDown(event) {
-      
+
       // Disable key locks to make pasting from the buffer work correctly
-      if((event.ctrlKey && event.code === 'KeyV') || (event.ctrlKey && event.code === 'KeyC') || event.code === "F5") {
+      if ((event.ctrlKey && event.code === 'KeyV') || (event.ctrlKey && event.code === 'KeyC') || event.code === "F5") {
         console.log("work")
         return
       }
 
       // before activating shortcut, ensure user is not actively typing in an input field
-      if(!hotkeysConfig.canvas_blur_prompt){
-        if(event.target.nodeName === 'TEXTAREA' || event.target.nodeName === 'INPUT') {
+      if (!hotkeysConfig.canvas_blur_prompt) {
+        if (event.target.nodeName === 'TEXTAREA' || event.target.nodeName === 'INPUT') {
           return
         }
       }
-       
+
 
       const hotkeyActions = {
         [hotkeysConfig.canvas_hotkey_reset]: resetZoom,
@@ -1043,22 +1074,22 @@ const defaultHotkeysConfig = {
         event.preventDefault();
 
         const operationKey = event.code === "Minus" || event.code === "NumpadSubtract" ? "-" : "+"
-        zoomFakeWheelEvent(targetElement, operationKey,event)
+        zoomFakeWheelEvent(targetElement, operationKey, event)
       }
 
       if (
         isModifierKey(event, hotkeysConfig.canvas_hotkey_zoom) ||
         isModifierKey(event, hotkeysConfig.canvas_hotkey_adjust)
-       ) {
+      ) {
         event.preventDefault();
-       }
+      }
 
 
-       if (event.code === "ShiftLeft" && hotkeysConfig.canvas_zoom_draw_staight_lines){
+      if (event.code === "ShiftLeft" && hotkeysConfig.canvas_zoom_draw_staight_lines) {
         window.drawStraightLine = true;
-       }
-    
-  }
+      }
+
+    }
 
     // Get Mouse position
     function getMousePosition(e) {
@@ -1071,6 +1102,8 @@ const defaultHotkeysConfig = {
 
     // Handle events only inside the targetElement
     let isKeyDownHandlerAttached = false;
+    let hideTimeout;
+    let buttonsHidden = false;
 
     function handleMouseMove() {
       if (!isKeyDownHandlerAttached) {
@@ -1078,6 +1111,20 @@ const defaultHotkeysConfig = {
         isKeyDownHandlerAttached = true;
 
         activeElement = elemId;
+      }
+
+
+
+      if (window.isDrawing && hotkeysConfig.canvas_zoom_hide_btn) {
+        if (!buttonsHidden) {
+          hideCanvasButtons(true);
+          buttonsHidden = true;
+        }
+      } else {
+        if (buttonsHidden) {
+          hideCanvasButtons(false);
+          buttonsHidden = false;
+        }
       }
     }
 
@@ -1105,7 +1152,7 @@ const defaultHotkeysConfig = {
 
     targetElement.addEventListener("wheel", (e) => {
       // change zoom level
-      if(!window.applyZoomAndPan){
+      if (!window.applyZoomAndPan) {
         const operation = e.deltaY > 0 ? "-" : "+";
         changeZoomLevel(operation, e);
       }
@@ -1122,35 +1169,35 @@ const defaultHotkeysConfig = {
     // Handle the move event for pan functionality. Updates the panX and panY variables and applies the new transform to the target element.
     function handleMoveKeyDown(e) {
       // Disable key locks to make pasting from the buffer work correctly
-      if ((e.ctrlKey && e.code === 'KeyV')  || (e.ctrlKey && event.code === 'KeyC') || e.code === "F5") {
+      if ((e.ctrlKey && e.code === 'KeyV') || (e.ctrlKey && event.code === 'KeyC') || e.code === "F5") {
         console.log("work")
         return
       }
 
       // before activating shortcut, ensure user is not actively typing in an input field
-      if(!hotkeysConfig.canvas_blur_prompt){
-        if(e.target.nodeName === 'TEXTAREA' || e.target.nodeName === 'INPUT') {
+      if (!hotkeysConfig.canvas_blur_prompt) {
+        if (e.target.nodeName === 'TEXTAREA' || e.target.nodeName === 'INPUT') {
           return
         }
       }
 
-      if (e.code === hotkeysConfig.canvas_hotkey_move ) { 
-              if (!e.ctrlKey && !e.metaKey && isKeyDownHandlerAttached) {
-                  e.preventDefault();
-                  document.activeElement.blur();
-                  isMoving = true;
-              }
-          }
-  }
+      if (e.code === hotkeysConfig.canvas_hotkey_move) {
+        if (!e.ctrlKey && !e.metaKey && isKeyDownHandlerAttached) {
+          e.preventDefault();
+          document.activeElement.blur();
+          isMoving = true;
+        }
+      }
+    }
 
     function handleMoveKeyUp(e) {
       if (e.code === hotkeysConfig.canvas_hotkey_move) {
         isMoving = false;
       }
 
-      if (e.code === "ShiftLeft"){
+      if (e.code === "ShiftLeft") {
         window.drawStraightLine = false;
-       }
+      }
     }
 
     document.addEventListener("keydown", handleMoveKeyDown);
@@ -1173,7 +1220,7 @@ const defaultHotkeysConfig = {
         toggleOverlap("on");
       });
 
-      
+
     }
 
     function handleMoveByKey(e) {
@@ -1294,23 +1341,23 @@ const defaultHotkeysConfig = {
       const I2I = "div#tab_img2img";
       const Tab = "div#script_twoshot_tabs";
       const Canvas = "div#twoshot_canvas_sketch";
-    
-    //Text to Image Implementation
+
+      //Text to Image Implementation
       const LCT2IID = T2I + " " + Tab;
       const LCT2IEl = document.querySelector(LCT2IID);
       const LCT2TMaskID = LCT2IID + " " + Canvas;
 
       if (LCT2IEl) {
-          LCT2IEl.addEventListener(
-            "click",
-            async () => {
+        LCT2IEl.addEventListener(
+          "click",
+          async () => {
             const LCT2TMaskEl = await waitForElement(LCT2TMaskID);
             if (LCT2TMaskEl) {
               applyZoomAndPan(LCT2TMaskID);
             }
           },
           { once: true }
-          );
+        );
       }
 
       //Image to Image Implementation
@@ -1319,17 +1366,17 @@ const defaultHotkeysConfig = {
       const LCI2IMaskID = LCI2IID + " " + Canvas;
 
       if (LCI2IEl) {
-          LCI2IEl.addEventListener(
+        LCI2IEl.addEventListener(
           "click",
           async () => {
-          const LCI2IMaskEl = await waitForElement(LCI2IMaskID);
-          if (LCI2IMaskEl) {
-            applyZoomAndPan(LCI2IMaskID);
-          }
-        },
-        { once: true }
+            const LCI2IMaskEl = await waitForElement(LCI2IMaskID);
+            if (LCI2IMaskEl) {
+              applyZoomAndPan(LCI2IMaskID);
+            }
+          },
+          { once: true }
         );
-    }
+      }
     }
   }
 });

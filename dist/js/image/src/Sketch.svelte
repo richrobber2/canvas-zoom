@@ -360,6 +360,7 @@
 
 	let handle_draw_start = (e) => {
 		e.preventDefault();
+		window.isDrawing = true;
 		const { x, y } = get_pointer_pos(e);
 
 		if (!e.touches && e.button !== 0) return;
@@ -422,6 +423,7 @@
 	};
 
 	let handle_draw_end = (e) => {
+		window.isDrawing = false;
 		e.preventDefault();
 		handle_draw_move(e);
 		is_drawing = false;

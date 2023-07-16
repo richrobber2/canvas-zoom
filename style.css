@@ -194,3 +194,15 @@ button[aria-label="Redraw"] {
   background-repeat: no-repeat;
   vertical-align: middle;
 }
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
+}
