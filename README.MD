@@ -26,6 +26,8 @@ https://github.com/richrobber2/canvas-zoom/assets/22278673/1f666443-34bc-421e-8e
 
 You can edit the hotkeys as you want, to do this you need to go into the settings.
 
+Canvas zoom works on a modified version of gradio 3.31 or 3.23 for versions below 1.1, you can read all the details in the dist folder
+
 The hotkeys only work in the image area
 
 ## Default hotkeys:
@@ -117,6 +119,8 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 **Если расширение не работает проверьте страницу с решением частых проблем https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting**
 
 **Вы можете ознакомиться с возможностями этого расширения в [canvas-zoom-showcase](https://github.com/daswer123/canvas-zoom-showcase)**
+
+**Canvas Zoom работает на модифицированной версии градио 3.31 или 3.23 для версии ниже 1.1, все подробности вы можете почитать в папке dist**
 
 ## О Расширении
 
