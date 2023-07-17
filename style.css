@@ -1,4 +1,4 @@
-.canvas-tooltip{
+.canvas-tooltip {
   display: none;
 }
 
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column; 
+  flex-direction: column;
 
   z-index: 100;
 }
@@ -25,7 +25,7 @@
   width: 2px;
   height: 7px;
   background-color: white;
-  margin-top: 2px; 
+  margin-top: 2px;
 }
 
 .canvas-tooltip-info--extension::before {
@@ -38,10 +38,10 @@
 
 .canvas-tooltip-content--extension {
   display: none;
-  background-color: #f9f9f9; 
-  color: #333; 
+  background-color: #f9f9f9;
+  color: #333;
   border: 1px solid #ddd;
-  padding: 15px; 
+  padding: 15px;
   position: absolute;
   top: 30px;
   left: 10px;
@@ -49,23 +49,28 @@
   font-size: 14px;
   opacity: 0;
   border-radius: 8px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); 
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 
   z-index: 101;
 }
 
 .canvas-tooltip--extension:hover .canvas-tooltip-content--extension {
   display: block;
-  animation: fadeIn 0.5s; 
+  animation: fadeIn 0.5s;
   opacity: 1;
 }
 
 @keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-.fullscreen-btn-main{
+.fullscreen-btn-main {
   position: absolute;
   top: 45px;
   left: 10px;
@@ -73,45 +78,53 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
-.fullscreen-btn{
+.fullscreen-btn {
   cursor: pointer;
-  font-style: normal;
+  align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   border-radius: 5px;
   z-index: 100;
 }
 
-.fullscreen-btn:hover{
+.fullscreen-btn {
+  padding-top: 13px;
+}
+
+.fullscreen-btn:hover {
   background-color: rgba(22, 22, 22, 0.5);
 }
 
-.dropper-btn-main{
+.dropper-btn-main {
   position: absolute;
-  top: 80px;
+  top: 100px;
   left: 10px;
+
+
 
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
-.dropper-btn{
+.dropper-btn {
   cursor: pointer;
   font-style: normal;
   background-color: rgba(0, 0, 0, 0.5);
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   border-radius: 5px;
   z-index: 100;
+
+  padding-top: 13px;
 }
 
-.dropper-btn:hover{
+.dropper-btn:hover {
   background-color: rgba(22, 22, 22, 0.5);
 }
 
@@ -174,13 +187,16 @@ button[aria-label="Redraw"] {
 
 @keyframes fadeInOut {
   0% {
-      opacity: 0;
+    opacity: 0;
   }
-  10%, 90% {
-      opacity: 1;
+
+  10%,
+  90% {
+    opacity: 1;
   }
+
   100% {
-      opacity: 0;
+    opacity: 0;
   }
 }
 

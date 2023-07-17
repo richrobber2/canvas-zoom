@@ -404,7 +404,6 @@ onUiLoaded(async () => {
     clonedDiv.classList.add("get-img-dem");
     getImgDataBtn = clonedDiv.querySelector("button");
 
-
     getImgDataBtn.innerHTML = "<i>📏</i>";
     getImgDataBtn.id = "img2img_res_get_btn";
     getImgDataBtn.title = "Get the width and height from the picture";
@@ -582,16 +581,16 @@ onUiLoaded(async () => {
 
       const button = document.createElement("button");
       button.className = "fullscreen-btn-main";
-      button.innerHTML = `<i class="fullscreen-btn">F</i>`;
+      button.innerHTML = `<p class="fullscreen-btn">F</p>`;
 
       const dropperBtn = document.createElement("button");
       dropperBtn.className = "dropper-btn-main";
-      dropperBtn.innerHTML = `<i class="dropper-btn">P</i>`;
+      dropperBtn.innerHTML = `<p class="dropper-btn">P</p>`;
 
       // Add an event listener to the button
       button.addEventListener("click", function () {
         // Call the fitToScreen function here
-        fitToScreen();
+        fitToScreen(true);
       });
 
       // Add an event listener to the button
@@ -629,7 +628,7 @@ onUiLoaded(async () => {
     }
 
     // Reset the zoom level and pan position of the target element to their initial values
-    function resetZoom() {
+    function resetZoom(isMobile = false) {
       elemData[elemId] = {
         zoomLevel: 1,
         panX: 0,
@@ -653,6 +652,11 @@ onUiLoaded(async () => {
       ) {
         fitToElement();
         return;
+      }
+
+      if (isMobile) {
+        fitToElement();
+        return
       }
 
       targetElement.style.width = "";
@@ -813,19 +817,25 @@ onUiLoaded(async () => {
      */
 
     // Fullscreen mode
-    function fitToScreen() {
+    function fitToScreen(isMobile = false) {
       const canvas = gradioApp().querySelector(
         `${elemId} canvas[key="interface"]`
       );
 
       if (!canvas) return;
 
-      if (canvas.offsetWidth > 862) {
+      if (canvas.offsetWidth > 862 || isMobile) {
         targetElement.style.width = canvas.offsetWidth + "px";
       }
 
       if (fullScreenMode) {
-        resetZoom();
+
+        if (isMobile) {
+          resetZoom(true);
+        } else {
+          resetZoom();
+        }
+
         fullScreenMode = false;
         return;
       }
