@@ -628,7 +628,7 @@ onUiLoaded(async () => {
     }
 
     // Reset the zoom level and pan position of the target element to their initial values
-    function resetZoom(isMobile = false) {
+    function resetZoom(_ = "", isMobile = false) {
       elemData[elemId] = {
         zoomLevel: 1,
         panX: 0,
@@ -831,7 +831,7 @@ onUiLoaded(async () => {
       if (fullScreenMode) {
 
         if (isMobile) {
-          resetZoom(true);
+          resetZoom("", true);
         } else {
           resetZoom();
         }
