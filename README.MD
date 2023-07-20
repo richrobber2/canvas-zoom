@@ -8,6 +8,9 @@ Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
 **The extension is fully compatible with webui version [1.4](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.4.0) and the built-in canvas-zoom-and-pan extension. However, I still recommend that you disable the built-in.**
 
+Canvas Zoom supports integration with other popular extensions: ControlNet, Regional Prompter and Latent Couple(Two Shot). 
+More details [here](https://github.com/richrobber2/canvas-zoom/discussions/42#discussioncomment-6102485)
+
 https://github.com/richrobber2/canvas-zoom/assets/22278673/1f666443-34bc-421e-8edc-e4eaa22722a6
 
 ## Important Notes
@@ -109,6 +112,9 @@ Thanks to the [AI Diffusion](https://discord.gg/xpuct) community on discord for 
 **Расширение совместимо с версией webui [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) и [версией от 25 марта](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
 **Расширение полностью совместимо с webui версии [1.4](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.4.0) и встроенным расширением canvas-zoom-and-pan. Тем не менее, я рекомендую отключить встроенное расширение.**
+
+Canvas Zoom поддерживает интеграцию с другими популярными расширениями: ControlNet, Regional Prompter и Latent Couple(Two Shot). 
+Более подробная информация [здесь](https://github.com/richrobber2/canvas-zoom/discussions/42#discussioncomment-6102485)
 
 ## Важные замечания
 
