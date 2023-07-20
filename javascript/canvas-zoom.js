@@ -447,9 +447,7 @@ onUiLoaded(async () => {
     // Clear mask when send through buttons
     if (hotkeysConfig.canvas_zoom_mask_clear) {
       allButtons.forEach((button) => {
-
         if (button.innerText === "img2img") return;
-
         button.addEventListener("click", (e) => {
           const sendToTabName = getTabElFromText(button.innerText);
 
@@ -1179,7 +1177,7 @@ onUiLoaded(async () => {
       const isDefaultCanvas = checkIsDefault(elementIDs, elemId)
 
       // change zoom level
-      if (!isDefaultCanvas) {
+      if (!isDefaultCanvas || !window.applyZoomAndPan) {
         const operation = e.deltaY > 0 ? "-" : "+";
         changeZoomLevel(operation, e);
       }
@@ -1299,9 +1297,10 @@ onUiLoaded(async () => {
   applyZoomAndPan(elementIDs.inpaintSketch);
 
   // Make Canvas zoom func global, like in build in extension
-  if (!window.applyZoomAndPan) {
-    window.applyZoomAndPan = applyZoomAndPan
-  }
+  // Temp disable have bugs :(
+  // if (!window.applyZoomAndPan) {
+  //   window.applyZoomAndPan = applyZoomAndPan
+  // }
 
   // Create a function to add event listeners to elements
   function applyZoomAndPanIntegration(id, elementIDs) {
