@@ -1291,116 +1291,57 @@ onUiLoaded(async () => {
   applyZoomAndPan(elementIDs.inpaint);
   applyZoomAndPan(elementIDs.inpaintSketch);
 
-  //Enable ControlNet Integration
-  // Integration ControlNet
+  // Make Canvas zoom func global, like in build in extension
+  if (!window.applyZoomAndPan) {
+    window.applyZoomAndPan = applyZoomAndPan
+  }
+
+  // Create a function to add event listeners to elements
+  function applyZoomAndPanIntegration(id, elementIDs) {
+    const mainEl = document.querySelector(id);
+
+    if (mainEl) {
+      mainEl.addEventListener(
+        "click",
+        async () => {
+          for (let elementID of elementIDs) {
+            const el = await waitForElement(elementID);
+            if (el) {
+              applyZoomAndPan(elementID);
+            } else {
+              break;
+            }
+          }
+        },
+        { once: true }
+      );
+    }
+  }
+
+  // Enable Extensions Integration
   const integrateControlNet = hotkeysConfig.canvas_zoom_enable_integration;
-  if (integrateControlNet === true) {
-    const t2icontolNetMainID = "#txt2img_controlnet";
-    const t2icontolNetMainEl = document.querySelector(t2icontolNetMainID);
-    const i2icontolNetMainID = "#img2img_controlnet";
-    const i2icontolNetMainEl = document.querySelector(i2icontolNetMainID);
+  if (integrateControlNet) {
 
-    if (t2icontolNetMainEl) {
-      t2icontolNetMainEl.addEventListener(
-        "click",
-        async () => {
-          const maxElements = 10;
-          for (let i = 0; i < maxElements; i++) {
-            const t2iControlNetElID = `#txt2img_controlnet_ControlNet-${i}_input_image`;
-            const t2iControlNetEl = await waitForElement(t2iControlNetElID);
-            if (t2iControlNetEl) {
-              applyZoomAndPan(t2iControlNetElID);
-            } else {
-              break;
-            }
-          }
-        },
-        { once: true }
-      );
-    }
+    // Add integration with ControlNet txt2img Tabs
+    applyZoomAndPanIntegration("#txt2img_controlnet",
+      Array.from({ length: 10 }, (_, i) => `#txt2img_controlnet_ControlNet-${i}_input_image`));
 
-    if (i2icontolNetMainEl) {
-      i2icontolNetMainEl.addEventListener(
-        "click",
-        async () => {
-          const maxElements = 10;
-          for (let i = 0; i < maxElements; i++) {
-            const i2iControlNetElID = `#img2img_controlnet_ControlNet-${i}_input_image`;
-            const i2iControlNetEl = await waitForElement(i2iControlNetElID);
-            if (i2iControlNetEl) {
-              applyZoomAndPan(i2iControlNetElID);
-            } else {
-              break;
-            }
-          }
-        },
-        { once: true }
-      );
-    }
+    // Add integration with ControlNet img2img Tabs
+    applyZoomAndPanIntegration("#img2img_controlnet",
+      Array.from({ length: 10 }, (_, i) => `#img2img_controlnet_ControlNet-${i}_input_image`));
 
-    // Integration with Regional Prompter
-    if (integrateControlNet === true) {
-      const RPId = "#RP_main";
-      const RPEl = document.querySelector(RPId);
+    // Add integration with Regional Prompter
+    applyZoomAndPanIntegration("#RP_main", ["#polymask"]);
 
-      if (RPEl) {
-        RPEl.addEventListener(
-          "click",
-          async () => {
-            const RPMaskId = "#polymask";
-            const RPMaskEl = await waitForElement(RPMaskId);
+    // Add integration with Latent Couple txt2img
+    applyZoomAndPanIntegration("div#tab_txt2img div#script_twoshot_tabs", ["div#tab_txt2img div#script_twoshot_tabs div#twoshot_canvas_sketch"]);
 
-            if (RPMaskEl) {
-              applyZoomAndPan(RPMaskId);
-            }
-          },
-          { once: true }
-        );
-      }
-    }
+    // Add integration with Latent Couple img2img
+    applyZoomAndPanIntegration("div#tab_img2img div#script_twoshot_tabs", ["div#tab_img2img div#script_twoshot_tabs div#twoshot_canvas_sketch"]);
 
-    // Integration with Latent Couple / twoshot_tabs
-    if (integrateControlNet === true) {
-      const T2I = "div#tab_txt2img";
-      const I2I = "div#tab_img2img";
-      const Tab = "div#script_twoshot_tabs";
-      const Canvas = "div#twoshot_canvas_sketch";
 
-      //Text to Image Implementation
-      const LCT2IID = T2I + " " + Tab;
-      const LCT2IEl = document.querySelector(LCT2IID);
-      const LCT2TMaskID = LCT2IID + " " + Canvas;
+    // Add your integration and open PR 😊
 
-      if (LCT2IEl) {
-        LCT2IEl.addEventListener(
-          "click",
-          async () => {
-            const LCT2TMaskEl = await waitForElement(LCT2TMaskID);
-            if (LCT2TMaskEl) {
-              applyZoomAndPan(LCT2TMaskID);
-            }
-          },
-          { once: true }
-        );
-      }
 
-      //Image to Image Implementation
-      const LCI2IID = I2I + " " + Tab;
-      const LCI2IEl = document.querySelector(LCI2IID);
-      const LCI2IMaskID = LCI2IID + " " + Canvas;
-
-      if (LCI2IEl) {
-        LCI2IEl.addEventListener(
-          "click",
-          async () => {
-            const LCI2IMaskEl = await waitForElement(LCI2IMaskID);
-            if (LCI2IMaskEl) {
-              applyZoomAndPan(LCI2IMaskID);
-            }
-          },
-          { once: true }
-        );
-      }
-    }
   }
 });
