@@ -961,21 +961,21 @@ onUiLoaded(async () => {
       // const clearBtn = document.querySelector(`${activeElement} button[aria-label='Clear']`)
 
       if (hide) {
-        artistsBtns.classList.add("hidden")
-        funcBtns.classList.add("hidden")
-        tooltip.classList.add("hidden")
+        artistsBtns.classList.add("canvas-buttons-hidden")
+        funcBtns.classList.add("canvas-buttons-hidden")
+        tooltip.classList.add("canvas-buttons-hidden")
 
-        artistsBtns.classList.remove("visible")
-        funcBtns.classList.remove("visible")
-        tooltip.classList.remove("visible")
+        artistsBtns.classList.remove("canvas-buttons-visible")
+        funcBtns.classList.remove("canvas-buttons-visible")
+        tooltip.classList.remove("canvas-buttons-visible")
       } else {
-        artistsBtns.classList.remove("hidden")
-        funcBtns.classList.remove("hidden")
-        tooltip.classList.remove("hidden")
+        artistsBtns.classList.remove("canvas-buttons-hidden")
+        funcBtns.classList.remove("canvas-buttons-hidden")
+        tooltip.classList.remove("canvas-buttons-hidden")
 
-        artistsBtns.classList.add("visible")
-        funcBtns.classList.add("visible")
-        tooltip.classList.add("visible")
+        artistsBtns.classList.add("canvas-buttons-visible")
+        funcBtns.classList.add("canvas-buttons-visible")
+        tooltip.classList.add("canvas-buttons-visible")
       }
 
     }

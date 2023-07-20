@@ -211,13 +211,13 @@ button[aria-label="Redraw"] {
   vertical-align: middle;
 }
 
-.hidden {
+.canvas-buttons-hidden {
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.5s ease-out;
 }
 
-.visible {
+.canvas-buttons-visible {
   visibility: visible;
   opacity: 1;
   transition: opacity 0.5s ease-in;
