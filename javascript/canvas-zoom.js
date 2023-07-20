@@ -1,5 +1,6 @@
 onUiLoaded(async () => {
   const elementIDs = {
+    img2img: "#img2img_img2img_tab",
     sketch: "#img2img_sketch",
     inpaint: "#img2maskimg",
     inpaintSketch: "#inpaint_sketch",
@@ -390,6 +391,7 @@ onUiLoaded(async () => {
       [elementIDs.inpaint]: "inpaint",
       [elementIDs.sketch]: "sketch",
       [elementIDs.inpaintSketch]: "inpaint_sketch",
+      [elementIDs.img2img]: "img2img",
     }[elemId];
 
     const queryString = `#img2img_copy_to_${tabString}`;
@@ -430,6 +432,10 @@ onUiLoaded(async () => {
     };
 
     const sendButtons = getSendButtons(elemId);
+    const img2imgButtons = getSendButtons(elementIDs.img2img);
+
+    const allButtons = [...sendButtons, ...img2imgButtons];
+
     let fullScreenMode = false;
 
     //Fix white canvas when change width
@@ -440,7 +446,8 @@ onUiLoaded(async () => {
 
     // Clear mask when send through buttons
     if (hotkeysConfig.canvas_zoom_mask_clear) {
-      sendButtons.forEach((button) => {
+      allButtons.forEach((button) => {
+
         if (button.innerText === "img2img") return;
 
         button.addEventListener("click", (e) => {
