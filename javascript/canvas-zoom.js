@@ -1274,6 +1274,11 @@ onUiLoaded(async () => {
 
     gradioApp().addEventListener("mousemove", handleMoveByKey);
     // targetElement.addEventListener("mousedown", targetElementHandler);
+
+    // Additional trigger if the main trigger has failed
+    targetElement.addEventListener("mouseup", (e) => {
+      window.isDrawing = false
+    })
   }
 
   applyZoomAndPan(elementIDs.sketch);
