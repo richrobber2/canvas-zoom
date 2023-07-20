@@ -19,6 +19,10 @@ onUiLoaded(async () => {
 
   // Helper functions
 
+  function checkIsDefault(elements, elemID) {
+    return Object.values(elements).some(value => value.includes(elemID));
+  }
+
   function zoomFakeWheelEvent(targetElement, sign, oldEvent) {
     const rect = targetElement.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -1164,8 +1168,11 @@ onUiLoaded(async () => {
     });
 
     targetElement.addEventListener("wheel", (e) => {
+
+      const isDefaultCanvas = checkIsDefault(elementIDs, elemId)
+
       // change zoom level
-      if (!window.applyZoomAndPan) {
+      if (!isDefaultCanvas) {
         const operation = e.deltaY > 0 ? "-" : "+";
         changeZoomLevel(operation, e);
       }
@@ -1183,7 +1190,6 @@ onUiLoaded(async () => {
     function handleMoveKeyDown(e) {
       // Disable key locks to make pasting from the buffer work correctly
       if ((e.ctrlKey && e.code === 'KeyV') || (e.ctrlKey && event.code === 'KeyC') || e.code === "F5") {
-        console.log("work")
         return
       }
 
