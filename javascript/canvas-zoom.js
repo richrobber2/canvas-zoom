@@ -362,20 +362,23 @@
     }
 
     const isGetSizeImgBtnExists = !!document.querySelector("#img2img_detect_image_size_btn");
-
+    let getImgDataBtn, clonedDiv;
+    
     if (!isGetSizeImgBtnExists) {
-      const clonedDiv = elements.img2imgDemRaw.children[0].cloneNode(true);
+      clonedDiv = elements.img2imgDemRaw.children[0].cloneNode(true);
       clonedDiv.classList.add("get-img-dem");
-
-      const getImgDataBtn = clonedDiv.querySelector("button");
+    
+      getImgDataBtn = clonedDiv.querySelector("button");
       getImgDataBtn.innerHTML = "<i>📏</i>";
       getImgDataBtn.id = "img2img_res_get_btn";
       getImgDataBtn.title = "Get the width and height from the picture";
-
+    
       elements.img2imgDemRaw.appendChild(clonedDiv);
     }
 
     function applyZoomAndPan(elemId) {
+      const targetElement = gradioApp().querySelector(elemId);
+      
       if (!targetElement) {
         console.error("Element not found");
         return;
@@ -770,45 +773,48 @@
         setBrushOpacity(canvasOpacity);
       };
 
-      /**
-       * Restores the source of an image to its original state, in case of an undo operation.
-       */
-      const restoreUndo = () => {
-        const img = targetElement.querySelector(`${elemId} img`);
-        const { dataSource, isUpload } = img.dataset;
+     /**
+     * Restores the source of an image to its original state, in case of an undo operation.
+     */
+    //Restore undo func
+    function restoreUndo() {
+      const img = targetElement.querySelector(`${elemId} img`);
+      const imgDataSource = img.getAttribute("data-source");
+      const isUpload = img.getAttribute("data-isupload");
 
-        if (dataSource && img.src !== dataSource && isUpload === "false") {
-          img.style.display = "none";
-          img.src = dataSource;
-        }
-      };
+      if (imgDataSource && img.src !== imgDataSource && isUpload === "false") {
+        img.style.display = "none";
+        img.src = imgDataSource;
+      }
+    }
 
-      /**
-       * Undo the last action performed by the user, considering keypress and mouse events.
-       * @param {object} e - The event object.
-       */
-      const undoLastAction = (e) => {
-        const isCtrlPressed = e.ctrlKey || e.metaKey;
-        const isAuxButton = e.button >= 3;
-        const activeTab = getTabId(elements);
+    /**
+     * Undo the last action performed by the user, considering keypress and mouse events.
+     * @param {object} e - The event object.
+     */
+    // Undo last action
+    function undoLastAction(e) {
+      const isCtrlPressed = e.ctrlKey || e.metaKey;
+      const isAuxButton = e.button >= 3;
+      const activeTab = getTabId(elements);
 
-        if (canvasOpacity > 1 && getActiveTab(elements).innerText === "Inpaint") {
-          setCanvasOpacity(1);
-          setBrushOpacity(1);
-          canvasOpacity = brushOpacity = 1;
-        }
+      // Move undoBtn query outside the if statement to avoid unnecessary queries
+      const undoBtn = document.querySelector(`${elemId} button[aria-label="Undo"]`);
 
-        if (!isCtrlPressed && !isAuxButton) return;
+      // Set opacity to 1, to avoid bugs
+      if (canvasOpacity > 1 && "Inpaint" === getActiveTab(elements).innerText) {
+        setCanvasOpacity(1);
+        setBrushOpacity(1);
+        canvasOpacity = 1;
+        brushOpacity = 1;
+      }
 
+      if ((isCtrlPressed || isAuxButton) && undoBtn && activeTab === elemId) {
         e.preventDefault();
-
-        const undoBtn = document.querySelector(`${elemId} button[aria-label="Undo"]`);
-
-        if (undoBtn && activeTab === elemId) {
-          restoreUndo();
-          undoBtn.click();
-        }
-      };
+        restoreUndo();
+        undoBtn.click();
+      }
+    }
 
       // Toggle dropper
       function toggleDropper() {
@@ -823,20 +829,23 @@
        * Toggles the visibility of certain canvas buttons and tooltips.
        * @param {boolean} hide - Specifies whether to hide (true) or show (false) the elements.
        */
-      const hideCanvasButtons = (hide = false) => {
-        const selectors = [
-          `${activeElement} button[aria-label='Undo']`.parentElement,
-          `${activeElement} .brush`.parentElement,
-          `${activeElement} .canvas-tooltip-info--extension`
-        ];
-
-        selectors.forEach(selector => {
-          const element = document.querySelector(selector);
-
-          element.classList.toggle("canvas-buttons-hidden", hide);
-          element.classList.toggle("canvas-buttons-visible", !hide);
+      function hideCanvasButtons(hide = false) {
+        const funcBtns = document.querySelector(`${activeElement} button[aria-label='Undo']`)?.parentElement;
+        const artistsBtns = document.querySelector(`${activeElement} .brush`)?.parentElement;
+        const tooltip = document.querySelector(`${activeElement} .canvas-tooltip-info--extension`);
+  
+        const elements = [funcBtns, artistsBtns, tooltip];
+  
+        elements.forEach(element => {
+          if (hide) {
+            element.classList.remove("canvas-buttons-visible");
+            element.classList.add("canvas-buttons-hidden");
+          } else {
+            element.classList.remove("canvas-buttons-hidden");
+            element.classList.add("canvas-buttons-visible");
+          }
         });
-      };
+      }
 
 
       /**
@@ -955,9 +964,13 @@
 
         const shouldHideButtons = window.isDrawing && hotkeysConfig.canvas_zoom_hide_btn;
 
-        if (shouldHideButtons !== buttonsHidden) {
-          hideCanvasButtons(shouldHideButtons);
-          buttonsHidden = shouldHideButtons;
+        try {
+          if (shouldHideButtons !== buttonsHidden) {
+            hideCanvasButtons(shouldHideButtons);
+            buttonsHidden = shouldHideButtons;
+          }
+        } catch (e) {
+          // A small hack, as it is necessary that this check works like this
         }
       };
 
