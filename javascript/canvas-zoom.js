@@ -162,6 +162,11 @@
         const userValue = hotkeysConfigOpts[key];
         const defaultValue = defaultHotkeysConfig[key];
 
+        if(key === "canvas_zoom_undo_extra_key") { 
+          result[key] = userValue
+          continue
+        }
+
         if (userValue === undefined || invalidTypes.has(typeof userValue) || userValue.startsWith("#") || userValue === "disable") {
           result[key] = userValue === undefined ? defaultValue : userValue;
         } else if (isValidHotkey(userValue)) {
@@ -280,6 +285,8 @@
     const defaultHotkeysConfig = {
       canvas_hotkey_zoom: "Alt",
       canvas_hotkey_adjust: "Ctrl",
+      canvas_zoom_undo_extra_key: "Ctrl",
+      canvas_zoom_hotkey_undo : "KeyZ",
       canvas_hotkey_reset: "KeyR",
       canvas_hotkey_fullscreen: "KeyS",
       canvas_hotkey_move: "KeyF",
@@ -306,6 +313,7 @@
       "Zoom": "canvas_hotkey_zoom",
       "Adjust brush size": "canvas_hotkey_adjust",
       "Moving canvas": "canvas_hotkey_move",
+      "Undo": "canvas_zoom_hotkey_undo",
       "Fullscreen": "canvas_hotkey_fullscreen",
       "Reset Zoom": "canvas_hotkey_reset",
       "Overlap": "canvas_hotkey_overlap",
@@ -316,11 +324,11 @@
       "Transparency Mode": "canvas_zoom_hotkey_transparency",
     };
 
-    // Load the configuration from options
-    const preHotkeysConfig = createHotkeyConfig(defaultHotkeysConfig, hotkeysConfigOpts);
+    // Disable funcs
+    const preHotkeysConfig = disableFunctions(hotkeysConfigOpts,hotkeysConfigOpts.canvas_zoom_disabled_functions)
 
     // Disable unnecessary user functions
-    const hotkeysConfig = disableFunctions(preHotkeysConfig, preHotkeysConfig.canvas_zoom_disabled_functions);
+    const hotkeysConfig = createHotkeyConfig(defaultHotkeysConfig, preHotkeysConfig);
 
     // Initialize localStorage variables
     localStorage.setItem("brushOutline", hotkeysConfig.canvas_zoom_brush_outline);
@@ -471,6 +479,7 @@
         const hotkeysInfo = [
           { configKey: "canvas_hotkey_zoom", action: "Zoom canvas", keySuffix: " + wheel" },
           { configKey: "canvas_hotkey_adjust", action: "Adjust brush size", keySuffix: " + wheel" },
+          { configKey: "canvas_zoom_hotkey_undo", action: "Undo last action", keyPrefix: `${hotkeysConfig.canvas_zoom_undo_extra_key} + ` },
           { configKey: "canvas_hotkey_reset", action: "Reset zoom" },
           { configKey: "canvas_hotkey_fullscreen", action: "Fullscreen mode" },
           { configKey: "canvas_hotkey_move", action: "Move canvas" },
@@ -484,14 +493,24 @@
 
         const hotkeys = hotkeysInfo.map((info) => {
           const configValue = hotkeysConfig[info.configKey];
-          const key = info.keySuffix ? `${configValue}${info.keySuffix}` : configValue.slice(-1);
+          
+          let key = configValue.slice(-1);
+        
+          if (info.keySuffix) {
+            key = `${configValue}${info.keySuffix}`;
+          }
+          
+          if (info.keyPrefix && info.keyPrefix !== "None + ") {
+            key = `${info.keyPrefix}${configValue[3]}`;
+          }
+        
           return {
             key,
             action: info.action,
             disabled: configValue === "disable",
           };
         });
-
+        
         hotkeys
           .filter(hotkey => !hotkey.disabled)
           .forEach(hotkey => {
@@ -792,14 +811,22 @@
      * Undo the last action performed by the user, considering keypress and mouse events.
      * @param {object} e - The event object.
      */
+
     // Undo last action
     function undoLastAction(e) {
-      const isCtrlPressed = e.ctrlKey || e.metaKey;
+      let isCtrlPressed = isModifierKey(e, hotkeysConfig.canvas_zoom_undo_extra_key)
       const isAuxButton = e.button >= 3;
-      const activeTab = getTabId(elements);
+      const activeTab = activeElement;
+
+      if(hotkeysConfig.canvas_zoom_undo_extra_key === "None"){
+        isCtrlPressed = true
+      } else {
+        if (!isModifierKey(e, hotkeysConfig.canvas_zoom_undo_extra_key)) return;
+      }
+
 
       // Move undoBtn query outside the if statement to avoid unnecessary queries
-      const undoBtn = document.querySelector(`${elemId} button[aria-label="Undo"]`);
+      const undoBtn = document.querySelector(`${activeTab} button[aria-label="Undo"]`);
 
       // Set opacity to 1, to avoid bugs
       if (canvasOpacity > 1 && "Inpaint" === getActiveTab(elements).innerText) {
@@ -917,7 +944,7 @@
           [hotkeysConfig.canvas_zoom_hotkey_dropper]: toggleDropper,
           [hotkeysConfig.canvas_zoom_hotkey_fill]: fillCanvasWithColor,
           [hotkeysConfig.canvas_zoom_hotkey_transparency]: toggleOpacityMode,
-          ["KeyZ"]: undoLastAction,
+          [hotkeysConfig.canvas_zoom_hotkey_undo]: undoLastAction,
         };
 
         const action = hotkeyActions[event.code];
