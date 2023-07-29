@@ -713,74 +713,138 @@
       };
 
       /**
-       * Fits the target element within its parent's boundaries, adjusting the scale and offsets.
-       */
-      const fitToElement = () => {
-        const { style, offsetWidth: elementWidth, offsetHeight: elementHeight } = targetElement;
-        const { clientWidth: screenWidth, clientHeight: screenHeight } = targetElement.parentElement;
+     * This function fits the target element to the screen by calculating
+     * the required scale and offsets. It also updates the global variables
+     * zoomLevel, panX, and panY to reflect the new state.
+     */
 
-        const { x: elementX } = targetElement.getBoundingClientRect();
+    function fitToElement() {
+      //Reset Zoom
+      targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
 
-        style.transform = `translate(${0}px, ${0}px) scale(${1})`;
+      // Get element and screen dimensions
+      const elementWidth = targetElement.offsetWidth;
+      const elementHeight = targetElement.offsetHeight;
+      const parentElement = targetElement.parentElement;
+      const screenWidth = parentElement.clientWidth;
+      const screenHeight = parentElement.clientHeight;
 
-        const scale = Math.min(screenWidth / elementWidth, screenHeight / elementHeight);
+      // Get element's coordinates relative to the parent element
+      const elementRect = targetElement.getBoundingClientRect();
+      const parentRect = parentElement.getBoundingClientRect();
+      const elementX = elementRect.x - parentRect.x;
 
-        const [originX, originY] = window.getComputedStyle(targetElement).transformOrigin.split(" ");
-        const offsetX = (screenWidth - elementWidth * scale) / 2 - parseFloat(originX) * (1 - scale);
-        const offsetY = (screenHeight - elementHeight * scale) / 2.5 - parseFloat(originY) * (1 - scale);
+      // Calculate scale and offsets
+      const scaleX = screenWidth / elementWidth;
+      const scaleY = screenHeight / elementHeight;
+      const scale = Math.min(scaleX, scaleY);
 
-        style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+      const transformOrigin =
+        window.getComputedStyle(targetElement).transformOrigin;
+      const [originX, originY] = transformOrigin.split(" ");
+      const originXValue = parseFloat(originX);
+      const originYValue = parseFloat(originY);
 
-        Object.assign(elemData[elemId], {
-          zoomLevel: scale,
-          panX: offsetX,
-          panY: offsetY,
-        });
+      const offsetX =
+        (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
+      const offsetY =
+        (screenHeight - elementHeight * scale) / 2.5 -
+        originYValue * (1 - scale);
 
-        fullScreenMode = false;
-        toggleOverlap("off");
-      };
+      // Apply scale and offsets to the element
+      targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 
-      /**
-       * Adjusts the target element to fit the entire screen, considering mobile viewports.
-       * @param {boolean} isMobile - Specifies if the function should consider mobile viewport dimensions.
-       */
-      const fitToScreen = (isMobile = false) => {
-        const canvas = gradioApp().querySelector(`${elemId} canvas[key="interface"]`);
+      // Update global variables
+      elemData[elemId].zoomLevel = scale;
+      elemData[elemId].panX = offsetX;
+      elemData[elemId].panY = offsetY;
 
-        if (!canvas || fullScreenMode) {
-          if (canvas && isMobile) resetZoom("", true);
-          else if (canvas) resetZoom();
-          fullScreenMode = false;
-          return;
+      fullScreenMode = false;
+      toggleOverlap("off");
+    }
+
+    /**
+     * This function fits the target element to the screen by calculating
+     * the required scale and offsets. It also updates the global variables
+     * zoomLevel, panX, and panY to reflect the new state.
+     */
+
+    // Fullscreen mode
+    function fitToScreen(isMobile = false) {
+      const canvas = gradioApp().querySelector(
+        `${elemId} canvas[key="interface"]`
+      );
+
+      if (!canvas) return;
+
+      if (canvas.offsetWidth > 862 || isMobile) {
+        targetElement.style.width = canvas.offsetWidth + "px";
+      }
+
+      if (fullScreenMode) {
+
+        if (isMobile) {
+          resetZoom("", true);
+        } else {
+          resetZoom();
         }
 
-        const { style, offsetWidth: elementWidth, offsetHeight: elementHeight } = targetElement;
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-        const screenWidth = window.innerWidth - scrollbarWidth;
-        const screenHeight = window.innerHeight;
+        fullScreenMode = false;
+        return;
+      }
 
-        style.transform = `translate(${0}px, ${0}px) scale(${1})`;
-        if (canvas.offsetWidth > 862 || isMobile) style.width = `${canvas.offsetWidth}px`;
+      //Reset Zoom
+      targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
 
-        const { x: elementX, y: elementY } = targetElement.getBoundingClientRect();
-        const scale = Math.min(screenWidth / elementWidth, screenHeight / elementHeight);
+      // Get scrollbar width to right-align the image
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
 
-        const [originX, originY] = window.getComputedStyle(targetElement).transformOrigin.split(" ");
-        const offsetX = (screenWidth - elementWidth * scale) / 2 - elementX - parseFloat(originX) * (1 - scale);
-        const offsetY = (screenHeight - elementHeight * scale) / 2 - elementY - parseFloat(originY) * (1 - scale);
+      // Get element and screen dimensions
+      const elementWidth = targetElement.offsetWidth;
+      const elementHeight = targetElement.offsetHeight;
+      const screenWidth = window.innerWidth - scrollbarWidth;
+      const screenHeight = window.innerHeight;
 
-        style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+      // Get element's coordinates relative to the page
+      const elementRect = targetElement.getBoundingClientRect();
+      const elementY = elementRect.y;
+      const elementX = elementRect.x;
 
-        Object.assign(elemData[elemId], {
-          zoomLevel: scale,
-          panX: offsetX,
-          panY: offsetY,
-        });
+      // Calculate scale and offsets
+      const scaleX = screenWidth / elementWidth;
+      const scaleY = screenHeight / elementHeight;
+      const scale = Math.min(scaleX, scaleY);
 
-        fullScreenMode = true;
-        toggleOverlap("on");
-      };
+      // Get the current transformOrigin
+      const computedStyle = window.getComputedStyle(targetElement);
+      const transformOrigin = computedStyle.transformOrigin;
+      const [originX, originY] = transformOrigin.split(" ");
+      const originXValue = parseFloat(originX);
+      const originYValue = parseFloat(originY);
+
+      // Calculate offsets with respect to the transformOrigin
+      const offsetX =
+        (screenWidth - elementWidth * scale) / 2 -
+        elementX -
+        originXValue * (1 - scale);
+      const offsetY =
+        (screenHeight - elementHeight * scale) / 2 -
+        elementY -
+        originYValue * (1 - scale);
+
+      // Apply scale and offsets to the element
+      targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+
+      // Update global variables
+      elemData[elemId].zoomLevel = scale;
+      elemData[elemId].panX = offsetX;
+      elemData[elemId].panY = offsetY;
+
+      fullScreenMode = true;
+      toggleOverlap("on");
+    }
+
       /**
        * Toggles the opacity mode for the canvas and brush.
        */
