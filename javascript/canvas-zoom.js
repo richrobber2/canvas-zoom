@@ -882,7 +882,7 @@
       const isAuxButton = e.button >= 3;
       const activeTab = activeElement;
 
-      if(hotkeysConfig.canvas_zoom_undo_extra_key === "None"){
+      if(hotkeysConfig.canvas_zoom_undo_extra_key === "None" || isAuxButton){
         isCtrlPressed = true
       } else {
         if (!isModifierKey(e, hotkeysConfig.canvas_zoom_undo_extra_key)) return;
@@ -900,7 +900,9 @@
         brushOpacity = 1;
       }
 
-      if ((isCtrlPressed || isAuxButton) && undoBtn && activeTab === elemId) {
+      
+
+      if ((isCtrlPressed) && undoBtn && activeTab === elemId) {
         e.preventDefault();
         restoreUndo();
         undoBtn.click();
