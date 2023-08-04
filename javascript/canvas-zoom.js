@@ -304,6 +304,7 @@
       canvas_zoom_brush_outline: false,
       canvas_zoom_enable_integration: false,
       canvas_zoom_add_buttons: false,
+      canvas_zoom_auto_expand : false,
       canvas_zoom_inpaint_brushcolor: "#000000",
       canvas_zoom_transparency_level: 60,
       canvas_zoom_disabled_functions: [],
@@ -653,8 +654,7 @@
         `${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`
       );
       fileInput.addEventListener("click", resetZoom);
-
-
+      
       /**
        * Updates the zoom level of a specified element, adjusts panX and panY coordinates, and applies style transformations.
        * @param {number} level - The desired zoom level.
@@ -1035,6 +1035,25 @@
       const getMousePosition = ({ offsetX, offsetY }) => {
         mouseX = offsetX;
         mouseY = offsetY;
+
+        if(hotkeysConfig.canvas_zoom_auto_expand){
+        const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
+        const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
+        if (isMainTab) {
+          if (canvas && canvas.offsetWidth > 862 && parseInt(targetElement.style.width) > 862) {
+            return
+          }
+
+          if (canvas) {
+            targetElement.style.visibility = "hidden"
+            setTimeout(() => {
+              fitToScreen()
+              resetZoom()
+              targetElement.style.visibility = "visible"
+            }, 10);
+          }
+        }
+      }
       };
 
       targetElement.addEventListener("mousemove", getMousePosition);
@@ -1283,6 +1302,6 @@
 
       // Add your integration and open PR 😊
 
-      
+
     }
   });

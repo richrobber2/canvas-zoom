@@ -18,6 +18,7 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_show_tooltip": shared.OptionInfo(True, "Enable tooltip on the canvas"),
     "canvas_zoom_hide_btn": shared.OptionInfo(True, "Hide the control buttons when you draw"),
     "canvas_zoom_mask_clear": shared.OptionInfo(True, "Enable mask clearing in inpaint after any picture is moved in inpaint via buttons"),
+    "canvas_zoom_auto_expand": shared.OptionInfo(False, "Automatic expansion of an image that does not fit completely within the canvas area, similar to manual S and R entry"),
     "canvas_zoom_inpaint_label": shared.OptionInfo(True, "INPAINT - Show the label next to the model selection when you select an inpaint model"),
     "canvas_zoom_inpaint_warning": shared.OptionInfo(True, "INPAINT - Show warning when you try to use inpaint model in txt2img mode(The model name must contain 'inpainting' or 'inpaint'.)"),
     "canvas_zoom_inpaint_change_btn_color": shared.OptionInfo(False, "INPAINT - Enable button color change when inpaint model is selected"),
