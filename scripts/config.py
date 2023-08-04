@@ -23,7 +23,7 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_zoom_inpaint_change_btn_color": shared.OptionInfo(False, "INPAINT - Enable button color change when inpaint model is selected"),
     "canvas_zoom_inpaint_btn_color": shared.OptionInfo("#C33227", 'INPAINT - Change the color of the button, which will change if the inpaint model is selected.',gr.ColorPicker),
     "canvas_zoom_brush_outline": shared.OptionInfo(False, "Enable outline for the brush"),
-    "canvas_zoom_enable_integration": shared.OptionInfo(False, "Enable integration with ControlNet, Regional Prompter and Latent Couple(Two Shot)"),
+    "canvas_zoom_enable_integration": shared.OptionInfo(False, "Enable integration with ControlNet, Regional Prompter and Latent Couple(Two Shot), Inpaint Anything"),
     "canvas_zoom_add_buttons": shared.OptionInfo(False, "Add a button to switch to full screen mode. May be useful for devices without keyboard"),
     "canvas_blur_prompt": shared.OptionInfo(False, "Take the focus off the prompt when working with a canvas"),
     "canvas_zoom_draw_staight_lines": shared.OptionInfo(False, "Enable the function of drawing straight lines between points while holding down the Shift key"),

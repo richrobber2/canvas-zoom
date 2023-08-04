@@ -1230,8 +1230,16 @@
      * @param {string} id - The id of the main element.
      * @param {Array} elementIDs - An array of element IDs to which the event listeners should be added.
      */
-    const applyZoomAndPanIntegration = (id, elementIDs) => {
+    const applyZoomAndPanIntegration = async (id, elementIDs) => {
       const mainEl = document.querySelector(id);
+
+      if(id.toLocaleLowerCase() === "none"){
+        for (const elementID of elementIDs) {
+          const el = await waitForElement(elementID);
+          if (!el) break;
+          applyZoomAndPan(elementID);
+        }
+      }
 
       if (!mainEl) return;
 
@@ -1270,9 +1278,11 @@
       // Add integration with Latent Couple img2img
       applyZoomAndPanIntegration("div#tab_img2img div#script_twoshot_tabs", ["div#tab_img2img div#script_twoshot_tabs div#twoshot_canvas_sketch"]);
 
+      // Add integration with Inpaint Anything      
+      applyZoomAndPanIntegration("None", ["#ia_sam_image","#ia_sel_mask"]);
 
       // Add your integration and open PR 😊
 
-
+      
     }
   });
