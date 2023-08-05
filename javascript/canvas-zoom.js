@@ -694,7 +694,14 @@
 
         e.preventDefault();
 
-        const { zoomLevel } = elemData[elemId];
+        let { zoomLevel } = elemData[elemId];
+
+        if(!zoomLevel) {
+          console.log(zoomLevel)
+          zoomLevel = 1;
+          elemData[elemId].zoomLevel = zoomLevel;
+        }
+
         const delta = zoomLevel > 7 ? 0.9 : zoomLevel > 2 ? 0.6 : 0.2;
 
         const zoomPos = {
@@ -1165,6 +1172,19 @@
        * @param {number} movementY - The amount of vertical movement.
        */
       const updatePanPosition = (movementX, movementY) => {
+
+          let {zoomLevel, panX, panY} = elemData[elemId];
+
+          if(typeof zoomLevel === 'undefined' || typeof panX === 'undefined' || typeof panY === 'undefined') {
+            zoomLevel = 1;
+            panX = 0;
+            panY = 0;
+        
+            elemData[elemId].zoomLevel = zoomLevel;
+            elemData[elemId].panX = panX;
+            elemData[elemId].panY = panY;
+        }
+
         const panSpeed = elemData[elemId].zoomLevel > 8 ? 3.5 : 2;
 
         elemData[elemId].panX += movementX * panSpeed;
@@ -1300,6 +1320,7 @@
       // Add integration with Inpaint Anything      
       applyZoomAndPanIntegration("None", ["#ia_sam_image","#ia_sel_mask"]);
 
+      // Add by template, if you have a tab then add its class as the first argument, if you have a tab then add none at the beginning
       // Add your integration and open PR 😊
 
 
