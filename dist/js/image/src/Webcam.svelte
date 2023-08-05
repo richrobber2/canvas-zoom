@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from "svelte";
 	import { Camera, Circle, Square } from "@gradio/icons";
+	import type { FileData } from "@gradio/upload";
 
 	let video_source: HTMLVideoElement;
 	let canvas: HTMLCanvasElement;
@@ -11,7 +12,19 @@
 	export let mirror_webcam: boolean;
 	export let include_audio: boolean;
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{
+		stream: undefined;
+		capture:
+			| {
+					data: FileReader["result"];
+					name: string;
+					is_example?: boolean;
+			  }
+			| string;
+		error: string;
+		start_recording: undefined;
+		stop_recording: undefined;
+	}>();
 
 	onMount(() => (canvas = document.createElement("canvas")));
 
@@ -71,10 +84,12 @@
 						name: "sample." + mimeType.substring(6),
 						is_example: false
 					});
+					dispatch("stop_recording");
 				}
 			};
 			ReaderObj.readAsDataURL(video_blob);
 		} else {
+			dispatch("start_recording");
 			recorded_blobs = [];
 			let validMimeTypes = ["video/webm", "video/mp4"];
 			for (let validMimeType of validMimeTypes) {

@@ -1037,23 +1037,23 @@
         mouseY = offsetY;
 
         if(hotkeysConfig.canvas_zoom_auto_expand){
-        const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
-        const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
-        if (isMainTab) {
-          if (canvas && canvas.offsetWidth > 862 && parseInt(targetElement.style.width) > 862) {
-            return
-          }
-
-          if (canvas) {
-            targetElement.style.visibility = "hidden"
-            setTimeout(() => {
-              fitToScreen()
-              resetZoom()
-              targetElement.style.visibility = "visible"
-            }, 10);
+          const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
+          const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
+          if (isMainTab) {
+            if (canvas && parseInt(targetElement.style.width) > 862 || parseInt(canvas.width) < 862 ) {
+              return
+            }
+  
+            if (canvas) {
+              targetElement.style.visibility = "hidden"
+              setTimeout(() => {
+                fitToScreen()
+                resetZoom()
+                targetElement.style.visibility = "visible"
+              }, 10);
+            }
           }
         }
-      }
       };
 
       targetElement.addEventListener("mousemove", getMousePosition);

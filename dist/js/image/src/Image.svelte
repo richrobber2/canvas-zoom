@@ -29,6 +29,8 @@
 	export let brush_radius: number;
 	export let selectable: boolean = false;
 
+	export let mask_opacity;
+
 	let sketch: Sketch;
 	let cropper: Cropper;
 
@@ -225,6 +227,7 @@
 					on:clear={handle_clear}
 					editable
 				/>
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
 
 				<img
 					src={value}
@@ -254,6 +257,7 @@
 						bind:brush_color
 						on:change={handle_save}
 						on:redraw={sketch.redraw()}
+						{mask_opacity}
 						{mode}
 						width={img_width || max_width}
 						height={img_height || max_height}
@@ -281,6 +285,7 @@
 					{/if}
 				{/if}
 			{:else}
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<img
 					src={value.image || value}
 					alt="hello"
@@ -326,7 +331,7 @@
 				on:capture={(e) =>
 					tool === "color-sketch"
 						? handle_upload(e)
-						: handle_save(e, true, "pizda")}
+						: handle_save(e, true, "")}
 				on:stream={handle_save}
 				on:error
 				{streaming}
@@ -343,7 +348,7 @@
 			on:clear={handle_clear}
 			editable
 		/>
-
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<img
 			src={value}
 			alt=""
@@ -394,6 +399,7 @@
 			{/if}
 		{/if}
 	{:else}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<img
 			src={value.image || value}
 			alt=""
