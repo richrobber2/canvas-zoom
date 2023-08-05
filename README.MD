@@ -4,6 +4,9 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
+**Important information, In the dev version of webui the gradio library has been updated, so if you are using canvas-zoom in this version you may have problems.**
+**I am working on transferring all canvas-zoom modifications to the new version of gradio so that everything will work correctly, if you have problems uninstall the extension for now and additionally do** [remove extension](https://github.com/richrobber2/canvas-zoom/wiki/Troubleshooting#i-deleted-the-extension-but-some-elements-of-the-extension-remain).
+
 **The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0) And the [March 25 version](https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/22bcc7be428c94e9408f589966c2040187245d81)**
 
 **The extension is fully compatible with webui version [1.4](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.4.0),[1.5](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.5.0) and the built-in canvas-zoom-and-pan extension. However, I still recommend that you disable the built-in.**
