@@ -697,7 +697,6 @@
         let { zoomLevel } = elemData[elemId];
 
         if(!zoomLevel) {
-          console.log(zoomLevel)
           zoomLevel = 1;
           elemData[elemId].zoomLevel = zoomLevel;
         }
