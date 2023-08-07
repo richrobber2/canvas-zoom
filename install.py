@@ -10,10 +10,13 @@ detect_module_path = os.path.join(sys.path[0], "detect_extension.py")  # assumin
 # Form the destination path
 destination_path = os.path.join(module_path, "detect_extension.py")
 
-# Check if the source file exists and if the file doesn't already exist at the destination
-if os.path.isfile(detect_module_path) and not os.path.isfile(destination_path):
+# Check if the source file exists and is a file (not a directory),
+# and if the file doesn't already exist at the destination,
+# and if the module path is a valid directory
+if os.path.isfile(detect_module_path) and not os.path.isfile(destination_path) and os.path.isdir(module_path):
     # Copy the file
     shutil.copyfile(detect_module_path, destination_path)
+
 
 # Check the version of the gradio, if it is less than 3.28.1 then cancel the installation
 is_right_version = False
