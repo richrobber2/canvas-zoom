@@ -10,8 +10,8 @@ detect_module_path = os.path.join(sys.path[0], "detect_extension.py")  # assumin
 # Form the destination path
 destination_path = os.path.join(module_path, "detect_extension.py")
 
-# Check if the file doesn't already exist at the destination
-if not os.path.isfile(destination_path):
+# Check if the source file exists and if the file doesn't already exist at the destination
+if os.path.isfile(detect_module_path) and not os.path.isfile(destination_path):
     # Copy the file
     shutil.copyfile(detect_module_path, destination_path)
 
