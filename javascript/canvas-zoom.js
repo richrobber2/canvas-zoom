@@ -298,13 +298,13 @@
       canvas_zoom_hotkey_transparency: "KeyC",
       canvas_zoom_hide_btn: true,
       canvas_show_tooltip: true,
+      canvas_auto_expand : true,
       canvas_zoom_mask_clear: true,
+      canvas_zoom_enable_integration: true,
       canvas_blur_prompt: false,
       canvas_zoom_draw_staight_lines: false,
       canvas_zoom_brush_outline: false,
-      canvas_zoom_enable_integration: false,
       canvas_zoom_add_buttons: false,
-      canvas_zoom_auto_expand : false,
       canvas_zoom_inpaint_brushcolor: "#000000",
       canvas_zoom_transparency_level: 60,
       canvas_zoom_disabled_functions: [],
@@ -1033,6 +1033,27 @@
         if (event.code === "ShiftLeft" && hotkeysConfig.canvas_zoom_draw_staight_lines) window.drawStraightLine = true;
       };
 
+        // Simulation of the function to put a long image into the screen.
+        // We define the size of the canvas, make a fullscreen to reveal the image, then reduce it to fit into the element.
+        // We hide the image and show it to the user when it is ready.
+        function autoExpand(e) {
+          const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
+          const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
+          if (canvas && isMainTab) {
+              if (canvas && parseInt(targetElement.style.width) > 862 || parseInt(canvas.width) < 862) {
+                  return;
+              }
+              if (canvas) {
+                  targetElement.style.visibility = "hidden";
+                  setTimeout(() => {
+                      fitToScreen();
+                      resetZoom();
+                      targetElement.style.visibility = "visible";
+                  }, 10);
+              }
+          }
+      }
+
 
       /**
        * Updates the global mouse position based on the given event.
@@ -1041,26 +1062,12 @@
       const getMousePosition = ({ offsetX, offsetY }) => {
         mouseX = offsetX;
         mouseY = offsetY;
-
-        if(hotkeysConfig.canvas_zoom_auto_expand){
-          const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
-          const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
-          if (isMainTab) {
-            if (canvas && parseInt(targetElement.style.width) > 862 || parseInt(canvas.width) < 862 ) {
-              return
-            }
-  
-            if (canvas) {
-              targetElement.style.visibility = "hidden"
-              setTimeout(() => {
-                fitToScreen()
-                resetZoom()
-                targetElement.style.visibility = "visible"
-              }, 10);
-            }
-          }
-        }
       };
+
+      // Apply auto expand if enabled
+      if (hotkeysConfig.canvas_auto_expand && !window.applyZoomAndPan) {
+        targetElement.addEventListener("mousemove", autoExpand);
+      }
 
       targetElement.addEventListener("mousemove", getMousePosition);
       targetElement.addEventListener("auxclick", undoLastAction);
@@ -1277,6 +1284,7 @@
           if (!el) break;
           applyZoomAndPan(elementID);
         }
+        return
       }
 
       if (!mainEl) return;
@@ -1299,6 +1307,12 @@
     const integrateControlNet = hotkeysConfig.canvas_zoom_enable_integration;
     if (integrateControlNet) {
 
+      // Add integration with ControlNet txt2img One TAB
+      applyZoomAndPanIntegration("#txt2img_controlnet", ["#txt2img_controlnet_ControlNet_input_image"]);
+
+      // Add integration with ControlNet img2img One TAB
+      applyZoomAndPanIntegration("#img2img_controlnet", ["#img2img_controlnet_ControlNet_input_image"]);
+
       // Add integration with ControlNet txt2img Tabs
       applyZoomAndPanIntegration("#txt2img_controlnet",
         Array.from({ length: 10 }, (_, i) => `#txt2img_controlnet_ControlNet-${i}_input_image`));
@@ -1317,7 +1331,7 @@
       applyZoomAndPanIntegration("div#tab_img2img div#script_twoshot_tabs", ["div#tab_img2img div#script_twoshot_tabs div#twoshot_canvas_sketch"]);
 
       // Add integration with Inpaint Anything      
-      applyZoomAndPanIntegration("None", ["#ia_sam_image","#ia_sel_mask"]);
+      applyZoomAndPanIntegration("None", ["#ia_sam_image", "#ia_sel_mask"]);
 
       // Add by template, if you have a tab then add its class as the first argument, if you have a tab then add none at the beginning
       // Add your integration and open PR 😊
