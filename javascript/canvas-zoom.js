@@ -1034,26 +1034,27 @@
       };
 
         // Simulation of the function to put a long image into the screen.
-        // We define the size of the canvas, make a fullscreen to reveal the image, then reduce it to fit into the element.
+        // We define whether the picture has a scroll bar or not, make a fullscreen to reveal the image, then reduce it to fit into the element.
         // We hide the image and show it to the user when it is ready.
+        function isHorizontalScrollbar(element) {
+          return element.scrollWidth > element.clientWidth;
+        }
+        
         function autoExpand(e) {
           const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
           const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
+        
           if (canvas && isMainTab) {
-              if (canvas && parseInt(targetElement.style.width) > 862 || parseInt(canvas.width) < 862) {
-                  return;
-              }
-              if (canvas) {
-                  targetElement.style.visibility = "hidden";
-                  setTimeout(() => {
-                      fitToScreen();
-                      resetZoom();
-                      targetElement.style.visibility = "visible";
-                  }, 10);
-              }
+            if (isHorizontalScrollbar(targetElement)) {
+              targetElement.style.visibility = "hidden";
+              setTimeout(() => {
+                fitToScreen();
+                resetZoom();
+                targetElement.style.visibility = "visible";
+              }, 10);
+            }
           }
-      }
-
+        }
 
       /**
        * Updates the global mouse position based on the given event.
