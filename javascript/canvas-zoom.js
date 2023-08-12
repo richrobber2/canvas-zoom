@@ -1227,17 +1227,17 @@
         targetElement.style.pointerEvents = "auto";
       };
 
-      /**
-       * Handles the movement of the canvas element by mouse input.
-       * @param {MouseEvent} e - The mouse event object.
-       */
-      const handleMoveByMouse = (e) => {
-        if (!e.shiftKey || elemId !== activeElement) return;
-
+    /**
+     * Handles the movement of the canvas element by mouse input.
+     * @param {MouseEvent} e - The mouse event object.
+     */
+    const handleMoveByMouse = (e) => {
+      if (e.shiftKey && elemId === activeElement) {
         e.preventDefault();
         updatePanPosition(e.movementX, e.movementY);
         targetElement.style.pointerEvents = "none";
-      };
+      }
+    };
 
       function targetElementHandler(e) {
         if (e.shiftKey) {
@@ -1290,17 +1290,13 @@
 
       if (!mainEl) return;
 
-      mainEl.addEventListener(
-        "click",
-        async () => {
-          for (const elementID of elementIDs) {
-            const el = await waitForElement(elementID);
+      mainEl.addEventListener("click", async () => {
+        for (const elementID of elementIDs) {
+          const el = await waitForElement(elementID);
             if (!el) break;
-            applyZoomAndPan(elementID);
-          }
-        },
-        { once: true }
-      );
+          applyZoomAndPan(elementID);
+        }
+      }, { once: true });      
     };
 
 
