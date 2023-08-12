@@ -1033,28 +1033,31 @@
         if (event.code === "ShiftLeft" && hotkeysConfig.canvas_zoom_draw_staight_lines) window.drawStraightLine = true;
       };
 
-        // Simulation of the function to put a long image into the screen.
-        // We define whether the picture has a scroll bar or not, make a fullscreen to reveal the image, then reduce it to fit into the element.
-        // We hide the image and show it to the user when it is ready.
-        function isHorizontalScrollbar(element) {
-          return element.scrollWidth > element.clientWidth;
-        }
+    // Simulation of the function to put a long image into the screen.
+    // We define whether the picture has a scroll bar or not,
+    // make a fullscreen to reveal the image, then reduce it to fit into the element.
+    // We hide the image and show it to the user when it is ready.
+    function isHorizontalScrollbar(element) {
+      return element.scrollWidth > element.clientWidth;
+    }
+
+    function autoExpand(e) {
+      const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
+      const isMainTab =
+        [elementIDs.inpaint, elementIDs.inpaintSketch, elementIDs.sketch].includes(activeElement);
+
+      if (canvas && isMainTab && isHorizontalScrollbar(targetElement)) {
+        targetElement.style.visibility = "hidden";
         
-        function autoExpand(e) {
-          const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
-          const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
-        
-          if (canvas && isMainTab) {
-            if (isHorizontalScrollbar(targetElement)) {
-              targetElement.style.visibility = "hidden";
-              setTimeout(() => {
-                fitToScreen();
-                resetZoom();
-                targetElement.style.visibility = "visible";
-              }, 10);
-            }
-          }
-        }
+        setTimeout(() => {
+          fitToScreen();
+          resetZoom();
+          targetElement.style.visibility = "visible";
+        }, 10);
+      }
+    }
+
+
 
       /**
        * Updates the global mouse position based on the given event.
