@@ -1056,13 +1056,7 @@
         }, 10);
       }
     }
-
-
-
-      /**
-       * Updates the global mouse position based on the given event.
-       * @param {MouseEvent} e - The mouse event.
-       */
+    
       const getMousePosition = ({ offsetX, offsetY }) => {
         mouseX = offsetX;
         mouseY = offsetY;
