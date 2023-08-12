@@ -1140,23 +1140,26 @@
         adjustBrushSize(elemId, e.deltaY);
       });
 
-      /**
-       * Handles key down events to trigger moving operations on the canvas.
-       * @param {KeyboardEvent} event - The keyboard event object.
-       */
-      const handleMoveKeyDown = (e) => {
-        const allowedKeys = ['KeyV', 'KeyC', 'F5'];
-        const isCtrlPressed = e.ctrlKey;
-        const isTyping = ['TEXTAREA', 'INPUT'].includes(e.target.nodeName);
+    /**
+     * Handles key down events to trigger moving operations on the canvas.
+     * @param {KeyboardEvent} event - The keyboard event object.
+     */
+    const handleMoveKeyDown = (e) => {
+      const allowedKeys = ['KeyV', 'KeyC', 'F5'];
+      const isCtrlPressed = e.ctrlKey || e.metaKey; // Combine Ctrl and Meta (Cmd) keys
+      const isTyping = ['TEXTAREA', 'INPUT'].includes(e.target.nodeName);
 
-        if (isTyping && !hotkeysConfig.canvas_blur_prompt || isCtrlPressed && allowedKeys.includes(e.code)) return;
+      const shouldPreventDefault =
+        (isTyping && !hotkeysConfig.canvas_blur_prompt) || (isCtrlPressed && allowedKeys.includes(e.code));
 
-        if (e.code !== hotkeysConfig.canvas_hotkey_move || e.ctrlKey || e.metaKey || !isKeyDownHandlerAttached) return;
+      if (shouldPreventDefault || e.code !== hotkeysConfig.canvas_hotkey_move || !isKeyDownHandlerAttached) {
+        return;
+      }
 
-        e.preventDefault();
-        document.activeElement.blur();
-        isMoving = true;
-      };
+      e.preventDefault();
+      document.activeElement.blur();
+      isMoving = true;
+    };
 
       /**
        * Handles key up events to stop moving operations on the canvas.
@@ -1202,19 +1205,18 @@
       };
 
 
-      /**
-       * Handles the movement of the canvas element by keyboard input.
-       * @param {KeyboardEvent} e - The keyboard event object.
-       */
-      const handleMoveByKey = (e) => {
-        if (isMoving && elemId === activeElement) {
-          updatePanPosition(e.movementX, e.movementY);
-          targetElement.style.pointerEvents = "none";
-          return;
-        }
-
+    /**
+     * Handles the movement of the canvas element by keyboard input.
+     * @param {KeyboardEvent} e - The keyboard event object.
+     */
+    const handleMoveByKey = (e) => {
+      if (isMoving && elemId === activeElement) {
+        updatePanPosition(e.movementX, e.movementY);
+        targetElement.style.pointerEvents = "none";
+      } else {
         targetElement.style.pointerEvents = "auto";
-      };
+      }
+    };
 
       /**
        * Handles the end of the canvas movement operation.
