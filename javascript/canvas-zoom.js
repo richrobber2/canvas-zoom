@@ -1056,7 +1056,7 @@
         }, 10);
       }
     }
-    
+
       const getMousePosition = ({ offsetX, offsetY }) => {
         mouseX = offsetX;
         mouseY = offsetY;
@@ -1092,8 +1092,9 @@
             hideCanvasButtons(shouldHideButtons);
             buttonsHidden = shouldHideButtons;
           }
-        } catch (e) {
+        } catch (error) {
           // A small hack, as it is necessary that this check works like this
+          console.error("An error occurred while hiding canvas buttons:", error);
         }
       };
 
