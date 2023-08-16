@@ -20,6 +20,9 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_zoom_mask_clear": shared.OptionInfo(True, "Enable mask clearing in inpaint after any picture is moved in inpaint via buttons"),
     "canvas_auto_expand": shared.OptionInfo(True, "Automatic expansion of an image that does not fit completely within the canvas area, similar to manual S and R entry"),
     "canvas_zoom_enable_integration": shared.OptionInfo(True, "Enable integration with ControlNet, Regional Prompter and Latent Couple(Two Shot), Inpaint Anything"),
+    "canvas_zoom_transparency_level": shared.OptionInfo(70, "Opacity level in inpaint.Works with webui 1.6 otherwise this setting will adjust the transparency in transparency mode from the extension", gr.Slider, {"minimum": 10, "maximum": 100, "step": 5}),
+    "canvas_zoom_brush_opacity": shared.OptionInfo(False, "Makes the brush the same transparency as the mask"),
+    "canvas_zoom_inpaint_prevent_work": shared.OptionInfo(False, "Always prevent inpainting models work on txt2img tab by default"),
     "canvas_zoom_inpaint_label": shared.OptionInfo(True, "INPAINT - Show the label next to the model selection when you select an inpaint model"),
     "canvas_zoom_inpaint_warning": shared.OptionInfo(True, "INPAINT - Show warning when you try to use inpaint model in txt2img mode(The model name must contain 'inpainting' or 'inpaint'.)"),
     "canvas_zoom_inpaint_change_btn_color": shared.OptionInfo(False, "INPAINT - Enable button color change when inpaint model is selected"),
@@ -29,6 +32,5 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_blur_prompt": shared.OptionInfo(False, "Take the focus off the prompt when working with a canvas"),
     "canvas_zoom_draw_staight_lines": shared.OptionInfo(False, "Enable the function of drawing straight lines between points while holding down the Shift key"),
     "canvas_zoom_inpaint_brushcolor": shared.OptionInfo("#000000", 'Change the default inpaint brush color.',gr.ColorPicker),
-    "canvas_zoom_transparency_level": shared.OptionInfo(60, "Transparency level, in transparency mode. The more, the more transparent the lines will be", gr.Slider, {"minimum": 10, "maximum": 70, "step": 5}),
     "canvas_zoom_disabled_functions": shared.OptionInfo(["Overlap"], "Disable function that you don't use", gr.CheckboxGroup, {"choices": ["Zoom","Adjust brush size","Undo", "Moving canvas","Fullscreen","Reset Zoom","Overlap","Open color panel","Pin color panel","Dropper","Fill","Transparency Mode"]}),
 }))

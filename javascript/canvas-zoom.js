@@ -307,12 +307,13 @@
       canvas_auto_expand : true,
       canvas_zoom_mask_clear: true,
       canvas_zoom_enable_integration: true,
+      canvas_zoom_brush_opacity: false,
       canvas_blur_prompt: false,
       canvas_zoom_draw_staight_lines: false,
       canvas_zoom_brush_outline: false,
       canvas_zoom_add_buttons: false,
       canvas_zoom_inpaint_brushcolor: "#000000",
-      canvas_zoom_transparency_level: 60,
+      canvas_zoom_transparency_level: 70,
       canvas_zoom_disabled_functions: [],
     };
 
@@ -346,6 +347,8 @@
     let activeElement;
     let canvasOpacity = 1;
     let brushOpacity = 1;
+
+    window.maskOpacity = hotkeysConfig.canvas_zoom_transparency_level / 100
 
     // Element data holder
     const elemData = {};
@@ -1056,6 +1059,20 @@
       mouseY = offsetY;
     };
 
+    // We make the transparency of the brush and the transparency of the mask the same
+
+    function matchBrushOpacity(){
+      const canvas = document.querySelector(`${elementIDs.inpaint} canvas[key="interface"]`);
+      if(canvas && brushOpacity !== hotkeysConfig.canvas_zoom_transparency_level){
+        setBrushOpacity(100 - hotkeysConfig.canvas_zoom_transparency_level)
+        brushOpacity = hotkeysConfig.canvas_zoom_transparency_level
+      }
+    }
+
+    if(hotkeysConfig.canvas_zoom_brush_opacity){
+      targetElement.addEventListener("mousemove",matchBrushOpacity)
+    }
+      
     // Simulation of the function to put a long image into the screen.
     // We detect if an image has a scroll bar or not, make a fullscreen to reveal the image, then reduce it to fit into the element.
     // We hide the image and show it to the user when it is ready.
@@ -1078,8 +1095,6 @@
             }
         }
 
-        targetElement.addEventListener("mousemove", getMousePosition);
-
         //observers
         // Creating an observer with a callback function to handle DOM changes
         const observer = new MutationObserver((mutationsList, observer) => {
@@ -1099,7 +1114,6 @@
             // Set up an observer to track attribute changes
             observer.observe(targetElement, {attributes: true, childList: true, subtree: true});
         }
-
 
       targetElement.addEventListener("mousemove", getMousePosition);
       targetElement.addEventListener("auxclick", undoLastAction);

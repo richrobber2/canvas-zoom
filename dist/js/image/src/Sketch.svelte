@@ -22,6 +22,8 @@
 	export let container_height = 200;
 	export let shape;
 
+	if(window.maskOpacity) mask_opacity = window.maskOpacity
+
 	let colorPickerEnabled = localStorage.setItem("colorPickerEnable", false);
 	let transparentMask = localStorage.setItem("transparentMask", false);
 	let posX = 0;
