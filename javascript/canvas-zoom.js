@@ -17,6 +17,8 @@
       img2imgDemRaw: "#img2img_dimensions_row",
       sendToInpainBtn: "#image_buttons_img2img #inpaint_tab",
       sendToInpainBtnT2I: "#image_buttons_txt2img #inpaint_tab",
+      sendToInpainBtnNew: "#img2img_send_to_inpaint",
+      sendToInpainBtnT2INew : "#txt2img_send_to_inpaint"
     };
     const tabNameToElementId = {
       "Inpaint sketch": elementIDs.inpaintSketch,
@@ -433,8 +435,14 @@
           }
         });
 
-        elements.sendToInpainBtn.addEventListener("click", clearMask);
-        elements.sendToInpainBtnT2I.addEventListener("click", clearMask);
+        if (elements.sendToInpainBtn) {
+          elements.sendToInpainBtn.addEventListener("click", clearMask);
+          elements.sendToInpainBtnT2I.addEventListener("click", clearMask);
+        }
+        else {
+          elements.sendToInpainBtnNew.addEventListener("click", clearMask);
+          elements.sendToInpainBtnT2INew.addEventListener("click", clearMask);
+        }
       }
 
       if (!isGetSizeImgBtnExists) {
@@ -1120,7 +1128,7 @@
           }
         } catch (error) {
           // A small hack, as it is necessary that this check works like this
-          console.error("An error occurred while hiding canvas buttons:", error);
+          // There's no need to report a problem because there isn't one.
         }
       };
 
