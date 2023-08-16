@@ -30,6 +30,10 @@
       return Object.values(elements).some(value => value.includes(elemID));
     }
 
+    function hasHorizontalScrollbar(element) {
+      return element.scrollWidth > element.clientWidth;
+    }
+
     /**
      * Dispatches a synthetic wheel event to simulate zoom operation.
      * @param {Element} targetElement - The target element for the event.
@@ -591,6 +595,11 @@
         toggleOverlap("off");
         fullScreenMode = false;
 
+        const closeBtn = targetElement.querySelector("button[aria-label='Remove Image']");
+        if (closeBtn) {
+            closeBtn.addEventListener("click", resetZoom);
+        }
+
         if (canvas && parseFloat(canvas.style.width) > 865 && parseFloat(targetElement.style.width) > 865) {
           fitToElement();
           return;
@@ -1033,39 +1042,56 @@
         if (event.code === "ShiftLeft" && hotkeysConfig.canvas_zoom_draw_staight_lines) window.drawStraightLine = true;
       };
 
+    // Get mouse position 
+    const getMousePosition = ({ offsetX, offsetY }) => {
+      mouseX = offsetX;
+      mouseY = offsetY;
+    };
+
     // Simulation of the function to put a long image into the screen.
-    // We define whether the picture has a scroll bar or not,
-    // make a fullscreen to reveal the image, then reduce it to fit into the element.
+    // We detect if an image has a scroll bar or not, make a fullscreen to reveal the image, then reduce it to fit into the element.
     // We hide the image and show it to the user when it is ready.
-    function isHorizontalScrollbar(element) {
-      return element.scrollWidth > element.clientWidth;
-    }
 
-    function autoExpand(e) {
-      const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
-      const isMainTab =
-        [elementIDs.inpaint, elementIDs.inpaintSketch, elementIDs.sketch].includes(activeElement);
+    targetElement.isExpanded = false;
+        function autoExpand() {
+            const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
+            const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
 
-      if (canvas && isMainTab && isHorizontalScrollbar(targetElement)) {
-        targetElement.style.visibility = "hidden";
-        
-        setTimeout(() => {
-          fitToScreen();
-          resetZoom();
-          targetElement.style.visibility = "visible";
-        }, 10);
-      }
-    }
+            if (canvas && isMainTab) {
+                if (hasHorizontalScrollbar(targetElement) && targetElement.isExpanded === false) {
+                    targetElement.style.visibility = "hidden";
+                    setTimeout(() => {
+                        fitToScreen();
+                        resetZoom();
+                        targetElement.style.visibility = "visible";
+                        targetElement.isExpanded = true;
+                    }, 10);
+                }
+            }
+        }
 
-      const getMousePosition = ({ offsetX, offsetY }) => {
-        mouseX = offsetX;
-        mouseY = offsetY;
-      };
+        targetElement.addEventListener("mousemove", getMousePosition);
 
-      // Apply auto expand if enabled
-      if (hotkeysConfig.canvas_auto_expand && !window.applyZoomAndPan) {
-        targetElement.addEventListener("mousemove", autoExpand);
-      }
+        //observers
+        // Creating an observer with a callback function to handle DOM changes
+        const observer = new MutationObserver((mutationsList, observer) => {
+            for (let mutation of mutationsList) {
+                // If the style attribute of the canvas has changed, by observation it happens only when the picture changes
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style' &&
+                    mutation.target.tagName.toLowerCase() === 'canvas') {
+                    targetElement.isExpanded = false;
+                    setTimeout(resetZoom, 10);
+                }
+            }
+        });
+
+        // Apply auto expand if enabled
+        if (hotkeysConfig.canvas_auto_expand && !window.applyZoomAndPan) {
+            targetElement.addEventListener("mousemove", autoExpand);
+            // Set up an observer to track attribute changes
+            observer.observe(targetElement, {attributes: true, childList: true, subtree: true});
+        }
+
 
       targetElement.addEventListener("mousemove", getMousePosition);
       targetElement.addEventListener("auxclick", undoLastAction);
