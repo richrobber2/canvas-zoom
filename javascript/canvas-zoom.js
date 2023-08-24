@@ -1147,7 +1147,7 @@
         });
 
         // Apply auto expand if enabled
-        if (hotkeysConfig.canvas_auto_expand && !window.applyZoomAndPan) {
+        if (hotkeysConfig.canvas_auto_expand && (!window.applyZoomAndPan || isExtension )) {
             targetElement.addEventListener("mousemove", autoExpand);
             // Set up an observer to track attribute changes
             observer.observe(targetElement, {attributes: true, childList: true, subtree: true});
@@ -1433,7 +1433,7 @@
 
       // Add integration with ControlNet img2img One TAB
       applyZoomAndPanIntegration("#img2img_controlnet", ["#img2img_controlnet_ControlNet_input_image"]);
-      
+
       // Add integration with Regional Prompter
       applyZoomAndPanIntegration("#RP_main", ["#polymask"]);
 
