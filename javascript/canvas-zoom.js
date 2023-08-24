@@ -395,7 +395,7 @@
     // Initialize localStorage variables
     localStorage.setItem("brushOutline", hotkeysConfig.canvas_zoom_brush_outline);
     
-    console.log(canvasColor.img2img_inpaint_mask_brush_color,canvasColor.img2img_sketch_default_brush_color,canvasColor.canvas_zoom_inpaint_brushcolor)
+    // console.log(canvasColor.img2img_inpaint_mask_brush_color,canvasColor.img2img_sketch_default_brush_color,canvasColor.canvas_zoom_inpaint_brushcolor)
     
     // img2img_sketch_default_brush_color, img2img_inpaint_mask_brush_color.
 
