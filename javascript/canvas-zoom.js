@@ -394,7 +394,7 @@
       elements.img2imgDemRaw.appendChild(clonedDiv);
     }
 
-    function applyZoomAndPan(elemId) {
+    function applyZoomAndPan(elemId, isExtension = true) {
       const targetElement = gradioApp().querySelector(elemId);
       
       if (!targetElement) {
@@ -597,6 +597,12 @@
           panY: 0,
         };
 
+        if (isExtension) {
+          targetElement.style.overflow = "hidden";
+        }
+
+        targetElement.isZoomed = false;
+
         fixCanvas();
 
         targetElement.style.transform = `scale(${elemData[elemId].zoomLevel}) translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px)`;
@@ -608,10 +614,28 @@
 
         const closeBtn = targetElement.querySelector("button[aria-label='Remove Image']");
         if (closeBtn) {
-            closeBtn.addEventListener("click", resetZoom);
+          closeBtn.addEventListener("click", resetZoom);
         }
 
-        if (canvas && parseFloat(canvas.style.width) > 865 && parseFloat(targetElement.style.width) > 865) {
+        if (canvas && isExtension) {
+          const parentElement = targetElement.closest('[id^="component-"]');
+          if (
+            canvas &&
+            parseFloat(canvas.style.width) > parentElement.offsetWidth &&
+            parseFloat(targetElement.style.width) > parentElement.offsetWidth
+          ) {
+            fitToElement();
+            return;
+          }
+
+        }
+
+        if (
+          canvas &&
+          !isExtension &&
+          parseFloat(canvas.style.width) > 865 &&
+          parseFloat(targetElement.style.width) > 865
+        ) {
           fitToElement();
           return;
         }
@@ -623,7 +647,7 @@
 
         targetElement.style.width = "";
         if (canvas) {
-          targetElement.style.height = canvas.style.height;
+          // targetElement.style.height = canvas.style.height;
         }
       }
 
@@ -685,7 +709,7 @@
       const updateZoom = (level, x, y) => {
         const { panX, panY, zoomLevel } = elemData[elemId];
 
-        const clampedLevel = Math.max(0.5, Math.min(level, 15));
+        const clampedLevel = Math.max(0.1, Math.min(level, 15));
 
         Object.assign(elemData[elemId], {
           panX: panX + x - (x * clampedLevel) / zoomLevel,
@@ -699,6 +723,10 @@
 
         toggleOverlap("on");
         setImgDisplayToNone();
+
+        if (isExtension) {
+          targetElement.style.overflow = "visible";
+      }
 
         return clampedLevel;
       };
@@ -736,6 +764,8 @@
           zoomPos.x - rect.left,
           zoomPos.y - rect.top
         );
+
+        targetElement.isZoomed = true;
       };
 
       /**
@@ -748,10 +778,18 @@
       //Reset Zoom
       targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
 
+      let parentElement;
+
+      if (isExtension) {
+        parentElement = targetElement.closest('[id^="component-"]');
+      } else {
+        parentElement = targetElement.parentElement;
+      }
+
       // Get element and screen dimensions
       const elementWidth = targetElement.offsetWidth;
       const elementHeight = targetElement.offsetHeight;
-      const parentElement = targetElement.parentElement;
+      // const parentElement = targetElement.parentElement;
       const screenWidth = parentElement.clientWidth;
       const screenHeight = parentElement.clientHeight;
 
@@ -799,25 +837,27 @@
     function fitToScreen(isMobile = false) {
       const canvas = gradioApp().querySelector(
         `${elemId} canvas[key="interface"]`
-      );
+    );
 
-      if (!canvas) return;
+    if (!canvas) return;
 
-      if (canvas.offsetWidth > 862 || isMobile) {
-        targetElement.style.width = canvas.offsetWidth + "px";
-      }
+    if (canvas.offsetWidth > 862 || isExtension || isMobile) {
+        targetElement.style.width = (canvas.offsetWidth + 2) + "px";
+    }
 
-      if (fullScreenMode) {
+    if (isExtension) {
+        targetElement.style.overflow = "visible";
+    }
 
+    if (fullScreenMode) {
         if (isMobile) {
-          resetZoom("", true);
-        } else {
-          resetZoom();
-        }
-
+            resetZoom("", true);
+          } else {
+            resetZoom();
+          }
         fullScreenMode = false;
         return;
-      }
+    }
 
       //Reset Zoom
       targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
@@ -1080,9 +1120,7 @@
     targetElement.isExpanded = false;
         function autoExpand() {
             const canvas = document.querySelector(`${elemId} canvas[key="interface"]`);
-            const isMainTab = activeElement === elementIDs.inpaint || activeElement === elementIDs.inpaintSketch || activeElement === elementIDs.sketch;
-
-            if (canvas && isMainTab) {
+            if (canvas) {
                 if (hasHorizontalScrollbar(targetElement) && targetElement.isExpanded === false) {
                     targetElement.style.visibility = "hidden";
                     setTimeout(() => {
@@ -1257,14 +1295,19 @@
      * Handles the movement of the canvas element by keyboard input.
      * @param {KeyboardEvent} e - The keyboard event object.
      */
-    const handleMoveByKey = (e) => {
+    function handleMoveByKey(e) {
       if (isMoving && elemId === activeElement) {
-        updatePanPosition(e.movementX, e.movementY);
-        targetElement.style.pointerEvents = "none";
+          updatePanPosition(e.movementX, e.movementY);
+          targetElement.style.pointerEvents = "none";
+
+          if (isExtension) {
+              targetElement.style.overflow = "visible";
+          }
+
       } else {
-        targetElement.style.pointerEvents = "auto";
+          targetElement.style.pointerEvents = "auto";
       }
-    };
+  }
 
       /**
        * Handles the end of the canvas movement operation.
@@ -1284,6 +1327,10 @@
         e.preventDefault();
         updatePanPosition(e.movementX, e.movementY);
         targetElement.style.pointerEvents = "none";
+
+        if (isExtension) {
+          targetElement.style.overflow = "visible";
+      }
       }
     };
 
@@ -1295,10 +1342,40 @@
         }
       }
 
+      // Checks for extension
+      function checkForOutBox() {
+        const parentElement = targetElement.closest('[id^="component-"]');
+        if (parentElement.offsetWidth < targetElement.offsetWidth && !targetElement.isExpanded) {
+            resetZoom();
+            targetElement.isExpanded = true;
+        }
+
+        if (parentElement.offsetWidth < targetElement.offsetWidth && elemData[elemId].zoomLevel == 1) {
+            resetZoom();
+        }
+
+        if (parentElement.offsetWidth < targetElement.offsetWidth && targetElement.offsetWidth * elemData[elemId].zoomLevel > parentElement.offsetWidth && elemData[elemId].zoomLevel < 1 && !targetElement.isZoomed) {
+            resetZoom();
+        }
+    }
+
+      if (isExtension) {
+        targetElement.addEventListener("mousemove", checkForOutBox);
+    }
+
       // Prevents sticking to the mouse
       window.onblur = function () {
         isMoving = false;
       };
+
+      window.addEventListener('resize', (e) => {
+        resetZoom();
+
+        if (isExtension) {
+            targetElement.isExpanded = false;
+            targetElement.isZoomed = false;
+        }
+    });
 
       gradioApp().addEventListener("mousemove", handleMoveByKey);
       // targetElement.addEventListener("mousedown", targetElementHandler);
@@ -1309,9 +1386,9 @@
       })
     }
 
-    applyZoomAndPan(elementIDs.sketch);
-    applyZoomAndPan(elementIDs.inpaint);
-    applyZoomAndPan(elementIDs.inpaintSketch);
+    applyZoomAndPan(elementIDs.sketch,false);
+    applyZoomAndPan(elementIDs.inpaint,false);
+    applyZoomAndPan(elementIDs.inpaintSketch,false);
 
     // Make Canvas zoom func global, like in build in extension
     // Temp disable have bugs :(
@@ -1324,48 +1401,39 @@
      * @param {string} id - The id of the main element.
      * @param {Array} elementIDs - An array of element IDs to which the event listeners should be added.
      */
-    const applyZoomAndPanIntegration = async (id, elementIDs) => {
+    // Make the function global so that other extensions can take advantage of this solution
+    const applyZoomAndPanIntegration = async(id, elementIDs) => {
       const mainEl = document.querySelector(id);
-
-      if(id.toLocaleLowerCase() === "none"){
-        for (const elementID of elementIDs) {
-          const el = await waitForElement(elementID);
-          if (!el) break;
-          applyZoomAndPan(elementID);
-        }
-        return
+      if (id.toLocaleLowerCase() === "none") {
+          for (const elementID of elementIDs) {
+              const el = await waitForElement(elementID);
+              if (!el) break;
+              applyZoomAndPan(elementID);
+          }
+          return;
       }
 
       if (!mainEl) return;
+      mainEl.addEventListener("click", async() => {
+          for (const elementID of elementIDs) {
+              const el = await waitForElement(elementID);
+              if (!el) break;
+              applyZoomAndPan(elementID);
+          }
+      }, {once: true});
+  };
 
-      mainEl.addEventListener("click", async () => {
-        for (const elementID of elementIDs) {
-          const el = await waitForElement(elementID);
-            if (!el) break;
-          applyZoomAndPan(elementID);
-        }
-      }, { once: true });      
-    };
 
 
     // Enable Extensions Integration
     const integrateControlNet = hotkeysConfig.canvas_zoom_enable_integration;
     if (integrateControlNet) {
-
       // Add integration with ControlNet txt2img One TAB
       applyZoomAndPanIntegration("#txt2img_controlnet", ["#txt2img_controlnet_ControlNet_input_image"]);
 
       // Add integration with ControlNet img2img One TAB
       applyZoomAndPanIntegration("#img2img_controlnet", ["#img2img_controlnet_ControlNet_input_image"]);
-
-      // Add integration with ControlNet txt2img Tabs
-      applyZoomAndPanIntegration("#txt2img_controlnet",
-        Array.from({ length: 10 }, (_, i) => `#txt2img_controlnet_ControlNet-${i}_input_image`));
-
-      // Add integration with ControlNet img2img Tabs
-      applyZoomAndPanIntegration("#img2img_controlnet",
-        Array.from({ length: 10 }, (_, i) => `#img2img_controlnet_ControlNet-${i}_input_image`));
-
+      
       // Add integration with Regional Prompter
       applyZoomAndPanIntegration("#RP_main", ["#polymask"]);
 
@@ -1381,6 +1449,23 @@
       // Add by template, if you have a tab then add its class as the first argument, if you have a tab then add none at the beginning
       // Add your integration and open PR 😊
 
-
     }
+
+    // The controlNet author has implemented this functionality in new versions
+    if(!window.applyZoomAndPanIntegration && integrateControlNet){
+      // Add integration with ControlNet txt2img Tabs
+      applyZoomAndPanIntegration("#txt2img_controlnet",
+        Array.from({ length: 10 }, (_, i) => `#txt2img_controlnet_ControlNet-${i}_input_image`));
+
+      // Add integration with ControlNet img2img Tabs
+      applyZoomAndPanIntegration("#img2img_controlnet",
+        Array.from({ length: 10 }, (_, i) => `#img2img_controlnet_ControlNet-${i}_input_image`));
+    }
+
+    // if(window.applyZoomAndPanIntegration){
+      window.applyZoomAndPanIntegration = applyZoomAndPanIntegration
+    // }
+
+    
+
   });
