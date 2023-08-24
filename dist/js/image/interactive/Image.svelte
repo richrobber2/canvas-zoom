@@ -156,7 +156,7 @@
 		}
 	}
 
-	$: brush_color = mode == "mask" ? "#000000" : "#000";
+	// $: brush_color = mode == "mask" ? "#000000" : "#000";
 
 	let value_img;
 	let max_height;

@@ -115,18 +115,6 @@
 	let canvas_observer = null;
 	let line_count = 0;
 
-	if (mode === "mask") {
-		if (localStorage.getItem("brush_color")) {
-			brush_color = localStorage.getItem("brush_color");
-		}
-	}
-
-	if (mode !== "mask"){
-		if (localStorage.getItem("sketch_brush_color")) {
-			brush_color = localStorage.getItem("sketch_brush_color");
-		}
-	}
-
 	function draw_cropped_image() {
 		if (!shape) {
 			ctx.temp.drawImage(value_img, 0, 0, width, height);
