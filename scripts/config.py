@@ -31,6 +31,6 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_zoom_add_buttons": shared.OptionInfo(False, "Add a button to switch to full screen mode. May be useful for devices without keyboard"),
     "canvas_blur_prompt": shared.OptionInfo(False, "Take the focus off the prompt when working with a canvas"),
     "canvas_zoom_draw_staight_lines": shared.OptionInfo(False, "Enable the function of drawing straight lines between points while holding down the Shift key"),
-    "canvas_zoom_inpaint_brushcolor": shared.OptionInfo("#000000", 'Change the default inpaint brush color.',gr.ColorPicker),
+    "canvas_zoom_inpaint_brushcolor": shared.OptionInfo("#000000", 'Change the default inpaint brush color. Since version 1.6 this setting doesnt work, look for it in "img2img" in the settings .',gr.ColorPicker),
     "canvas_zoom_disabled_functions": shared.OptionInfo(["Overlap"], "Disable function that you don't use", gr.CheckboxGroup, {"choices": ["Zoom","Adjust brush size","Undo", "Moving canvas","Fullscreen","Reset Zoom","Overlap","Open color panel","Pin color panel","Dropper","Fill","Transparency Mode"]}),
 }))

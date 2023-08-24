@@ -1,10 +1,10 @@
 <script>
 	// @ts-nocheck
-	/* eslint-disable */
 
 	import { onMount, onDestroy, createEventDispatcher, tick } from "svelte";
 	import { fade } from "svelte/transition";
 	import { LazyBrush } from "lazy-brush/src";
+	import { brush_color_store } from "./Brushcolor";
 	import ResizeObserver from "resize-observer-polyfill";
 
 	const dispatch = createEventDispatcher();
@@ -21,6 +21,16 @@
 	export let height = 200;
 	export let container_height = 200;
 	export let shape;
+
+	if(window.maskOpacity) mask_opacity = window.maskOpacity
+
+	let colorPickerEnabled = localStorage.setItem("colorPickerEnable", false);
+	let transparentMask = localStorage.setItem("transparentMask", false);
+	let posX = 0;
+	let posY = 0;
+	let lineStartPoint = null;
+
+	let isMakMode;
 
 	$: {
 		if (shape && (width || height)) {
@@ -68,28 +78,28 @@
 	function mid_point(p1, p2) {
 		return {
 			x: p1.x + (p2.x - p1.x) / 2,
-			y: p1.y + (p2.y - p1.y) / 2
+			y: p1.y + (p2.y - p1.y) / 2,
 		};
 	}
 
 	const canvas_types = [
 		{
 			name: "interface",
-			zIndex: 15
+			zIndex: 15,
 		},
 		{
 			name: "mask",
 			zIndex: 13,
-			opacity: mask_opacity
+			opacity: mask_opacity,
 		},
 		{
 			name: "drawing",
-			zIndex: 11
+			zIndex: 11,
 		},
 		{
 			name: "temp",
-			zIndex: 12
-		}
+			zIndex: 12,
+		},
 	];
 
 	let canvas = {};
@@ -104,6 +114,18 @@
 	let canvas_container = null;
 	let canvas_observer = null;
 	let line_count = 0;
+
+	if (mode === "mask") {
+		if (localStorage.getItem("brush_color")) {
+			brush_color = localStorage.getItem("brush_color");
+		}
+	}
+
+	if (mode !== "mask"){
+		if (localStorage.getItem("sketch_brush_color")) {
+			brush_color = localStorage.getItem("sketch_brush_color");
+		}
+	}
 
 	function draw_cropped_image() {
 		if (!shape) {
@@ -184,8 +206,8 @@
 			enabled: true,
 			initialPoint: {
 				x: width / 2,
-				y: height / 2
-			}
+				y: height / 2,
+			},
 		});
 
 		canvas_observer = new ResizeObserver((entries, observer, ...rest) => {
@@ -217,6 +239,19 @@
 		mounted = false;
 		canvas_observer.unobserve(canvas_container);
 	});
+
+	export function redraw() {
+		clear_canvas();
+		if (value_img) {
+			draw_cropped_image();
+		}
+		if (lines.length == 0) {
+			dispatch("clear");
+		}
+		line_count = lines.length;
+		draw_lines({ lines: lines }, true);
+		trigger_on_change();
+	}
 
 	function redraw_image(_lines) {
 		clear_canvas();
@@ -266,19 +301,30 @@
 		return JSON.stringify({
 			lines: lines,
 			width: canvas_width,
-			height: canvas_height
+			height: canvas_height,
 		});
 	};
 
 	let draw_lines = ({ lines }) => {
+		const brushMain = brush_color;
 		lines.forEach((line) => {
 			const { points: _points, brush_color, brush_radius } = line;
-			draw_points({
-				points: _points,
-				brush_color,
-				brush_radius,
-				mask: mode === "mask"
-			});
+
+			if (mode === "mask") {
+				draw_points({
+					points: _points,
+					brush_color: brushMain,
+					brush_radius,
+					mask: mode === "mask",
+				});
+			} else {
+				draw_points({
+					points: _points,
+					brush_color,
+					brush_radius,
+					mask: mode === "mask",
+				});
+			}
 		});
 
 		saveLine({ brush_color, brush_radius });
@@ -287,10 +333,62 @@
 		}
 	};
 
+	let draw_line = ({ start, end, brush_color, brush_radius }) => {
+		ctx.temp.beginPath();
+		ctx.temp.moveTo(start.x, start.y);
+		ctx.temp.lineTo(end.x, end.y);
+		ctx.temp.strokeStyle = brush_color;
+		ctx.temp.lineWidth = brush_radius;
+		ctx.temp.stroke();
+
+		// Save the line as two points in the lines array
+		const newLine = {
+			points: [start, end],
+			brush_color: brush_color,
+			brush_radius: brush_radius,
+		};
+
+		lines.push(newLine);
+		line_count += 1;
+		saveLine();
+	};
+
 	let handle_draw_start = (e) => {
 		e.preventDefault();
-		is_pressing = true;
 		const { x, y } = get_pointer_pos(e);
+
+		window.isDrawing = true;
+		if (!e.touches && e.button !== 0) return;
+
+		let drawStraightLine = window.drawStraightLine || false;
+		if (drawStraightLine === false || (lines.length === 0 && !lineStartPoint)) {
+			lineStartPoint = null;
+		}
+		if (drawStraightLine) {
+			if (lineStartPoint === null) {
+				lineStartPoint = { x, y };
+			} else {
+				draw_line({
+					start: lineStartPoint,
+					end: { x, y },
+					brush_color,
+					brush_radius,
+				});
+				lineStartPoint = { x, y };
+			}
+			return;
+		}
+
+		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
+		if (colorPickerEnabled && mode !== "mask") {
+			brush_color = getPixelColor(x, y);
+			const brush_color_hex = rgbToHex(brush_color);
+			brush_color_store.set(brush_color_hex);
+			localStorage.setItem("colorPickerEnable", "false");
+			return;
+		}
+
+		is_pressing = true;
 		if (e.touches && e.touches.length > 0) {
 			lazy.update({ x, y }, { both: true });
 		}
@@ -300,7 +398,15 @@
 
 	let handle_draw_move = (e) => {
 		e.preventDefault();
+
+		if (localStorage.getItem("fillCanvasBrushColor") === "true") {
+			fill_canvas_color();
+			localStorage.setItem("fillCanvasBrushColor", false);
+		}
+
 		const { x, y } = get_pointer_pos(e);
+		posX = x;
+		posY = y;
 		handle_pointer_move(x, y);
 	};
 
@@ -340,14 +446,14 @@
 
 		const container_dimensions = {
 			height: container_height,
-			width: container_height * (dimensions.width / dimensions.height)
+			width: container_height * (dimensions.width / dimensions.height),
 		};
 
 		await Promise.all([
 			set_canvas_size(canvas.interface, dimensions, container_dimensions),
 			set_canvas_size(canvas.drawing, dimensions, container_dimensions),
 			set_canvas_size(canvas.temp, dimensions, container_dimensions),
-			set_canvas_size(canvas.mask, dimensions, container_dimensions, false)
+			set_canvas_size(canvas.mask, dimensions, container_dimensions, false),
 		]);
 
 		if (!brush_radius) {
@@ -406,11 +512,29 @@
 
 		return {
 			x: ((clientX - rect.left) / rect.width) * width,
-			y: ((clientY - rect.top) / rect.height) * height
+			y: ((clientY - rect.top) / rect.height) * height,
 		};
 	};
 
+	function toggleColorPicker() {
+		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
+		if (colorPickerEnabled && mode !== "mask") {
+			for (const key in canvas) {
+				canvas[key].style.cursor = "crosshair";
+			}
+		} else {
+			for (const key in canvas) {
+				canvas[key].style.cursor = "none";
+			}
+		}
+	}
+
 	let handle_pointer_move = (x, y) => {
+		colorPickerEnabled = localStorage.getItem("colorPickerEnable") === "true";
+		toggleColorPicker();
+		if (colorPickerEnabled && mode !== "mask") {
+			return;
+		}
 		lazy.update({ x: x, y: y });
 		const is_disabled = !lazy.isEnabled();
 		if ((is_pressing && !is_drawing) || (is_disabled && is_pressing)) {
@@ -423,7 +547,7 @@
 				points: points,
 				brush_color,
 				brush_radius,
-				mask: mode === "mask"
+				mask: mode === "mask",
 			});
 		}
 		mouse_has_moved = true;
@@ -451,6 +575,75 @@
 		target_ctx.lineTo(p1.x, p1.y);
 		target_ctx.stroke();
 	};
+	// help funcs
+	function getBrightness(hexColor) {
+		const rgbColor = hexToRgb(hexColor);
+		if (rgbColor) {
+			const { r, g, b } = rgbColor;
+			return (r * 299 + g * 587 + b * 114) / 1000;
+		}
+		return 0;
+	}
+	function getPixelColor(x, y) {
+		const imageData = ctx.drawing.getImageData(x - 1, y, 1, 1);
+		const [r, g, b, a] = imageData.data;
+		return `rgb(${r}, ${g}, ${b})`;
+	}
+	function hexToRgb(hex) {
+		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+		return result
+			? {
+					r: parseInt(result[1], 16),
+					g: parseInt(result[2], 16),
+					b: parseInt(result[3], 16),
+			  }
+			: null;
+	}
+	function rgbToHex(rgbString) {
+		// Extracting r, g, b values from a string
+		const [r, g, b] = rgbString
+			.match(/\d+/g) // Find all the numbers in the string
+			.map(Number); // Convert each group of digits to a numeric value
+		// Function to convert a number to a two-digit hexadecimal value
+		function toHex(num) {
+			const hex = num.toString(16);
+			return hex.length === 1 ? `0${hex}` : hex;
+		}
+		// Convert each r, g, b value to hexadecimal format and combine them
+		return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+	}
+	// end
+
+	function fill_canvas_color() {
+		if (mode === "mask") {
+			return;
+		}
+		ctx.temp.fillStyle = brush_color;
+		ctx.temp.fillRect(0, 0, width, height);
+		var startX = 0; // start point of the line (x-coordinate)
+		var startY = height / 2; // start point of the line (y-coordinate)
+		var endX = width; // end point of the line (x-coordinate)
+		var endY = height / 2; // end point of the line (y-coordinate)
+		ctx.drawing.beginPath();
+		ctx.drawing.moveTo(startX, startY);
+		ctx.drawing.lineTo(endX, endY);
+		ctx.drawing.strokeStyle = brush_color;
+		ctx.drawing.lineWidth = height; // make the line height of the canvas
+		ctx.drawing.stroke();
+		// Save line as two points in the lines array
+		lines = [
+			{
+				points: [
+					{ x: startX, y: startY },
+					{ x: endX, y: endY },
+				],
+				brush_color: brush_color,
+				brush_radius: height,
+			},
+		];
+		line_count = 1;
+		saveLine();
+	}
 
 	let save_mask_line = () => {
 		if (points.length < 1) return;
@@ -465,7 +658,7 @@
 		lines.push({
 			points: points.slice(),
 			brush_color: brush_color,
-			brush_radius
+			brush_radius,
 		});
 
 		if (mode !== "mask") {
@@ -522,16 +715,42 @@
 	let draw_interface = (ctx, pointer, brush) => {
 		ctx.clearRect(0, 0, width, height);
 
+		let brushX = brush.x;
+		let brushY = brush.y;
+		if (posX && posY) {
+			brushX = posX;
+			brushY = posY;
+		}
+
 		// brush preview
 		ctx.beginPath();
 		ctx.fillStyle = brush_color;
-		ctx.arc(brush.x, brush.y, brush_radius / 2, 0, Math.PI * 2, true);
+		const brushOutlineEnabled = localStorage.getItem("brushOutline") === "true";
+		if (brushOutlineEnabled) {
+			const brightness = getBrightness(brush_color);
+			ctx.strokeStyle = brightness > 128 ? "black" : "white"; // Change the strokeStyle based on brightness
+			if (brush_radius > 180) {
+				ctx.lineWidth = 4;
+			} else if (brush_radius > 80) {
+				ctx.lineWidth = 3; // Change the value to control the thickness of the border
+			} else if (brush_radius > 20) {
+				ctx.lineWidth = 2; // Change the value to control the thickness of the border
+			} else {
+				ctx.lineWidth = 1;
+			}
+		}
+
+		ctx.arc(brushX, brushY, brush_radius / 2, 0, Math.PI * 2, true);
 		ctx.fill();
+
+		if (brushOutlineEnabled) {
+			ctx.stroke(); // Main Point Boundary
+		}
 
 		// tiny brush point dot
 		ctx.beginPath();
 		ctx.fillStyle = catenary_color;
-		ctx.arc(brush.x, brush.y, brush_dot, 0, Math.PI * 2, true);
+		ctx.arc(brushX, brushY, brush_dot, 0, Math.PI * 2, true);
 		ctx.fill();
 	};
 
@@ -565,6 +784,12 @@
 			on:mousemove={name === "interface" ? handle_draw_move : undefined}
 			on:mouseup={name === "interface" ? handle_draw_end : undefined}
 			on:mouseout={name === "interface" ? handle_draw_end : undefined}
+			on:mouseout={name === "interface"
+				? () => {
+						posX = posY = 0;
+						localStorage.setItem("overCanvas", "false");
+				  }
+				: undefined}
 			on:blur={name === "interface" ? handle_draw_end : undefined}
 			on:touchstart={name === "interface" ? handle_draw_start : undefined}
 			on:touchmove={name === "interface" ? handle_draw_move : undefined}
@@ -598,6 +823,14 @@
 
 	canvas:hover {
 		cursor: none;
+	}
+
+	canvas:not(.color-picker-enabled):hover {
+		cursor: none;
+	}
+
+	canvas.color-picker-enabled:hover {
+		cursor: crosshair;
 	}
 
 	.wrap {

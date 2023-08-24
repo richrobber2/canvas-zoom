@@ -1,16 +1,23 @@
 <script lang="ts">
+	import { createEventDispatcher } from "svelte";
 	import { IconButton } from "@gradio/atoms";
 	import { Brush, Color } from "@gradio/icons";
+	import { brush_color_store } from "./Brushcolor";
 
+	const dispatch = createEventDispatcher();
 	let show_size = false;
 	let show_col = false;
 
 	export let brush_radius = 20;
-	export let brush_color = "#000";
 	export let container_height: number;
 	export let img_width: number;
 	export let img_height: number;
 	export let mode: "mask" | "other" = "other";
+	export let brush_color = "#000";
+
+	brush_color_store.subscribe(($brush_color) => {
+		brush_color = $brush_color;
+	});
 
 	$: width = container_height * (img_width / img_height);
 </script>
@@ -33,7 +40,7 @@
 		{/if}
 	</span>
 
-	{#if mode !== "mask"}
+	{#if true}
 		<span class="col">
 			<IconButton
 				Icon={Color}
@@ -41,7 +48,14 @@
 				on:click={() => (show_col = !show_col)}
 			/>
 			{#if show_col}
-				<input aria-label="Brush color" bind:value={brush_color} type="color" />
+				<input
+					aria-label="Brush color"
+					on:change={() => {
+						if (mode === "mask") dispatch("redraw");
+					}}
+					bind:value={brush_color}
+					type="color"
+				/>
 			{/if}
 		</span>
 	{/if}

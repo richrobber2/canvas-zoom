@@ -337,10 +337,7 @@
 
     // Disable unnecessary user functions
     const hotkeysConfig = createHotkeyConfig(defaultHotkeysConfig, preHotkeysConfig);
-
-    // Initialize localStorage variables
-    localStorage.setItem("brushOutline", hotkeysConfig.canvas_zoom_brush_outline);
-    localStorage.setItem("brush_color", hotkeysConfig.canvas_zoom_inpaint_brushcolor);
+    
 
     // Variables for moving and opacity
     let isMoving = false;
@@ -392,6 +389,24 @@
       getImgDataBtn.title = "Get the width and height from the picture";
     
       elements.img2imgDemRaw.appendChild(clonedDiv);
+    }
+
+    const canvasColor = await waitForOpts();
+    // Initialize localStorage variables
+    localStorage.setItem("brushOutline", hotkeysConfig.canvas_zoom_brush_outline);
+    
+    console.log(canvasColor.img2img_inpaint_mask_brush_color,canvasColor.img2img_sketch_default_brush_color,canvasColor.canvas_zoom_inpaint_brushcolor)
+    
+    // img2img_sketch_default_brush_color, img2img_inpaint_mask_brush_color.
+
+    if(canvasColor.img2img_inpaint_mask_brush_color){
+      localStorage.setItem("brush_color", canvasColor.img2img_inpaint_mask_brush_color);
+    } else {
+      localStorage.setItem("brush_color", hotkeysConfig.canvas_zoom_inpaint_brushcolor);
+    }
+
+    if(canvasColor.img2img_sketch_default_brush_color){
+      localStorage.setItem("sketch_brush_color", canvasColor.img2img_sketch_default_brush_color);
     }
 
     function applyZoomAndPan(elemId, isExtension = true) {
