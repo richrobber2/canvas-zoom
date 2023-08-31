@@ -6,8 +6,8 @@ That's why it turns out that the extension weighs so much ~140mb.
 35mb new version, 35 mb old version, and git folder another 70mb. 
 
 # Folder Assignment
-- **templates** ( Modified Gradio 3.31.0 )
-- **old-auto-v-1-0** ( Modified Gradio 3.23 )  For those who don't want to upgrade
+- **templates** ( Modified Gradio 3.41.2 )
+- **v1_1_v1_5_1** ( Modified Gradio 3.31.0 )  For those who don't want to upgrade
 - **js** ( The original gradio files I changed )
 
 During installation, the folder with the modified gradio replaces the original one in the folder venv\Lib\site-packages\gradio
