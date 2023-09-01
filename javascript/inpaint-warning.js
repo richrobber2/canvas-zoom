@@ -177,28 +177,32 @@ onUiLoaded(async () => {
 
   
 
-  // Creating an Observer
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (enableLabel) {
-          handleInputChange(input, inpaintingPattern, inpaintButton);
-        }
-
-        if (enableBtnColor) {
-          const modelClass = input.value;
-          if (inpaintingPattern.test(modelClass)) {
-            // Enable button colors
-            updateButtonColors(buttons, true, normalColor, hoverColor);
-          } else {
-            // Disable button colors
-            updateButtonColors(buttons, false, normalColor, hoverColor);
+      // if (mutation.type === "attributes" && mutation.attributeName === "class") {
+  
+        setTimeout(() => { // delay check for 3 seconds
+          console.log(input.value)
+          if (enableLabel) {
+            handleInputChange(input, inpaintingPattern, inpaintButton);
           }
-        }
+  
+          if (enableBtnColor) {
+            const modelClass = input.value;
+            if (inpaintingPattern.test(modelClass)) {
+              // Enable button colors
+              updateButtonColors(buttons, true, normalColor, hoverColor);
+            } else {
+              // Disable button colors
+              updateButtonColors(buttons, false, normalColor, hoverColor);
+            }
+          }
+        }, 3000);
+  
       }
-    }
+    // }
   });
-
+  
   // Beginning Observation
   observer.observe(input, { attributes: true });
 
