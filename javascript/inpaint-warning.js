@@ -182,7 +182,7 @@ onUiLoaded(async () => {
       // if (mutation.type === "attributes" && mutation.attributeName === "class") {
   
         setTimeout(() => { // delay check for 3 seconds
-          console.log(input.value)
+          // console.log(input.value)
           if (enableLabel) {
             handleInputChange(input, inpaintingPattern, inpaintButton);
           }
