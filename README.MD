@@ -59,6 +59,10 @@ The hotkeys only work in the image area
 
 **C** - Toggle mask transparency mode ( Works only in Inpaint )
 
+**[** - Increase brush size
+
+**]** - Decrease brush size
+
 In transparency mode, you can paint but the effect will not be what you expect, this mode is useful to see how the mask fits on the picture.
 
 ### Additional hotkeys
@@ -164,6 +168,10 @@ Canvas Zoom поддерживает интеграцию с другими по
 **O** - Перекрыть все элементы и обратно
 
 **C** - Переключение режима прозрачности маски ( Работает только в Inpaint )
+
+**[** - Увеличить размер кисти
+
+**]** - Уменьшить размер кисти
 
 В режиме прозрачности, вы можете рисовать но эфект будет не такой какой вы ожидаете, этот режим удобен для просмотра того, как лежит маска на картинке.
 
