@@ -22,10 +22,11 @@
 	export let container_height = 200;
 	export let shape;
 
-	if(window.maskOpacity) mask_opacity = window.maskOpacity
+	if (window.maskOpacity) mask_opacity = window.maskOpacity;
 
 	let colorPickerEnabled = localStorage.setItem("colorPickerEnable", false);
 	let transparentMask = localStorage.setItem("transparentMask", false);
+
 	let posX = 0;
 	let posY = 0;
 	let lineStartPoint = null;
@@ -724,7 +725,7 @@
 			} else if (brush_radius > 20) {
 				ctx.lineWidth = 2; // Change the value to control the thickness of the border
 			} else {
-				ctx.lineWidth = 1;
+				ctx.lineWidth = 2;
 			}
 		}
 

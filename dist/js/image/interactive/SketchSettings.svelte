@@ -15,6 +15,13 @@
 	export let mode: "mask" | "other" = "other";
 	export let brush_color = "#000";
 
+	let maxBrushSize = window.maxBrushSize;
+	if (maxBrushSize) {
+		maxBrushSize = maxBrushSize / 100;
+	} else {
+		maxBrushSize = 1;
+	}
+
 	brush_color_store.subscribe(($brush_color) => {
 		brush_color = $brush_color;
 	});
@@ -35,7 +42,7 @@
 				bind:value={brush_radius}
 				type="range"
 				min={0.5 * (img_width / width)}
-				max={75 * (img_width / width)}
+				max={75 * (img_width / width) * maxBrushSize}
 			/>
 		{/if}
 	</span>

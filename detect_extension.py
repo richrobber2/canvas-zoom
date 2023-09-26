@@ -30,10 +30,12 @@ if os.path.isfile(config_path):
         # Check if "canvas-zoom" is in the list of disabled_extensions
         if "canvas-zoom" in config.get('disabled_extensions', []):
             launch.run(f'"{python}" -m pip install --force-reinstall --no-deps gradio=={gradio_version}', desc=f"Uninstalling modified gradio for canvas-zoom", errdesc=f"Couldn't uninstall canvas-zoom", live=False)
+            os.remove(script_path)
 
         # Check if disable_all_extensions is not "none"
         if config.get('disable_all_extensions', 'none') == 'all':
             launch.run(f'"{python}" -m pip install --force-reinstall --no-deps gradio=={gradio_version}', desc=f"Uninstalling modified gradio for canvas-zoom", errdesc=f"Couldn't uninstall canvas-zoom", live=False)
+            os.remove(script_path)
 
 # Check if the folder exists
 if not os.path.exists(canvasZoomPath) and gradio_version is not None:
