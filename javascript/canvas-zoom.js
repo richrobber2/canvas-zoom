@@ -322,6 +322,7 @@ onUiLoaded(async () => {
     canvas_zoom_add_buttons: false,
     canvas_zoom_inpaint_brushcolor: "#000000",
     canvas_zoom_transparency_level: 70,
+    canvas_zoom_brush_size_change: 5,
     canvas_zoom_brush_size: 200,
     canvas_zoom_disabled_functions: [],
   };
@@ -1105,8 +1106,8 @@ onUiLoaded(async () => {
         [hotkeysConfig.canvas_zoom_hotkey_fill]: fillCanvasWithColor,
         [hotkeysConfig.canvas_zoom_hotkey_transparency]: toggleOpacityMode,
         [hotkeysConfig.canvas_zoom_hotkey_undo]: undoLastAction,
-        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -5, false),
-        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, 5, false),
+        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -hotkeysConfig.canvas_zoom_brush_size_change, false),
+        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, hotkeysConfig.canvas_zoom_brush_size_change, false),
       };
 
       const action = hotkeyActions[event.code];
@@ -1261,7 +1262,7 @@ onUiLoaded(async () => {
       if (!isModifierKey(e, hotkeysConfig.canvas_hotkey_adjust)) return;
 
       e.preventDefault();
-      adjustBrushSize(elemId, e.deltaY);
+      adjustBrushSize(elemId, e.deltaY, false, hotkeysConfig.canvas_zoom_brush_size_change);
     });
 
     /**

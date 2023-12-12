@@ -89,6 +89,8 @@ In transparency mode, you can paint but the effect will not be what you expect, 
 
 8. In the settings you can turn off the tooltip and functionality that you do not need
 
+9. You can adjust the size of the maximum size of the brush and the ability to change the % by which it is changed
+
 ## Known bugs:
 
 1. If a white image appears when you cancel on the Hotkey, press the cancel hotkey again and the image will return.
@@ -198,6 +200,8 @@ Canvas Zoom поддерживает интеграцию с другими по
 7. Вы можете выбрать цвет маски в Inpaint по умолчанию, цвет маски можно изменить в настройках.
 
 8. В настройках вы можете отключить подсказку и функционал которым вы не пользуетесь
+
+9. Вы можете настроить размер максимального размера кисти и возможность изменения %, на который он изменяется
 
 ## Известные баги:
 

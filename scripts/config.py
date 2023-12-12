@@ -23,6 +23,7 @@ shared.options_templates.update(shared.options_section(('canvas_zoom', "Canvas Z
     "canvas_auto_expand": shared.OptionInfo(True, "Automatic expansion of an image that does not fit completely within the canvas area, similar to manual S and R entry"),
     "canvas_zoom_enable_integration": shared.OptionInfo(True, "Enable integration with ControlNet, Regional Prompter and Latent Couple(Two Shot), Inpaint Anything"),
     "canvas_zoom_brush_size": shared.OptionInfo(200, "Increase % of the maximum brush size", gr.Slider, {"minimum": 100, "maximum": 1000, "step": 50}),
+    "canvas_zoom_brush_size_change": shared.OptionInfo(5, "Percentage at which the brush size changes, the higher the percentage the faster the brush changes its size", gr.Slider, {"minimum": 1, "maximum": 10, "step": 1}),
     "canvas_zoom_transparency_level": shared.OptionInfo(70, "Opacity level in inpaint.Works with webui 1.6 otherwise this setting will adjust the transparency in transparency mode from the extension", gr.Slider, {"minimum": 10, "maximum": 100, "step": 5}),
     "canvas_zoom_brush_opacity": shared.OptionInfo(False, "Makes the brush the same transparency as the mask"),
     # "canvas_zoom_inpaint_prevent_work": shared.OptionInfo(False, "Always prevent inpainting models work on txt2img tab by default"), #TODO
