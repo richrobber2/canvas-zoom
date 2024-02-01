@@ -710,7 +710,6 @@ onUiLoaded(async () => {
       if (input) {
         input.click();
         if (!withoutValue) {
-
           const maxValue = parseFloat(input.getAttribute("max")) || 100;
           const changeAmount = maxValue * (percentage / 100);
           const newValue =
@@ -1106,8 +1105,8 @@ onUiLoaded(async () => {
         [hotkeysConfig.canvas_zoom_hotkey_fill]: fillCanvasWithColor,
         [hotkeysConfig.canvas_zoom_hotkey_transparency]: toggleOpacityMode,
         [hotkeysConfig.canvas_zoom_hotkey_undo]: undoLastAction,
-        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -hotkeysConfig.canvas_zoom_brush_size_change, false),
-        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, hotkeysConfig.canvas_zoom_brush_size_change, false),
+        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, 100, false,hotkeysConfig.canvas_zoom_brush_size_change),
+        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, -100, false,hotkeysConfig.canvas_zoom_brush_size_change),
       };
 
       const action = hotkeyActions[event.code];
