@@ -781,24 +781,37 @@ onUiLoaded(async () => {
     }
 
     /**
-     * Adjusts the brush size based on pressure sensitivity.
+     * Adjusts the brush size based on deltaY or pressure sensitivity.
      * @param {string} elemId - The element ID where the brush is used.
-     * @param {number} deltaY - The change in brush size (not used in this version).
+     * @param {number} deltaY - The change in brush size due to mouse wheel movement.
      * @param {boolean} withoutValue - Whether to ignore the deltaY value.
-     * @param {number} percentage - The percentage change of the brush size (not used in this version).
-     * @param {number} pressure - The pressure sensitivity value from 0.0 to 1.0.
+     * @param {number} percentage - The percentage change of the brush size.
+     * @param {number} [pressure] - Optional. The pressure sensitivity value from 0.0 to 1.0.
      */
-    function adjustBrushSize(elemId, deltaY, withoutValue = false, percentage = 5, pressure = 0.5) {
+    function adjustBrushSize(elemId, deltaY, withoutValue = false, percentage = 5, pressure) {
       const input = gradioApp().querySelector(`${elemId} input[aria-label='Brush radius']`);
       if (input) {
+        let newValue;
         const minValue = parseFloat(input.getAttribute("min")) || 1;
         const maxValue = parseFloat(input.getAttribute("max")) || 100;
-        // Use pressure to interpolate between min and max brush size.
-        const newValue = minValue + (maxValue - minValue) * pressure;
-        input.value = Math.min(Math.max(newValue, minValue), maxValue);
-        input.dispatchEvent(new Event("change"));
+
+        if (pressure !== undefined) {
+          // Use pressure to interpolate between min and max brush size if pressure is provided
+          newValue = minValue + (maxValue - minValue) * pressure;
+        } else if (!withoutValue) {
+          // Otherwise, adjust the brush size based on deltaY
+          const changeAmount = maxValue * (percentage / 100);
+          newValue = parseFloat(input.value) + (deltaY > 0 ? -changeAmount : changeAmount);
+        }
+
+        // Ensure the new value is within the allowed range
+        if (newValue !== undefined) {
+          input.value = Math.min(Math.max(newValue, minValue), maxValue);
+          input.dispatchEvent(new Event("change"));
+        }
       }
     }
+
 
     // Reset zoom when uploading a new image
     const fileInput = gradioApp().querySelector(
