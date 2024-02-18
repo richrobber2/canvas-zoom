@@ -677,6 +677,16 @@ onUiLoaded(async () => {
       if (canvas) {
         // targetElement.style.height = canvas.style.height;
       }
+
+      if (canvas) {
+        canvas.addEventListener('pointermove', (e) => {
+          if (e.pointerType === 'pen') {
+            const pressure = e.pressure;
+            // Assuming 'elemId' is defined in your context. Adjust the parameters as needed.
+            adjustBrushSize(elemId, 0, true, 5, pressure);
+          }
+        });
+      }
     }
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
@@ -694,30 +704,23 @@ onUiLoaded(async () => {
       }
     }
 
-    // Adjust the brush size based on the deltaY value from a mouse wheel event
-    function adjustBrushSize(
-      elemId,
-      deltaY,
-      withoutValue = false,
-      percentage = 5
-    ) {
-      const input =
-        gradioApp().querySelector(
-          `${elemId} input[aria-label='Brush radius']`
-        ) ||
-        gradioApp().querySelector(`${elemId} button[aria-label="Use brush"]`);
-
+    /**
+     * Adjusts the brush size based on pressure sensitivity.
+     * @param {string} elemId - The element ID where the brush is used.
+     * @param {number} deltaY - The change in brush size (not used in this version).
+     * @param {boolean} withoutValue - Whether to ignore the deltaY value.
+     * @param {number} percentage - The percentage change of the brush size (not used in this version).
+     * @param {number} pressure - The pressure sensitivity value from 0.0 to 1.0.
+     */
+    function adjustBrushSize(elemId, deltaY, withoutValue = false, percentage = 5, pressure = 0.5) {
+      const input = gradioApp().querySelector(`${elemId} input[aria-label='Brush radius']`);
       if (input) {
-        input.click();
-        if (!withoutValue) {
-          const maxValue = parseFloat(input.getAttribute("max")) || 100;
-          const changeAmount = maxValue * (percentage / 100);
-          const newValue =
-            parseFloat(input.value) +
-            (deltaY > 0 ? -changeAmount : changeAmount);
-          input.value = Math.min(Math.max(newValue, 0), maxValue);
-          input.dispatchEvent(new Event("change"));
-        }
+        const minValue = parseFloat(input.getAttribute("min")) || 1;
+        const maxValue = parseFloat(input.getAttribute("max")) || 100;
+        // Use pressure to interpolate between min and max brush size.
+        const newValue = minValue + (maxValue - minValue) * pressure;
+        input.value = Math.min(Math.max(newValue, minValue), maxValue);
+        input.dispatchEvent(new Event("change"));
       }
     }
 
@@ -1237,6 +1240,8 @@ onUiLoaded(async () => {
     // Add mouse event handlers
     targetElement.addEventListener("mousemove", handleMouseMove);
     targetElement.addEventListener("mouseleave", handleMouseLeave);
+
+
 
     // Reset zoom when click on another tab
     elements.img2imgTabs.addEventListener("click", resetZoom);
