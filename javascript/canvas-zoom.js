@@ -677,6 +677,92 @@ onUiLoaded(async () => {
       if (canvas) {
         // targetElement.style.height = canvas.style.height;
       }
+
+      if (canvas) {
+        canvas.addEventListener('pointermove', (e) => {
+          if (e.pointerType === 'pen') {
+            const pressure = e.pressure;
+            // Assuming 'elemId' is defined in your context. Adjust the parameters as needed.
+            adjustBrushSize(elemId, 0, true, 5, pressure);
+          }
+        });
+      }
+
+      let isPanning = false;
+      let initialDistance = null;
+      let initialZoom = 1;
+      // TODO: add something to stop it from zooming when the user lifts off fingers (from 3 to none or 2) because it quickly switches to 2 fingers if that happens
+
+      function getDistance(touches) {
+        const dx = touches[0].pageX - touches[1].pageX;
+        const dy = touches[0].pageY - touches[1].pageY;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+      
+      function getAngle(touches) {
+        const dx = touches[1].pageX - touches[0].pageX;
+        const dy = touches[1].pageY - touches[0].pageY;
+        return Math.atan2(dy, dx) * (180 / Math.PI);
+      }      
+
+      if (canvas){
+        let startPanPositions = [];
+
+        canvas.addEventListener('touchstart', function(e) {
+          if (e.touches.length === 2) {
+            // Prepare for zooming
+            e.preventDefault(); // Prevent page scrolling
+            e.stopPropagation()
+            initialDistance = getDistance(e.touches);
+            // TODO: add rotation support
+            initialAngle = getAngle(e.touches);
+            initialZoom = elemData[elemId].zoomLevel || 1;
+            const centerX = (e.touches[0].pageX + e.touches[1].pageX) / 2;
+            const centerY = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+            startPanPositions = [{ x: centerX, y: centerY }]; // Store the center for zoom focus
+          } else if (e.touches.length === 3) {
+            // Prepare for panning
+            e.preventDefault(); // Prevent page scrolling
+            e.stopPropagation()
+            isPanning = true;
+            startPanPositions = [
+              { x: e.touches[0].pageX, y: e.touches[0].pageY },
+              { x: e.touches[1].pageX, y: e.touches[1].pageY },
+              { x: e.touches[2].pageX, y: e.touches[2].pageY }
+            ];
+          }
+        }, { passive: false });
+        
+
+        canvas.addEventListener('touchmove', function(e) {
+          // TODO: maybe we should give the option to change number of fingers required to do things
+          if (e.touches.length === 2) {
+            e.stopPropagation()
+            // Handle zooming
+            const currentDistance = getDistance(e.touches);
+            const zoomFactor = currentDistance / initialDistance;
+            const newZoomLevel = initialZoom * zoomFactor;
+            const centerX = (e.touches[0].pageX + e.touches[1].pageX) / 2;
+            const centerY = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+        
+            updateZoomMobile(newZoomLevel, centerX, centerY);
+          } else if (e.touches.length === 3 && isPanning) {
+            e.stopPropagation()
+            // Handle panning
+            const currentPanPosition = {
+              x: (e.touches[0].pageX + e.touches[1].pageX + e.touches[2].pageX) / 3,
+              y: (e.touches[0].pageY + e.touches[1].pageY + e.touches[2].pageY) / 3,
+            };
+            const panX = currentPanPosition.x - startPanPositions[0].x;
+            const panY = currentPanPosition.y - startPanPositions[0].y;
+        
+            updatePanPositionAbsolute(panX, panY);
+        
+            // Update the start position for continuous panning
+            startPanPositions = [currentPanPosition];
+          }
+        }, { passive: false });             
+      }
     }
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
@@ -694,32 +780,38 @@ onUiLoaded(async () => {
       }
     }
 
-    // Adjust the brush size based on the deltaY value from a mouse wheel event
-    function adjustBrushSize(
-      elemId,
-      deltaY,
-      withoutValue = false,
-      percentage = 5
-    ) {
-      const input =
-        gradioApp().querySelector(
-          `${elemId} input[aria-label='Brush radius']`
-        ) ||
-        gradioApp().querySelector(`${elemId} button[aria-label="Use brush"]`);
-
+    /**
+     * Adjusts the brush size based on deltaY or pressure sensitivity.
+     * @param {string} elemId - The element ID where the brush is used.
+     * @param {number} deltaY - The change in brush size due to mouse wheel movement.
+     * @param {boolean} withoutValue - Whether to ignore the deltaY value.
+     * @param {number} percentage - The percentage change of the brush size.
+     * @param {number} [pressure] - Optional. The pressure sensitivity value from 0.0 to 1.0.
+     */
+    function adjustBrushSize(elemId, deltaY, withoutValue = false, percentage = 5, pressure) {
+      const input = gradioApp().querySelector(`${elemId} input[aria-label='Brush radius']`);
       if (input) {
-        input.click();
-        if (!withoutValue) {
-          const maxValue = parseFloat(input.getAttribute("max")) || 100;
+        let newValue;
+        const minValue = parseFloat(input.getAttribute("min")) || 1;
+        const maxValue = parseFloat(input.getAttribute("max")) || 100;
+
+        if (pressure !== undefined) {
+          // Use pressure to interpolate between min and max brush size if pressure is provided
+          newValue = minValue + (maxValue - minValue) * pressure;
+        } else if (!withoutValue) {
+          // Otherwise, adjust the brush size based on deltaY
           const changeAmount = maxValue * (percentage / 100);
-          const newValue =
-            parseFloat(input.value) +
-            (deltaY > 0 ? -changeAmount : changeAmount);
-          input.value = Math.min(Math.max(newValue, 0), maxValue);
+          newValue = parseFloat(input.value) + (deltaY > 0 ? -changeAmount : changeAmount);
+        }
+
+        // Ensure the new value is within the allowed range
+        if (newValue !== undefined) {
+          input.value = Math.min(Math.max(newValue, minValue), maxValue);
           input.dispatchEvent(new Event("change"));
         }
       }
     }
+
 
     // Reset zoom when uploading a new image
     const fileInput = gradioApp().querySelector(
@@ -759,6 +851,19 @@ onUiLoaded(async () => {
       return clampedLevel;
     };
 
+    const updateZoomMobile = (newZoomLevel, touchCenterX, touchCenterY) => {
+      const clampedLevel = Math.max(0.1, Math.min(newZoomLevel, 15));
+      const zoomRatio = clampedLevel / (elemData[elemId].zoomLevel || 1);
+    
+      elemData[elemId].panX += (touchCenterX - elemData[elemId].panX) * (1 - zoomRatio);
+      elemData[elemId].panY += (touchCenterY - elemData[elemId].panY) * (1 - zoomRatio);
+    
+      elemData[elemId].zoomLevel = clampedLevel;
+    
+      targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${clampedLevel})`;
+    };
+    
+    
 
     /**
      * Changes the zoom level of a specified element based on user interaction and hotkey configuration.
@@ -1238,6 +1343,8 @@ onUiLoaded(async () => {
     targetElement.addEventListener("mousemove", handleMouseMove);
     targetElement.addEventListener("mouseleave", handleMouseLeave);
 
+
+
     // Reset zoom when click on another tab
     elements.img2imgTabs.addEventListener("click", resetZoom);
     elements.img2imgTabs.addEventListener("click", () => {
@@ -1327,6 +1434,15 @@ onUiLoaded(async () => {
         toggleOverlap("on");
       });
     };
+
+    const updatePanPositionAbsolute = (panX, panY) => {
+      // Directly apply pan values to the element
+      elemData[elemId].panX += panX;
+      elemData[elemId].panY += panY;
+    
+      // Apply the transformation
+      targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${elemData[elemId].zoomLevel})`;
+    };    
 
 
     /**
