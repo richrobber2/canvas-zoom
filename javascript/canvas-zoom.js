@@ -687,6 +687,82 @@ onUiLoaded(async () => {
           }
         });
       }
+
+      let isPanning = false;
+      let initialDistance = null;
+      let initialZoom = 1;
+      // TODO: add something to stop it from zooming when the user lifts off fingers (from 3 to none or 2) because it quickly switches to 2 fingers if that happens
+
+      function getDistance(touches) {
+        const dx = touches[0].pageX - touches[1].pageX;
+        const dy = touches[0].pageY - touches[1].pageY;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+      
+      function getAngle(touches) {
+        const dx = touches[1].pageX - touches[0].pageX;
+        const dy = touches[1].pageY - touches[0].pageY;
+        return Math.atan2(dy, dx) * (180 / Math.PI);
+      }      
+
+      if (canvas){
+        let startPanPositions = [];
+
+        canvas.addEventListener('touchstart', function(e) {
+          if (e.touches.length === 2) {
+            // Prepare for zooming
+            e.preventDefault(); // Prevent page scrolling
+            e.stopPropagation()
+            initialDistance = getDistance(e.touches);
+            // TODO: add rotation support
+            initialAngle = getAngle(e.touches);
+            initialZoom = elemData[elemId].zoomLevel || 1;
+            const centerX = (e.touches[0].pageX + e.touches[1].pageX) / 2;
+            const centerY = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+            startPanPositions = [{ x: centerX, y: centerY }]; // Store the center for zoom focus
+          } else if (e.touches.length === 3) {
+            // Prepare for panning
+            e.preventDefault(); // Prevent page scrolling
+            e.stopPropagation()
+            isPanning = true;
+            startPanPositions = [
+              { x: e.touches[0].pageX, y: e.touches[0].pageY },
+              { x: e.touches[1].pageX, y: e.touches[1].pageY },
+              { x: e.touches[2].pageX, y: e.touches[2].pageY }
+            ];
+          }
+        }, { passive: false });
+        
+
+        canvas.addEventListener('touchmove', function(e) {
+          // TODO: maybe we should give the option to change number of fingers required to do things
+          if (e.touches.length === 2) {
+            e.stopPropagation()
+            // Handle zooming
+            const currentDistance = getDistance(e.touches);
+            const zoomFactor = currentDistance / initialDistance;
+            const newZoomLevel = initialZoom * zoomFactor;
+            const centerX = (e.touches[0].pageX + e.touches[1].pageX) / 2;
+            const centerY = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+        
+            updateZoomMobile(newZoomLevel, centerX, centerY);
+          } else if (e.touches.length === 3 && isPanning) {
+            e.stopPropagation()
+            // Handle panning
+            const currentPanPosition = {
+              x: (e.touches[0].pageX + e.touches[1].pageX + e.touches[2].pageX) / 3,
+              y: (e.touches[0].pageY + e.touches[1].pageY + e.touches[2].pageY) / 3,
+            };
+            const panX = currentPanPosition.x - startPanPositions[0].x;
+            const panY = currentPanPosition.y - startPanPositions[0].y;
+        
+            updatePanPositionAbsolute(panX, panY);
+        
+            // Update the start position for continuous panning
+            startPanPositions = [currentPanPosition];
+          }
+        }, { passive: false });             
+      }
     }
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
@@ -762,6 +838,19 @@ onUiLoaded(async () => {
       return clampedLevel;
     };
 
+    const updateZoomMobile = (newZoomLevel, touchCenterX, touchCenterY) => {
+      const clampedLevel = Math.max(0.1, Math.min(newZoomLevel, 15));
+      const zoomRatio = clampedLevel / (elemData[elemId].zoomLevel || 1);
+    
+      elemData[elemId].panX += (touchCenterX - elemData[elemId].panX) * (1 - zoomRatio);
+      elemData[elemId].panY += (touchCenterY - elemData[elemId].panY) * (1 - zoomRatio);
+    
+      elemData[elemId].zoomLevel = clampedLevel;
+    
+      targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${clampedLevel})`;
+    };
+    
+    
 
     /**
      * Changes the zoom level of a specified element based on user interaction and hotkey configuration.
@@ -1332,6 +1421,15 @@ onUiLoaded(async () => {
         toggleOverlap("on");
       });
     };
+
+    const updatePanPositionAbsolute = (panX, panY) => {
+      // Directly apply pan values to the element
+      elemData[elemId].panX += panX;
+      elemData[elemId].panY += panY;
+    
+      // Apply the transformation
+      targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${elemData[elemId].zoomLevel})`;
+    };    
 
 
     /**
