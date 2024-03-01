@@ -706,7 +706,7 @@ onUiLoaded(async () => {
           `${elemId} input[aria-label='Brush radius']`
         ) ||
         gradioApp().querySelector(`${elemId} button[aria-label="Use brush"]`);
-
+      
       if (input) {
         input.click();
         if (!withoutValue) {
@@ -1105,8 +1105,8 @@ onUiLoaded(async () => {
         [hotkeysConfig.canvas_zoom_hotkey_fill]: fillCanvasWithColor,
         [hotkeysConfig.canvas_zoom_hotkey_transparency]: toggleOpacityMode,
         [hotkeysConfig.canvas_zoom_hotkey_undo]: undoLastAction,
-        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, 100, false,hotkeysConfig.canvas_zoom_brush_size_change),
-        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, -100, false,hotkeysConfig.canvas_zoom_brush_size_change),
+        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, 100, false,hotkeysConfig.canvas_zoom_brush_size_change),
+        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -100, false,hotkeysConfig.canvas_zoom_brush_size_change),
       };
 
       const action = hotkeyActions[event.code];
