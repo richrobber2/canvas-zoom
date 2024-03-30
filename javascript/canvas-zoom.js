@@ -1182,14 +1182,14 @@ onUiLoaded(async () => {
       if (!isKeyDownHandlerAttached) {
         document.addEventListener("keydown", handleKeyDown);
         isKeyDownHandlerAttached = true;
-        activeElement = elementID; // Assuming elementID is defined elsewhere
+        activeElement = elementID;
       }
 
       const shouldHideButtons = window.isDrawing && hotkeysConfig.canvas_zoom_hide_btn;
 
       try {
         if (shouldHideButtons !== buttonsHidden) {
-          hideCanvasButtons(shouldHideButtons); // Assuming hideCanvasButtons is defined elsewhere
+          hideCanvasButtons(shouldHideButtons);
           buttonsHidden = shouldHideButtons;
         }
       } catch (error) {
