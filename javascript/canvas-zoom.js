@@ -1420,25 +1420,40 @@ onUiLoaded(async () => {
    */
   // Make the function global so that other extensions can take advantage of this solution
   const applyZoomAndPanIntegration = async (id, elementIDs) => {
-    const mainEl = document.querySelector(id);
+    // Check if the id is meant to target an element directly or is a special case
     if (id.toLocaleLowerCase() === "none") {
       for (const elementID of elementIDs) {
         const el = await waitForElement(elementID);
-        if (!el) break;
+        // Verify each element exists before attempting to apply zoom and pan functionalities
+        if (!el) {
+          console.warn(`Element ${elementID} not found.`);
+          continue; // Skip to the next elementID if the current one doesn't exist
+        }
         applyZoomAndPan(elementID);
       }
       return;
     }
 
-    if (!mainEl) return;
+    const mainEl = document.querySelector(id);
+    // Ensure the main element exists before attaching the event listener
+    if (!mainEl) {
+      console.warn(`Main element ${id} not found.`);
+      return;
+    }
+
     mainEl.addEventListener("click", async () => {
       for (const elementID of elementIDs) {
         const el = await waitForElement(elementID);
-        if (!el) break;
+        // Again, verify each dynamically awaited element exists before applying functionalities
+        if (!el) {
+          console.warn(`Element ${elementID} not found after click event.`);
+          continue; // Skip to the next elementID if the current one doesn't exist after click
+        }
         applyZoomAndPan(elementID);
       }
     }, { once: true });
   };
+
 
 
 
