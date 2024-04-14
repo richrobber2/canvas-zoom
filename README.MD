@@ -21,7 +21,7 @@ https://github.com/richrobber2/canvas-zoom/assets/22278673/1f666443-34bc-421e-8e
 
 **You can check out the features of this extension in [canvas-zoom-showcase](https://github.com/richrobber2/canvas-zoom/wiki/Functionality)**
 
-**The extension description also available in <a href="#ru"> RU </a> language:**
+**The extension description also available in [Russian](https://github.com/richrobber2/canvas-zoom/wiki/Russian) language:**
 
 # EN
 
