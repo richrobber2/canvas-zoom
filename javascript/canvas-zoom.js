@@ -42,10 +42,10 @@ onUiLoaded(async () => {
    * @param {string} sign - "+" or "-" sign to determine the zoom direction.
    * @param {Event} oldEvent - The original event.
    */
-  const zoomFakeWheelEvent = (targetElement, sign, oldEvent) => {
-    const rect = targetElement.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+  const zoomFakeWheelEvent = (targetElement, sign, { ctrlKey, altKey, shiftKey }) => {
+    const { left, top, width, height } = targetElement.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
     const detailValue = sign === "-" ? 1 : -1;
 
     const event = new WheelEvent("wheel", {
@@ -57,10 +57,10 @@ onUiLoaded(async () => {
       screenY: centerY,
       clientX: centerX,
       clientY: centerY,
-      ctrlKey: oldEvent.ctrlKey,
-      altKey: oldEvent.altKey,
-      shiftKey: oldEvent.shiftKey,
-      metaKey: oldEvent.ctrlKey,
+      ctrlKey,
+      altKey,
+      shiftKey,
+      metaKey: ctrlKey,
       button: 0,
       buttons: 0,
       relatedTarget: null,
