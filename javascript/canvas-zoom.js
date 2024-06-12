@@ -674,9 +674,7 @@ onUiLoaded(async () => {
     };
 
     // Reset zoom when uploading a new image
-    const fileInput = gradioApp().querySelector(
-      `${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`
-    );
+    const fileInput = gradioApp().querySelector(`${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`);
     fileInput.addEventListener("click", resetZoom);
 
     /**
@@ -696,10 +694,8 @@ onUiLoaded(async () => {
         panY: panY + y - (y * clampedLevel) / zoomLevel,
       });
 
-      Object.assign(targetElement.style, {
-        transformOrigin: "0 0",
-        transform: `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${clampedLevel})`,
-      });
+      targetElement.style.transformOrigin = "0 0";
+      targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${clampedLevel})`;
 
       toggleOverlap("on");
       setImgDisplayToNone();
