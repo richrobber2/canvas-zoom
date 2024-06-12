@@ -741,59 +741,42 @@ onUiLoaded(async () => {
     };
 
     /**
-   * This function fits the target element to the screen by calculating
-   * the required scale and offsets. It also updates the global variables
-   * zoomLevel, panX, and panY to reflect the new state.
-   */
+     * This function fits the target element to the screen by calculating
+     * the required scale and offsets. It also updates the global variables
+     * zoomLevel, panX, and panY to reflect the new state.
+     */
 
-    function fitToElement() {
+    const fitToElement = () => {
       //Reset Zoom
-      targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
+      targetElement.style.transform = `translate(0px, 0px) scale(1)`;
 
-      let parentElement;
-
-      if (isExtension) {
-        parentElement = targetElement.closest('[id^="component-"]');
-      } else {
-        parentElement = targetElement.parentElement;
-      }
+      const parentElement = isExtension
+        ? targetElement.closest('[id^="component-"]')
+        : targetElement.parentElement;
 
       // Get element and screen dimensions
-      const elementWidth = targetElement.offsetWidth;
-      const elementHeight = targetElement.offsetHeight;
-      // const parentElement = targetElement.parentElement;
-      const screenWidth = parentElement.clientWidth;
-      const screenHeight = parentElement.clientHeight;
+      const { offsetWidth: elementWidth, offsetHeight: elementHeight } = targetElement;
+      const { clientWidth: screenWidth, clientHeight: screenHeight } = parentElement;
 
       // Get element's coordinates relative to the parent element
-      const elementRect = targetElement.getBoundingClientRect();
-      const parentRect = parentElement.getBoundingClientRect();
-      const elementX = elementRect.x - parentRect.x;
 
       // Calculate scale and offsets
       const scaleX = screenWidth / elementWidth;
       const scaleY = screenHeight / elementHeight;
       const scale = Math.min(scaleX, scaleY);
 
-      const transformOrigin =
-        window.getComputedStyle(targetElement).transformOrigin;
-      const [originX, originY] = transformOrigin.split(" ");
+      const [originX, originY] = window.getComputedStyle(targetElement).transformOrigin.split(" ");
       const originXValue = parseFloat(originX);
       const originYValue = parseFloat(originY);
 
-      const offsetX =
-        (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
-      const offsetY =
-        (screenHeight - elementHeight * scale) / 2.5 -
-        originYValue * (1 - scale);
+      const offsetX = (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
+      const offsetY = (screenHeight - elementHeight * scale) / 2.5 - originYValue * (1 - scale);
 
       // Apply scale and offsets to the element
       targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 
       // Update global variables
-      elemData[elemId].zoomLevel = scale;
-      elemData[elemId].panX = offsetX;
-      elemData[elemId].panY = offsetY;
+      elemData[elemId] = { zoomLevel: scale, panX: offsetX, panY: offsetY };
 
       fullScreenMode = false;
       toggleOverlap("off");
