@@ -647,32 +647,31 @@ onUiLoaded(async () => {
       }
     }
 
-    // Adjust the brush size based on the deltaY value from a mouse wheel event
-    function adjustBrushSize(
-      elemId,
-      deltaY,
-      withoutValue = false,
-      percentage = 5
-    ) {
-      const input =
-        gradioApp().querySelector(
-          `${elemId} input[aria-label='Brush radius']`
-        ) ||
+    /**
+     * Function to adjust the brush size based on the deltaY value from a mouse wheel event
+     * @param {string} elemId - the id of the element
+     * @param {number} deltaY - the deltaY value from the mouse wheel event
+     * @param {boolean} withoutValue - indicates whether to adjust the brush size without a value
+     * @param {number} percentage - the percentage to adjust the brush size by
+     * @returns {void}
+     */
+    const adjustBrushSize = (elemId, deltaY, withoutValue = false, percentage = 5) => {
+      const input = gradioApp().querySelector(`${elemId} input[aria-label='Brush radius']`) ||
         gradioApp().querySelector(`${elemId} button[aria-label="Use brush"]`);
 
       if (input) {
         input.click();
+
         if (!withoutValue) {
           const maxValue = parseFloat(input.getAttribute("max")) || 100;
           const changeAmount = maxValue * (percentage / 100);
-          const newValue =
-            parseFloat(input.value) +
-            (deltaY > 0 ? -changeAmount : changeAmount);
+          const newValue = parseFloat(input.value) + (deltaY > 0 ? -changeAmount : changeAmount);
+
           input.value = Math.min(Math.max(newValue, 0), maxValue);
           input.dispatchEvent(new Event("change"));
         }
       }
-    }
+    };
 
     // Reset zoom when uploading a new image
     const fileInput = gradioApp().querySelector(
