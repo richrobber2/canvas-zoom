@@ -1355,40 +1355,32 @@ onUiLoaded(async () => {
   applyZoomAndPan(elementIDs.inpaint, false);
   applyZoomAndPan(elementIDs.inpaintSketch, false);
 
-  // Make Canvas zoom func global, like in build in extension
-  // Temp disable have bugs :(
-  // if (!window.applyZoomAndPan) {
-  //   window.applyZoomAndPan = applyZoomAndPan
-  // }
-
-  /**
-   * Adds event listeners to elements for enabling zoom and pan integration.
-   * @param {string} id - The id of the main element.
-   * @param {Array} elementIDs - An array of element IDs to which the event listeners should be added.
-   */
-  // Make the function global so that other extensions can take advantage of this solution
-  const applyZoomAndPanIntegration = async (id, elementIDs) => {
-    const mainEl = document.querySelector(id);
-    if (id.toLocaleLowerCase() === "none") {
-      for (const elementID of elementIDs) {
-        const el = await waitForElement(elementID);
-        if (!el) break;
-        applyZoomAndPan(elementID);
-      }
-      return;
+/**
+ * Adds event listeners to elements for enabling zoom and pan integration.
+ * @param {string} id - The id of the main element.
+ * @param {Array} elementIDs - An array of element IDs to which the event listeners should be added.
+ */
+const applyZoomAndPanIntegration = async (id, elementIDs) => {
+  if (id.toLowerCase() === "none") {
+    for (const elementID of elementIDs) {
+      const el = await waitForElement(elementID);
+      if (!el) return;
+      applyZoomAndPan(elementID);
     }
+    return;
+  }
 
-    if (!mainEl) return;
-    mainEl.addEventListener("click", async () => {
-      for (const elementID of elementIDs) {
-        const el = await waitForElement(elementID);
-        if (!el) break;
-        applyZoomAndPan(elementID);
-      }
-    }, { once: true });
-  };
+  const mainEl = document.querySelector(id);
+  if (!mainEl) return;
 
-
+  mainEl.addEventListener("click", async () => {
+    for (const elementID of elementIDs) {
+      const el = await waitForElement(elementID);
+      if (!el) return;
+      applyZoomAndPan(elementID);
+    }
+  }, { once: true });
+};
 
   // Enable Extensions Integration
   const integrateControlNet = hotkeysConfig.canvas_zoom_enable_integration;
