@@ -431,32 +431,28 @@ onUiLoaded(async () => {
     };
 
     if (hotkeysConfig.canvas_zoom_mask_clear) {
-      allButtons.forEach((button) => {
+      allButtons.forEach(button => {
         if (button.innerText !== "img2img") {
           button.addEventListener("click", () => {
             const sendToTabName = getTabElFromText(button.innerText);
+            if (!sendToTabName) return;
 
-            if (sendToTabName) {
-              const closeBtn = document.querySelector(
-                `${sendToTabName} button[aria-label='Remove Image']`
-              ) || document.querySelector(
-                `${sendToTabName} button[aria-label='Clear']`
-              );
+            const closeBtn = document.querySelector(
+              `${sendToTabName} button[aria-label='Remove Image']`
+            ) || document.querySelector(
+              `${sendToTabName} button[aria-label='Clear']`
+            );
 
-              closeBtn?.click();
-            }
+            closeBtn?.click();
           });
         }
       });
 
-      if (elements.sendToInpainBtn) {
-        elements.sendToInpainBtn.addEventListener("click", clearMask);
-        elements.sendToInpainBtnT2I.addEventListener("click", clearMask);
-      }
-      else {
-        elements.sendToInpainBtnNew.addEventListener("click", clearMask);
-        elements.sendToInpainBtnT2INew.addEventListener("click", clearMask);
-      }
+      const sendToInpainBtn = elements.sendToInpainBtn || elements.sendToInpainBtnNew;
+      const sendToInpainBtnT2I = elements.sendToInpainBtnT2I || elements.sendToInpainBtnT2INew;
+
+      sendToInpainBtn?.addEventListener("click", clearMask);
+      sendToInpainBtnT2I?.addEventListener("click", clearMask);
     }
 
     if (!isGetSizeImgBtnExists) {
