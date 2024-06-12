@@ -574,18 +574,18 @@ onUiLoaded(async () => {
      * Function to fix canvas display issues by hiding image when not in "img2img" mode
      * @returns {void}
      */
-    function fixCanvas() {
+    const fixCanvas = () => {
       const activeTab = getActiveTab(elements).textContent.trim();
 
       if (activeTab !== "img2img") {
         const img = targetElement.querySelector(`${elemId} img`);
 
-        if (img && img.style.display !== "none") {
+        if (img?.style.display !== "none") {
           img.style.display = "none";
           img.style.visibility = "hidden";
         }
       }
-    }
+    };
 
     /**
      * Function to reset the zoom level and pan position of the target element to their initial values
