@@ -160,22 +160,15 @@ onUiLoaded(async () => {
    * @return {Object} The resulting hotkey configuration.
    */
   const createHotkeyConfig = (defaultHotkeysConfig, hotkeysConfigOpts) => {
-    const result = {};
     const usedKeys = new Set();
     const invalidTypes = new Set(["boolean", "object", "number"]);
 
-    for (const key in defaultHotkeysConfig) {
+    return Object.entries(defaultHotkeysConfig).reduce((result, [key, defaultValue]) => {
       const userValue = hotkeysConfigOpts[key];
-      const defaultValue = defaultHotkeysConfig[key];
 
-      if (key === "canvas_zoom_undo_extra_key") {
-        result[key] = userValue
-        continue
-      }
-
-      // if(key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size")
-
-      if (userValue === undefined || invalidTypes.has(typeof userValue) || userValue.startsWith("#") || userValue === "disable") {
+      if (key === "canvas_zoom_undo_extra_key" || key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size") {
+        result[key] = userValue;
+      } else if (userValue === undefined || invalidTypes.has(typeof userValue) || userValue.startsWith("#") || userValue === "disable") {
         result[key] = userValue === undefined ? defaultValue : userValue;
       } else if (isValidHotkey(userValue)) {
         const normalizedUserValue = normalizeHotkey(userValue);
@@ -187,17 +180,14 @@ onUiLoaded(async () => {
           console.error(`Hotkey: ${formatHotkeyForDisplay(userValue)} for ${key} is repeated and conflicts with another hotkey. The default hotkey is used: ${formatHotkeyForDisplay(defaultValue)}`);
           result[key] = defaultValue;
         }
-      } else if (key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size") {
-        result[key] = defaultValue;
       } else {
         console.error(`Hotkey: ${formatHotkeyForDisplay(userValue)} for ${key} is not valid. The default hotkey is used: ${formatHotkeyForDisplay(defaultValue)}`);
         result[key] = defaultValue;
       }
-    }
 
-    return result;
+      return result;
+    }, {});
   };
-
   /**
    * Disables specified functions in the configuration.
    * @param {Object} config - The configuration object.
