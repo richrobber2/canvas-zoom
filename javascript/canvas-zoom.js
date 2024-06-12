@@ -356,16 +356,23 @@ onUiLoaded(async () => {
   // Apply functionality to the range inputs, restore redmask and correct for long images
   const rangeInputs = elements.rangeGroup ? Array.from(elements.rangeGroup.querySelectorAll("input")) : [gradioApp().querySelector("#img2img_width input[type='range']"), gradioApp().querySelector("#img2img_height input[type='range']")];
   rangeInputs.forEach(input => input?.addEventListener("input", () => restoreImgRedMask(elements)));
-  function getTabElFromText(tabName) {
+
+  /**
+   * Returns the element ID for a given tab name.
+   * @param {string} tabName - The name of the tab.
+   * @return {string} The element ID.
+   */
+  const getTabElFromText = tabName => {
     const tabMap = {
       inpaint: elementIDs.inpaint,
       sketch: elementIDs.sketch,
       "inpaint sketch": elementIDs.inpaintSketch,
     };
-    return tabMap[tabName.trim().toLowerCase()];
-  }
 
-  function getSendButtons(elemId) {
+    return tabMap[tabName.trim().toLowerCase()];
+  };
+
+  const getSendButtons = (elemId) => {
     const tabMap = {
       [elementIDs.inpaint]: "inpaint",
       [elementIDs.sketch]: "sketch",
@@ -374,9 +381,9 @@ onUiLoaded(async () => {
     };
     const tabString = tabMap[elemId];
     return document.querySelectorAll(`#img2img_copy_to_${tabString} button`);
-  }
+  };
 
-  const isGetSizeImgBtnExists = !!document.querySelector("#img2img_detect_image_size_btn");
+  const isGetSizeImgBtnExists = Boolean(document.querySelector("#img2img_detect_image_size_btn"));
   let getImgDataBtn, clonedDiv;
 
   if (!isGetSizeImgBtnExists) {
@@ -392,23 +399,10 @@ onUiLoaded(async () => {
   }
 
   const canvasColor = await waitForOpts();
-  // Initialize localStorage variables
   localStorage.setItem("brushOutline", hotkeysConfig.canvas_zoom_brush_outline);
 
-  // console.log(canvasColor.img2img_inpaint_mask_brush_color,canvasColor.img2img_sketch_default_brush_color,canvasColor.canvas_zoom_inpaint_brushcolor)
-
-  // img2img_sketch_default_brush_color, img2img_inpaint_mask_brush_color.
-
-  if (canvasColor.img2img_inpaint_mask_brush_color) {
-    localStorage.setItem("brush_color", canvasColor.img2img_inpaint_mask_brush_color);
-  } else {
-    localStorage.setItem("brush_color", hotkeysConfig.canvas_zoom_inpaint_brushcolor);
-  }
-
-  if (canvasColor.img2img_sketch_default_brush_color) {
-    localStorage.setItem("sketch_brush_color", canvasColor.img2img_sketch_default_brush_color);
-  }
-
+  localStorage.setItem("brush_color", canvasColor.img2img_inpaint_mask_brush_color || hotkeysConfig.canvas_zoom_inpaint_brushcolor);
+  localStorage.setItem("sketch_brush_color", canvasColor.img2img_sketch_default_brush_color);
   function applyZoomAndPan(elemId, isExtension = true) {
     const targetElement = gradioApp().querySelector(elemId);
 
