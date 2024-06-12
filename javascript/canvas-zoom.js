@@ -1194,23 +1194,22 @@ onUiLoaded(async () => {
      * Handles key down events to trigger moving operations on the canvas.
      * @param {KeyboardEvent} event - The keyboard event object.
      */
-    const handleMoveKeyDown = (e) => {
+    const handleMoveKeyDown = ({ ctrlKey, metaKey, target, code }) => {
       const allowedKeys = ['KeyV', 'KeyC', 'F5'];
-      const isCtrlPressed = e.ctrlKey || e.metaKey; // Combine Ctrl and Meta (Cmd) keys
-      const isTyping = ['TEXTAREA', 'INPUT'].includes(e.target.nodeName);
+      const isCtrlPressed = ctrlKey || metaKey; // Combine Ctrl and Meta (Cmd) keys
+      const isTyping = ['TEXTAREA', 'INPUT'].includes(target.nodeName);
 
       const shouldPreventDefault =
-        (isTyping && !hotkeysConfig.canvas_blur_prompt) || (isCtrlPressed && allowedKeys.includes(e.code));
+        (isTyping && !hotkeysConfig.canvas_blur_prompt) || (isCtrlPressed && allowedKeys.includes(code));
 
-      if (shouldPreventDefault || e.code !== hotkeysConfig.canvas_hotkey_move || !isKeyDownHandlerAttached) {
+      if (shouldPreventDefault || code !== hotkeysConfig.canvas_hotkey_move || !isKeyDownHandlerAttached) {
         return;
       }
 
-      e.preventDefault();
+      event.preventDefault();
       document.activeElement.blur();
       isMoving = true;
     };
-
     /**
      * Handles key up events to stop moving operations on the canvas.
      * @param {KeyboardEvent} event - The keyboard event object.
