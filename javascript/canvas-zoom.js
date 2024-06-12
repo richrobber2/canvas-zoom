@@ -422,11 +422,13 @@ onUiLoaded(async () => {
 
     let fullScreenMode = false;
 
-    //Fix white canvas when change width
-    function setImgDisplayToNone() {
+    /**
+     * Sets the display style of the image in the target element to "none".
+     */
+    const setImgDisplayToNone = () => {
       const img = targetElement.querySelector(`${elemId} img`);
-      if (img) img.style.display = "none";
-    }
+      img?.style.setProperty('display', 'none');
+    };
 
     if (hotkeysConfig.canvas_zoom_mask_clear) {
       allButtons.forEach((button) => {
