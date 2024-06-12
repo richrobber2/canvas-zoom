@@ -718,12 +718,8 @@ onUiLoaded(async () => {
 
       e.preventDefault();
 
-      let { zoomLevel } = elemData[elemId];
-
-      if (!zoomLevel) {
-        zoomLevel = 1;
-        elemData[elemId].zoomLevel = zoomLevel;
-      }
+      const { zoomLevel = 1 } = elemData[elemId];
+      elemData[elemId].zoomLevel = zoomLevel;
 
       const delta = zoomLevel > 7 ? 0.9 : zoomLevel > 2 ? 0.6 : 0.2;
 
