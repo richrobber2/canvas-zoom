@@ -458,31 +458,27 @@ onUiLoaded(async () => {
     if (!isGetSizeImgBtnExists) {
       getImgDataBtn.addEventListener("click", () => {
         const tabID = getTabId(elements);
-        const canvas = document.querySelector(`${tabID} canvas`);
-        const img = document.querySelector("#img2img_image img");
-        const imgUpload = document.querySelector("#img_inpaint_base img");
+        const [canvas, img, imgUpload] = [`${tabID} canvas`, "#img2img_image img", "#img_inpaint_base img"].map(selector => document.querySelector(selector));
 
         const rightWidth = img?.naturalWidth || canvas?.width || imgUpload?.naturalWidth;
         const rightHeight = img?.naturalHeight || canvas?.height || imgUpload?.naturalHeight;
 
         if (rightWidth && rightHeight) {
-          const [rangeWidth, rangeHeight] = document.querySelectorAll(
-            "#img2img_width input[type='range'], #img2img_height input[type='range']"
-          );
-          const [inputWidth, inputHeight] = document.querySelectorAll(
-            "#img2img_width input[type='number'], #img2img_height input[type='number']"
-          );
+          const [rangeWidth, rangeHeight, inputWidth, inputHeight] = [
+            ...document.querySelectorAll("#img2img_width input[type='range'], #img2img_height input[type='range']"),
+            ...document.querySelectorAll("#img2img_width input[type='number'], #img2img_height input[type='number']")
+          ];
 
-          rangeWidth.value = inputWidth.value = rightWidth;
-          rangeHeight.value = inputHeight.value = rightHeight;
+          [rangeWidth.value, inputWidth.value] = [rightWidth, rightWidth];
+          [rangeHeight.value, inputHeight.value] = [rightHeight, rightHeight];
 
           const changeEvent = new Event("change");
           const inputEvent = new Event("input");
 
-          for (const el of [rangeWidth, rangeHeight, inputWidth, inputHeight]) {
+          [rangeWidth, rangeHeight, inputWidth, inputHeight].forEach(el => {
             el.dispatchEvent(changeEvent);
             el.dispatchEvent(inputEvent);
-          }
+          });
         }
       });
     }
