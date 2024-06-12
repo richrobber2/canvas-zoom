@@ -483,7 +483,7 @@ onUiLoaded(async () => {
       });
     }
 
-    function createTooltip() {
+    const createTooltip = () => {
       const toolTipElemnt = targetElement.querySelector(".image-container") || targetElement.querySelector("div[data-testid='image']");
 
       const tooltip = document.createElement("div");
@@ -510,37 +510,36 @@ onUiLoaded(async () => {
         { configKey: "canvas_zoom_hotkey_transparency", action: "Transparency mode" },
       ];
 
-      const hotkeys = hotkeysInfo.map((info) => {
-        const configValue = hotkeysConfig[info.configKey];
-
+      const hotkeys = hotkeysInfo.map(({ configKey, action, keySuffix, keyPrefix }) => {
+        const configValue = hotkeysConfig[configKey];
         let key = configValue.slice(-1);
 
-        if (info.keySuffix) {
-          key = `${configValue}${info.keySuffix}`;
+        if (keySuffix) {
+          key = `${configValue}${keySuffix}`;
         }
 
-        if (info.keyPrefix && info.keyPrefix !== "None + ") {
-          key = `${info.keyPrefix}${configValue[3]}`;
+        if (keyPrefix && keyPrefix !== "None + ") {
+          key = `${keyPrefix}${configValue[3]}`;
         }
 
         return {
           key,
-          action: info.action,
+          action,
           disabled: configValue === "disable",
         };
       });
 
       hotkeys
-        .filter(hotkey => !hotkey.disabled)
-        .forEach(hotkey => {
+        .filter(({ disabled }) => !disabled)
+        .forEach(({ key, action }) => {
           const p = document.createElement("p");
-          p.innerHTML = `<b>${hotkey.key}</b> - ${hotkey.action}`;
+          p.innerHTML = `<b>${key}</b> - ${action}`;
           tooltipContent.appendChild(p);
         });
 
       tooltip.append(info, tooltipContent);
       toolTipElemnt.appendChild(tooltip);
-    }
+    };
 
     /**
    * Function to create fullscreen and dropper buttons and attach them to the target element
