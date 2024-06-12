@@ -1175,20 +1175,19 @@ onUiLoaded(async () => {
     });
 
     /**
-     * Event listener for wheel event on the target element to handle zoom and brush size adjustment.
-     */
-    targetElement.addEventListener("wheel", (e) => {
+    * Event listener for wheel event on the target element to handle zoom and brush size adjustment.
+    */
+    targetElement.addEventListener("wheel", ({ deltaY }) => {
       const isDefaultCanvas = checkIsDefault(elementIDs, elemId);
 
       if (!isDefaultCanvas || !window.applyZoomAndPan) {
-        const operation = e.deltaY > 0 ? "-" : "+";
-        changeZoomLevel(operation, e);
+        changeZoomLevel(deltaY > 0 ? "-" : "+", deltaY);
       }
 
-      if (!isModifierKey(e, hotkeysConfig.canvas_hotkey_adjust)) return;
+      if (!isModifierKey(deltaY, hotkeysConfig.canvas_hotkey_adjust)) return;
 
-      e.preventDefault();
-      adjustBrushSize(elemId, e.deltaY, false, hotkeysConfig.canvas_zoom_brush_size_change);
+      adjustBrushSize(elemId, deltaY, false, hotkeysConfig.canvas_zoom_brush_size_change);
+      return false;
     });
 
     /**
