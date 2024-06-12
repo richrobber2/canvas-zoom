@@ -1325,9 +1325,7 @@ onUiLoaded(async () => {
       }
     };
 
-    if (isExtension) {
-      targetElement.addEventListener("mousemove", checkForOutBox);
-    }
+    isExtension && targetElement.addEventListener("mousemove", checkForOutBox);
 
     // Prevents sticking to the mouse
     window.onblur = function () {
