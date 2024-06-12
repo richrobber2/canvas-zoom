@@ -95,8 +95,8 @@ onUiLoaded(async () => {
    * @return {Element} The active tab element.
    */
   const getActiveTab = (elements, all = false) => {
-    const tabs = elements.img2imgTabs.querySelectorAll("button");
-    return all ? tabs : Array.from(tabs).find(tab => tab.classList.contains("selected"));
+    const tabs = elements?.img2imgTabs?.querySelectorAll("button");
+    return all ? tabs : Array.from(tabs ?? []).find(tab => tab.classList.contains("selected"));
   };
 
   /**
