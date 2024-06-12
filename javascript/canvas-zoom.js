@@ -614,35 +614,24 @@ onUiLoaded(async () => {
       fullScreenMode = false;
 
       const closeBtn = targetElement.querySelector("button[aria-label='Remove Image']");
-      if (closeBtn) {
-        closeBtn.addEventListener("click", resetZoom);
-      }
+      closeBtn?.addEventListener("click", resetZoom);
 
       const parentElement = targetElement.closest('[id^="component-"]');
       const canvasWidth = canvas ? parseFloat(canvas.style.width) : 0;
       const targetElementWidth = parseFloat(targetElement.style.width);
 
-      if (canvas && isExtension && canvasWidth > parentElement.offsetWidth && targetElementWidth > parentElement.offsetWidth) {
-        fitToElement();
-        return;
-      }
-
-      if (canvas && !isExtension && canvasWidth > 865 && targetElementWidth > 865) {
-        fitToElement();
-        return;
-      }
-
-      if (isMobile) {
+      if ((canvas && isExtension && canvasWidth > parentElement.offsetWidth && targetElementWidth > parentElement.offsetWidth) ||
+        (canvas && !isExtension && canvasWidth > 865 && targetElementWidth > 865) ||
+        isMobile) {
         fitToElement();
         return;
       }
 
       targetElement.style.width = "";
-      if (canvas) {
-        // targetElement.style.height = canvas.style.height;
-      }
+      // if (canvas) {
+      //   targetElement.style.height = canvas.style.height;
+      // }
     };
-
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
     function toggleOverlap(forced = "") {
       const zIndex1 = "0";
