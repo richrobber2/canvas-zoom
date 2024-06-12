@@ -166,10 +166,10 @@ onUiLoaded(async () => {
     return Object.entries(defaultHotkeysConfig).reduce((result, [key, defaultValue]) => {
       const userValue = hotkeysConfigOpts[key];
 
-      if (key === "canvas_zoom_undo_extra_key" || key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size") {
+      if (["canvas_zoom_undo_extra_key", "canvas_zoom_inc_brush_size", "canvas_zoom_dec_brush_size"].includes(key)) {
         result[key] = userValue;
       } else if (userValue === undefined || invalidTypes.has(typeof userValue) || userValue.startsWith("#") || userValue === "disable") {
-        result[key] = userValue === undefined ? defaultValue : userValue;
+        result[key] = userValue ?? defaultValue;
       } else if (isValidHotkey(userValue)) {
         const normalizedUserValue = normalizeHotkey(userValue);
 
