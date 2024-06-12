@@ -542,24 +542,25 @@ onUiLoaded(async () => {
     };
 
     /**
-   * Function to create fullscreen and dropper buttons and attach them to the target element
-   * @returns {void}
-   */
-    function createFuncButtons() {
+     * Function to create fullscreen and dropper buttons and attach them to the target element
+     * @returns {void}
+     */
+    const createFuncButtons = () => {
       const buttonContainer = targetElement.querySelector(".image-container") || targetElement.querySelector("div[data-testid='image']");
 
-      const fullscreenBtn = document.createElement("button");
-      fullscreenBtn.className = "fullscreen-btn-main";
-      fullscreenBtn.innerHTML = `<p class="fullscreen-btn">F</p>`;
-      fullscreenBtn.addEventListener("click", () => fitToScreen(true));
+      const createButton = (className, innerHTML, clickHandler) => {
+        const button = document.createElement("button");
+        button.className = `${className}-main`;
+        button.innerHTML = `<p class="${className}">${innerHTML}</p>`;
+        button.addEventListener("click", clickHandler);
+        return button;
+      };
 
-      const dropperBtn = document.createElement("button");
-      dropperBtn.className = "dropper-btn-main";
-      dropperBtn.innerHTML = `<p class="dropper-btn">P</p>`;
-      dropperBtn.addEventListener("click", toggleDropper);
+      const fullscreenBtn = createButton("fullscreen-btn", "F", () => fitToScreen(true));
+      const dropperBtn = createButton("dropper-btn", "P", toggleDropper);
 
       buttonContainer.append(fullscreenBtn, dropperBtn);
-    }
+    };
 
     if (hotkeysConfig.canvas_show_tooltip) {
       createTooltip();
