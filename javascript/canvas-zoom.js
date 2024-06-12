@@ -187,13 +187,11 @@ onUiLoaded(async () => {
           console.error(`Hotkey: ${formatHotkeyForDisplay(userValue)} for ${key} is repeated and conflicts with another hotkey. The default hotkey is used: ${formatHotkeyForDisplay(defaultValue)}`);
           result[key] = defaultValue;
         }
+      } else if (key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size") {
+        result[key] = defaultValue;
       } else {
-        if (key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size") {
-          result[key] = defaultValue;
-        } else {
-          console.error(`Hotkey: ${formatHotkeyForDisplay(userValue)} for ${key} is not valid. The default hotkey is used: ${formatHotkeyForDisplay(defaultValue)}`);
-          result[key] = defaultValue;
-        }
+        console.error(`Hotkey: ${formatHotkeyForDisplay(userValue)} for ${key} is not valid. The default hotkey is used: ${formatHotkeyForDisplay(defaultValue)}`);
+        result[key] = defaultValue;
       }
     }
 
@@ -614,11 +612,10 @@ onUiLoaded(async () => {
 
     /**
      * Function to reset the zoom level and pan position of the target element to their initial values
-     * @param {string} _ - ignored parameter
      * @param {boolean} isMobile - indicates whether the application is running on a mobile device
      * @returns {void}
      */
-    function resetZoom(_ = "", isMobile = false) {
+    const resetZoom = (isMobile = false) => {
       elemData[elemId] = {
         zoomLevel: 1,
         panX: 0,
@@ -630,7 +627,6 @@ onUiLoaded(async () => {
       }
 
       targetElement.isZoomed = false;
-
       fixCanvas();
 
       targetElement.style.transform = `scale(${elemData[elemId].zoomLevel}) translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px)`;
@@ -645,25 +641,16 @@ onUiLoaded(async () => {
         closeBtn.addEventListener("click", resetZoom);
       }
 
-      if (canvas && isExtension) {
-        const parentElement = targetElement.closest('[id^="component-"]');
-        if (
-          canvas &&
-          parseFloat(canvas.style.width) > parentElement.offsetWidth &&
-          parseFloat(targetElement.style.width) > parentElement.offsetWidth
-        ) {
-          fitToElement();
-          return;
-        }
+      const parentElement = targetElement.closest('[id^="component-"]');
+      const canvasWidth = canvas ? parseFloat(canvas.style.width) : 0;
+      const targetElementWidth = parseFloat(targetElement.style.width);
 
+      if (canvas && isExtension && canvasWidth > parentElement.offsetWidth && targetElementWidth > parentElement.offsetWidth) {
+        fitToElement();
+        return;
       }
 
-      if (
-        canvas &&
-        !isExtension &&
-        parseFloat(canvas.style.width) > 865 &&
-        parseFloat(targetElement.style.width) > 865
-      ) {
+      if (canvas && !isExtension && canvasWidth > 865 && targetElementWidth > 865) {
         fitToElement();
         return;
       }
@@ -677,7 +664,7 @@ onUiLoaded(async () => {
       if (canvas) {
         // targetElement.style.height = canvas.style.height;
       }
-    }
+    };
 
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
     function toggleOverlap(forced = "") {
@@ -706,7 +693,7 @@ onUiLoaded(async () => {
           `${elemId} input[aria-label='Brush radius']`
         ) ||
         gradioApp().querySelector(`${elemId} button[aria-label="Use brush"]`);
-      
+
       if (input) {
         input.click();
         if (!withoutValue) {
@@ -1105,8 +1092,8 @@ onUiLoaded(async () => {
         [hotkeysConfig.canvas_zoom_hotkey_fill]: fillCanvasWithColor,
         [hotkeysConfig.canvas_zoom_hotkey_transparency]: toggleOpacityMode,
         [hotkeysConfig.canvas_zoom_hotkey_undo]: undoLastAction,
-        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, 100, false,hotkeysConfig.canvas_zoom_brush_size_change),
-        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -100, false,hotkeysConfig.canvas_zoom_brush_size_change),
+        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, 100, false, hotkeysConfig.canvas_zoom_brush_size_change),
+        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -100, false, hotkeysConfig.canvas_zoom_brush_size_change),
       };
 
       const action = hotkeyActions[event.code];
