@@ -1307,22 +1307,23 @@ onUiLoaded(async () => {
       }
     }
 
-    // Checks for extension
-    function checkForOutBox() {
+    /**
+     * Checks if the target element is out of its parent's bounds and resets zoom if necessary.
+     */
+    const checkForOutBox = () => {
       const parentElement = targetElement.closest('[id^="component-"]');
-      if (parentElement.offsetWidth < targetElement.offsetWidth && !targetElement.isExpanded) {
+      const isParentSmaller = parentElement.offsetWidth < targetElement.offsetWidth;
+      const { zoomLevel } = elemData[elemId];
+
+      if (isParentSmaller && (!targetElement.isExpanded || zoomLevel === 1)) {
         resetZoom();
-        targetElement.isExpanded = true;
+        if (!targetElement.isExpanded) targetElement.isExpanded = true;
       }
 
-      if (parentElement.offsetWidth < targetElement.offsetWidth && elemData[elemId].zoomLevel == 1) {
+      if (isParentSmaller && targetElement.offsetWidth * zoomLevel > parentElement.offsetWidth && zoomLevel < 1 && !targetElement.isZoomed) {
         resetZoom();
       }
-
-      if (parentElement.offsetWidth < targetElement.offsetWidth && targetElement.offsetWidth * elemData[elemId].zoomLevel > parentElement.offsetWidth && elemData[elemId].zoomLevel < 1 && !targetElement.isZoomed) {
-        resetZoom();
-      }
-    }
+    };
 
     if (isExtension) {
       targetElement.addEventListener("mousemove", checkForOutBox);
@@ -1355,32 +1356,32 @@ onUiLoaded(async () => {
   applyZoomAndPan(elementIDs.inpaint, false);
   applyZoomAndPan(elementIDs.inpaintSketch, false);
 
-/**
- * Adds event listeners to elements for enabling zoom and pan integration.
- * @param {string} id - The id of the main element.
- * @param {Array} elementIDs - An array of element IDs to which the event listeners should be added.
- */
-const applyZoomAndPanIntegration = async (id, elementIDs) => {
-  if (id.toLowerCase() === "none") {
-    for (const elementID of elementIDs) {
-      const el = await waitForElement(elementID);
-      if (!el) return;
-      applyZoomAndPan(elementID);
+  /**
+   * Adds event listeners to elements for enabling zoom and pan integration.
+   * @param {string} id - The id of the main element.
+   * @param {Array} elementIDs - An array of element IDs to which the event listeners should be added.
+   */
+  const applyZoomAndPanIntegration = async (id, elementIDs) => {
+    if (id.toLowerCase() === "none") {
+      for (const elementID of elementIDs) {
+        const el = await waitForElement(elementID);
+        if (!el) return;
+        applyZoomAndPan(elementID);
+      }
+      return;
     }
-    return;
-  }
 
-  const mainEl = document.querySelector(id);
-  if (!mainEl) return;
+    const mainEl = document.querySelector(id);
+    if (!mainEl) return;
 
-  mainEl.addEventListener("click", async () => {
-    for (const elementID of elementIDs) {
-      const el = await waitForElement(elementID);
-      if (!el) return;
-      applyZoomAndPan(elementID);
-    }
-  }, { once: true });
-};
+    mainEl.addEventListener("click", async () => {
+      for (const elementID of elementIDs) {
+        const el = await waitForElement(elementID);
+        if (!el) return;
+        applyZoomAndPan(elementID);
+      }
+    }, { once: true });
+  };
 
   // Enable Extensions Integration
   const integrateControlNet = hotkeysConfig.canvas_zoom_enable_integration;
