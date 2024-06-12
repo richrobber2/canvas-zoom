@@ -267,7 +267,7 @@ onUiLoaded(async () => {
     imageARPreview.style.transform = "";
     if (parseFloat(mainTab.style.width) > 865) {
       const scaleMatch = mainTab.style.transform.match(/scale\(([-+]?[0-9]*\.?[0-9]+)\)/);
-      const zoom = scaleMatch && scaleMatch[1] ? Number(scaleMatch[1]) : 1; // default zoom
+      const zoom = scaleMatch?.[1] ? Number(scaleMatch[1]) : 1; // default zoom
       imageARPreview.style.transformOrigin = "0 0";
       imageARPreview.style.transform = `scale(${zoom})`;
     }
@@ -277,7 +277,6 @@ onUiLoaded(async () => {
     img.style.display = "block";
     setTimeout(() => { img.style.display = "none"; }, 400);
   };
-
 
   const hotkeysConfigOpts = await waitForOpts();
 
