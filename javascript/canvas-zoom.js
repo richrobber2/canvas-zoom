@@ -42,10 +42,10 @@ onUiLoaded(async () => {
    * @param {string} sign - "+" or "-" sign to determine the zoom direction.
    * @param {Event} oldEvent - The original event.
    */
-  const zoomFakeWheelEvent = (targetElement, sign, { ctrlKey, altKey, shiftKey }) => {
-    const { left, top, width, height } = targetElement.getBoundingClientRect();
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
+  const zoomFakeWheelEvent = (targetElement, sign, oldEvent) => {
+    const rect = targetElement.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
     const detailValue = sign === "-" ? 1 : -1;
 
     const event = new WheelEvent("wheel", {
@@ -57,10 +57,10 @@ onUiLoaded(async () => {
       screenY: centerY,
       clientX: centerX,
       clientY: centerY,
-      ctrlKey,
-      altKey,
-      shiftKey,
-      metaKey: ctrlKey,
+      ctrlKey: oldEvent.ctrlKey,
+      altKey: oldEvent.altKey,
+      shiftKey: oldEvent.shiftKey,
+      metaKey: oldEvent.ctrlKey,
       button: 0,
       buttons: 0,
       relatedTarget: null,
@@ -95,8 +95,8 @@ onUiLoaded(async () => {
    * @return {Element} The active tab element.
    */
   const getActiveTab = (elements, all = false) => {
-    const tabs = elements?.img2imgTabs?.querySelectorAll("button");
-    return all ? tabs : Array.from(tabs ?? []).find(tab => tab.classList.contains("selected"));
+    const tabs = elements.img2imgTabs.querySelectorAll("button");
+    return all ? tabs : Array.from(tabs).find(tab => tab.classList.contains("selected"));
   };
 
   /**
@@ -160,16 +160,23 @@ onUiLoaded(async () => {
    * @return {Object} The resulting hotkey configuration.
    */
   const createHotkeyConfig = (defaultHotkeysConfig, hotkeysConfigOpts) => {
+    const result = {};
     const usedKeys = new Set();
     const invalidTypes = new Set(["boolean", "object", "number"]);
 
-    return Object.entries(defaultHotkeysConfig).reduce((result, [key, defaultValue]) => {
+    for (const key in defaultHotkeysConfig) {
       const userValue = hotkeysConfigOpts[key];
+      const defaultValue = defaultHotkeysConfig[key];
 
-      if (["canvas_zoom_undo_extra_key", "canvas_zoom_inc_brush_size", "canvas_zoom_dec_brush_size"].includes(key)) {
-        result[key] = userValue;
-      } else if (userValue === undefined || invalidTypes.has(typeof userValue) || userValue.startsWith("#") || userValue === "disable") {
-        result[key] = userValue ?? defaultValue;
+      if (key === "canvas_zoom_undo_extra_key") {
+        result[key] = userValue
+        continue
+      }
+
+      // if(key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size")
+
+      if (userValue === undefined || invalidTypes.has(typeof userValue) || userValue.startsWith("#") || userValue === "disable") {
+        result[key] = userValue === undefined ? defaultValue : userValue;
       } else if (isValidHotkey(userValue)) {
         const normalizedUserValue = normalizeHotkey(userValue);
 
@@ -181,13 +188,18 @@ onUiLoaded(async () => {
           result[key] = defaultValue;
         }
       } else {
-        console.error(`Hotkey: ${formatHotkeyForDisplay(userValue)} for ${key} is not valid. The default hotkey is used: ${formatHotkeyForDisplay(defaultValue)}`);
-        result[key] = defaultValue;
+        if (key === "canvas_zoom_inc_brush_size" || key === "canvas_zoom_dec_brush_size") {
+          result[key] = defaultValue;
+        } else {
+          console.error(`Hotkey: ${formatHotkeyForDisplay(userValue)} for ${key} is not valid. The default hotkey is used: ${formatHotkeyForDisplay(defaultValue)}`);
+          result[key] = defaultValue;
+        }
       }
+    }
 
-      return result;
-    }, {});
+    return result;
   };
+
   /**
    * Disables specified functions in the configuration.
    * @param {Object} config - The configuration object.
@@ -267,7 +279,7 @@ onUiLoaded(async () => {
     imageARPreview.style.transform = "";
     if (parseFloat(mainTab.style.width) > 865) {
       const scaleMatch = mainTab.style.transform.match(/scale\(([-+]?[0-9]*\.?[0-9]+)\)/);
-      const zoom = scaleMatch?.[1] ? Number(scaleMatch[1]) : 1; // default zoom
+      const zoom = scaleMatch && scaleMatch[1] ? Number(scaleMatch[1]) : 1; // default zoom
       imageARPreview.style.transformOrigin = "0 0";
       imageARPreview.style.transform = `scale(${zoom})`;
     }
@@ -277,6 +289,7 @@ onUiLoaded(async () => {
     img.style.display = "block";
     setTimeout(() => { img.style.display = "none"; }, 400);
   };
+
 
   const hotkeysConfigOpts = await waitForOpts();
 
@@ -356,23 +369,16 @@ onUiLoaded(async () => {
   // Apply functionality to the range inputs, restore redmask and correct for long images
   const rangeInputs = elements.rangeGroup ? Array.from(elements.rangeGroup.querySelectorAll("input")) : [gradioApp().querySelector("#img2img_width input[type='range']"), gradioApp().querySelector("#img2img_height input[type='range']")];
   rangeInputs.forEach(input => input?.addEventListener("input", () => restoreImgRedMask(elements)));
-
-  /**
-   * Returns the element ID for a given tab name.
-   * @param {string} tabName - The name of the tab.
-   * @return {string} The element ID.
-   */
-  const getTabElFromText = tabName => {
+  function getTabElFromText(tabName) {
     const tabMap = {
       inpaint: elementIDs.inpaint,
       sketch: elementIDs.sketch,
       "inpaint sketch": elementIDs.inpaintSketch,
     };
-
     return tabMap[tabName.trim().toLowerCase()];
-  };
+  }
 
-  const getSendButtons = (elemId) => {
+  function getSendButtons(elemId) {
     const tabMap = {
       [elementIDs.inpaint]: "inpaint",
       [elementIDs.sketch]: "sketch",
@@ -381,9 +387,9 @@ onUiLoaded(async () => {
     };
     const tabString = tabMap[elemId];
     return document.querySelectorAll(`#img2img_copy_to_${tabString} button`);
-  };
+  }
 
-  const isGetSizeImgBtnExists = Boolean(document.querySelector("#img2img_detect_image_size_btn"));
+  const isGetSizeImgBtnExists = !!document.querySelector("#img2img_detect_image_size_btn");
   let getImgDataBtn, clonedDiv;
 
   if (!isGetSizeImgBtnExists) {
@@ -399,10 +405,23 @@ onUiLoaded(async () => {
   }
 
   const canvasColor = await waitForOpts();
+  // Initialize localStorage variables
   localStorage.setItem("brushOutline", hotkeysConfig.canvas_zoom_brush_outline);
 
-  localStorage.setItem("brush_color", canvasColor.img2img_inpaint_mask_brush_color || hotkeysConfig.canvas_zoom_inpaint_brushcolor);
-  localStorage.setItem("sketch_brush_color", canvasColor.img2img_sketch_default_brush_color);
+  // console.log(canvasColor.img2img_inpaint_mask_brush_color,canvasColor.img2img_sketch_default_brush_color,canvasColor.canvas_zoom_inpaint_brushcolor)
+
+  // img2img_sketch_default_brush_color, img2img_inpaint_mask_brush_color.
+
+  if (canvasColor.img2img_inpaint_mask_brush_color) {
+    localStorage.setItem("brush_color", canvasColor.img2img_inpaint_mask_brush_color);
+  } else {
+    localStorage.setItem("brush_color", hotkeysConfig.canvas_zoom_inpaint_brushcolor);
+  }
+
+  if (canvasColor.img2img_sketch_default_brush_color) {
+    localStorage.setItem("sketch_brush_color", canvasColor.img2img_sketch_default_brush_color);
+  }
+
   function applyZoomAndPan(elemId, isExtension = true) {
     const targetElement = gradioApp().querySelector(elemId);
 
@@ -422,68 +441,74 @@ onUiLoaded(async () => {
 
     let fullScreenMode = false;
 
-    /**
-     * Sets the display style of the image in the target element to "none".
-     */
-    const setImgDisplayToNone = () => {
+    //Fix white canvas when change width
+    function setImgDisplayToNone() {
       const img = targetElement.querySelector(`${elemId} img`);
-      img?.style.setProperty('display', 'none');
-    };
+      if (img) img.style.display = "none";
+    }
 
     if (hotkeysConfig.canvas_zoom_mask_clear) {
-      allButtons.forEach(button => {
+      allButtons.forEach((button) => {
         if (button.innerText !== "img2img") {
           button.addEventListener("click", () => {
             const sendToTabName = getTabElFromText(button.innerText);
-            if (!sendToTabName) return;
 
-            const closeBtn = document.querySelector(
-              `${sendToTabName} button[aria-label='Remove Image']`
-            ) || document.querySelector(
-              `${sendToTabName} button[aria-label='Clear']`
-            );
+            if (sendToTabName) {
+              const closeBtn = document.querySelector(
+                `${sendToTabName} button[aria-label='Remove Image']`
+              ) || document.querySelector(
+                `${sendToTabName} button[aria-label='Clear']`
+              );
 
-            closeBtn?.click();
+              closeBtn?.click();
+            }
           });
         }
       });
 
-      const sendToInpainBtn = elements.sendToInpainBtn || elements.sendToInpainBtnNew;
-      const sendToInpainBtnT2I = elements.sendToInpainBtnT2I || elements.sendToInpainBtnT2INew;
-
-      sendToInpainBtn?.addEventListener("click", clearMask);
-      sendToInpainBtnT2I?.addEventListener("click", clearMask);
+      if (elements.sendToInpainBtn) {
+        elements.sendToInpainBtn.addEventListener("click", clearMask);
+        elements.sendToInpainBtnT2I.addEventListener("click", clearMask);
+      }
+      else {
+        elements.sendToInpainBtnNew.addEventListener("click", clearMask);
+        elements.sendToInpainBtnT2INew.addEventListener("click", clearMask);
+      }
     }
 
     if (!isGetSizeImgBtnExists) {
       getImgDataBtn.addEventListener("click", () => {
         const tabID = getTabId(elements);
-        const [canvas, img, imgUpload] = [`${tabID} canvas`, "#img2img_image img", "#img_inpaint_base img"].map(selector => document.querySelector(selector));
+        const canvas = document.querySelector(`${tabID} canvas`);
+        const img = document.querySelector("#img2img_image img");
+        const imgUpload = document.querySelector("#img_inpaint_base img");
 
         const rightWidth = img?.naturalWidth || canvas?.width || imgUpload?.naturalWidth;
         const rightHeight = img?.naturalHeight || canvas?.height || imgUpload?.naturalHeight;
 
         if (rightWidth && rightHeight) {
-          const [rangeWidth, rangeHeight, inputWidth, inputHeight] = [
-            ...document.querySelectorAll("#img2img_width input[type='range'], #img2img_height input[type='range']"),
-            ...document.querySelectorAll("#img2img_width input[type='number'], #img2img_height input[type='number']")
-          ];
+          const [rangeWidth, rangeHeight] = document.querySelectorAll(
+            "#img2img_width input[type='range'], #img2img_height input[type='range']"
+          );
+          const [inputWidth, inputHeight] = document.querySelectorAll(
+            "#img2img_width input[type='number'], #img2img_height input[type='number']"
+          );
 
-          [rangeWidth.value, inputWidth.value] = [rightWidth, rightWidth];
-          [rangeHeight.value, inputHeight.value] = [rightHeight, rightHeight];
+          rangeWidth.value = inputWidth.value = rightWidth;
+          rangeHeight.value = inputHeight.value = rightHeight;
 
           const changeEvent = new Event("change");
           const inputEvent = new Event("input");
 
-          [rangeWidth, rangeHeight, inputWidth, inputHeight].forEach(el => {
+          for (const el of [rangeWidth, rangeHeight, inputWidth, inputHeight]) {
             el.dispatchEvent(changeEvent);
             el.dispatchEvent(inputEvent);
-          });
+          }
         }
       });
     }
 
-    const createTooltip = () => {
+    function createTooltip() {
       const toolTipElemnt = targetElement.querySelector(".image-container") || targetElement.querySelector("div[data-testid='image']");
 
       const tooltip = document.createElement("div");
@@ -510,57 +535,57 @@ onUiLoaded(async () => {
         { configKey: "canvas_zoom_hotkey_transparency", action: "Transparency mode" },
       ];
 
-      const hotkeys = hotkeysInfo.map(({ configKey, action, keySuffix, keyPrefix }) => {
-        const configValue = hotkeysConfig[configKey];
+      const hotkeys = hotkeysInfo.map((info) => {
+        const configValue = hotkeysConfig[info.configKey];
+
         let key = configValue.slice(-1);
 
-        if (keySuffix) {
-          key = `${configValue}${keySuffix}`;
+        if (info.keySuffix) {
+          key = `${configValue}${info.keySuffix}`;
         }
 
-        if (keyPrefix && keyPrefix !== "None + ") {
-          key = `${keyPrefix}${configValue[3]}`;
+        if (info.keyPrefix && info.keyPrefix !== "None + ") {
+          key = `${info.keyPrefix}${configValue[3]}`;
         }
 
         return {
           key,
-          action,
+          action: info.action,
           disabled: configValue === "disable",
         };
       });
 
       hotkeys
-        .filter(({ disabled }) => !disabled)
-        .forEach(({ key, action }) => {
+        .filter(hotkey => !hotkey.disabled)
+        .forEach(hotkey => {
           const p = document.createElement("p");
-          p.innerHTML = `<b>${key}</b> - ${action}`;
+          p.innerHTML = `<b>${hotkey.key}</b> - ${hotkey.action}`;
           tooltipContent.appendChild(p);
         });
 
       tooltip.append(info, tooltipContent);
       toolTipElemnt.appendChild(tooltip);
-    };
+    }
 
     /**
-     * Function to create fullscreen and dropper buttons and attach them to the target element
-     * @returns {void}
-     */
-    const createFuncButtons = () => {
+   * Function to create fullscreen and dropper buttons and attach them to the target element
+   * @returns {void}
+   */
+    function createFuncButtons() {
       const buttonContainer = targetElement.querySelector(".image-container") || targetElement.querySelector("div[data-testid='image']");
 
-      const createButton = (className, innerHTML, clickHandler) => {
-        const button = document.createElement("button");
-        button.className = `${className}-main`;
-        button.innerHTML = `<p class="${className}">${innerHTML}</p>`;
-        button.addEventListener("click", clickHandler);
-        return button;
-      };
+      const fullscreenBtn = document.createElement("button");
+      fullscreenBtn.className = "fullscreen-btn-main";
+      fullscreenBtn.innerHTML = `<p class="fullscreen-btn">F</p>`;
+      fullscreenBtn.addEventListener("click", () => fitToScreen(true));
 
-      const fullscreenBtn = createButton("fullscreen-btn", "F", () => fitToScreen(true));
-      const dropperBtn = createButton("dropper-btn", "P", toggleDropper);
+      const dropperBtn = document.createElement("button");
+      dropperBtn.className = "dropper-btn-main";
+      dropperBtn.innerHTML = `<p class="dropper-btn">P</p>`;
+      dropperBtn.addEventListener("click", toggleDropper);
 
       buttonContainer.append(fullscreenBtn, dropperBtn);
-    };
+    }
 
     if (hotkeysConfig.canvas_show_tooltip) {
       createTooltip();
@@ -574,25 +599,26 @@ onUiLoaded(async () => {
      * Function to fix canvas display issues by hiding image when not in "img2img" mode
      * @returns {void}
      */
-    const fixCanvas = () => {
+    function fixCanvas() {
       const activeTab = getActiveTab(elements).textContent.trim();
 
       if (activeTab !== "img2img") {
         const img = targetElement.querySelector(`${elemId} img`);
 
-        if (img?.style.display !== "none") {
+        if (img && img.style.display !== "none") {
           img.style.display = "none";
           img.style.visibility = "hidden";
         }
       }
-    };
+    }
 
     /**
      * Function to reset the zoom level and pan position of the target element to their initial values
+     * @param {string} _ - ignored parameter
      * @param {boolean} isMobile - indicates whether the application is running on a mobile device
      * @returns {void}
      */
-    const resetZoom = (isMobile = false) => {
+    function resetZoom(_ = "", isMobile = false) {
       elemData[elemId] = {
         zoomLevel: 1,
         panX: 0,
@@ -604,6 +630,7 @@ onUiLoaded(async () => {
       }
 
       targetElement.isZoomed = false;
+
       fixCanvas();
 
       targetElement.style.transform = `scale(${elemData[elemId].zoomLevel}) translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px)`;
@@ -614,24 +641,44 @@ onUiLoaded(async () => {
       fullScreenMode = false;
 
       const closeBtn = targetElement.querySelector("button[aria-label='Remove Image']");
-      closeBtn?.addEventListener("click", resetZoom);
+      if (closeBtn) {
+        closeBtn.addEventListener("click", resetZoom);
+      }
 
-      const parentElement = targetElement.closest('[id^="component-"]');
-      const canvasWidth = canvas ? parseFloat(canvas.style.width) : 0;
-      const targetElementWidth = parseFloat(targetElement.style.width);
+      if (canvas && isExtension) {
+        const parentElement = targetElement.closest('[id^="component-"]');
+        if (
+          canvas &&
+          parseFloat(canvas.style.width) > parentElement.offsetWidth &&
+          parseFloat(targetElement.style.width) > parentElement.offsetWidth
+        ) {
+          fitToElement();
+          return;
+        }
 
-      if ((canvas && isExtension && canvasWidth > parentElement.offsetWidth && targetElementWidth > parentElement.offsetWidth) ||
-        (canvas && !isExtension && canvasWidth > 865 && targetElementWidth > 865) ||
-        isMobile) {
+      }
+
+      if (
+        canvas &&
+        !isExtension &&
+        parseFloat(canvas.style.width) > 865 &&
+        parseFloat(targetElement.style.width) > 865
+      ) {
+        fitToElement();
+        return;
+      }
+
+      if (isMobile) {
         fitToElement();
         return;
       }
 
       targetElement.style.width = "";
-      // if (canvas) {
-      //   targetElement.style.height = canvas.style.height;
-      // }
-    };
+      if (canvas) {
+        // targetElement.style.height = canvas.style.height;
+      }
+    }
+
     // Toggle the zIndex of the target element between two values, allowing it to overlap or be overlapped by other elements
     function toggleOverlap(forced = "") {
       const zIndex1 = "0";
@@ -647,34 +694,37 @@ onUiLoaded(async () => {
       }
     }
 
-    /**
-     * Function to adjust the brush size based on the deltaY value from a mouse wheel event
-     * @param {string} elemId - the id of the element
-     * @param {number} deltaY - the deltaY value from the mouse wheel event
-     * @param {boolean} withoutValue - indicates whether to adjust the brush size without a value
-     * @param {number} percentage - the percentage to adjust the brush size by
-     * @returns {void}
-     */
-    const adjustBrushSize = (elemId, deltaY, withoutValue = false, percentage = 5) => {
-      const input = gradioApp().querySelector(`${elemId} input[aria-label='Brush radius']`) ||
+    // Adjust the brush size based on the deltaY value from a mouse wheel event
+    function adjustBrushSize(
+      elemId,
+      deltaY,
+      withoutValue = false,
+      percentage = 5
+    ) {
+      const input =
+        gradioApp().querySelector(
+          `${elemId} input[aria-label='Brush radius']`
+        ) ||
         gradioApp().querySelector(`${elemId} button[aria-label="Use brush"]`);
-
+      
       if (input) {
         input.click();
-
         if (!withoutValue) {
           const maxValue = parseFloat(input.getAttribute("max")) || 100;
           const changeAmount = maxValue * (percentage / 100);
-          const newValue = parseFloat(input.value) + (deltaY > 0 ? -changeAmount : changeAmount);
-
+          const newValue =
+            parseFloat(input.value) +
+            (deltaY > 0 ? -changeAmount : changeAmount);
           input.value = Math.min(Math.max(newValue, 0), maxValue);
           input.dispatchEvent(new Event("change"));
         }
       }
-    };
+    }
 
     // Reset zoom when uploading a new image
-    const fileInput = gradioApp().querySelector(`${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`);
+    const fileInput = gradioApp().querySelector(
+      `${elemId} input[type="file"][accept="image/*"].svelte-116rqfv`
+    );
     fileInput.addEventListener("click", resetZoom);
 
     /**
@@ -694,8 +744,10 @@ onUiLoaded(async () => {
         panY: panY + y - (y * clampedLevel) / zoomLevel,
       });
 
-      targetElement.style.transformOrigin = "0 0";
-      targetElement.style.transform = `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${clampedLevel})`;
+      Object.assign(targetElement.style, {
+        transformOrigin: "0 0",
+        transform: `translate(${elemData[elemId].panX}px, ${elemData[elemId].panY}px) scale(${clampedLevel})`,
+      });
 
       toggleOverlap("on");
       setImgDisplayToNone();
@@ -718,8 +770,12 @@ onUiLoaded(async () => {
 
       e.preventDefault();
 
-      const { zoomLevel = 1 } = elemData[elemId];
-      elemData[elemId].zoomLevel = zoomLevel;
+      let { zoomLevel } = elemData[elemId];
+
+      if (!zoomLevel) {
+        zoomLevel = 1;
+        elemData[elemId].zoomLevel = zoomLevel;
+      }
 
       const delta = zoomLevel > 7 ? 0.9 : zoomLevel > 2 ? 0.6 : 0.2;
 
@@ -741,42 +797,59 @@ onUiLoaded(async () => {
     };
 
     /**
-     * This function fits the target element to the screen by calculating
-     * the required scale and offsets. It also updates the global variables
-     * zoomLevel, panX, and panY to reflect the new state.
-     */
+   * This function fits the target element to the screen by calculating
+   * the required scale and offsets. It also updates the global variables
+   * zoomLevel, panX, and panY to reflect the new state.
+   */
 
-    const fitToElement = () => {
+    function fitToElement() {
       //Reset Zoom
-      targetElement.style.transform = `translate(0px, 0px) scale(1)`;
+      targetElement.style.transform = `translate(${0}px, ${0}px) scale(${1})`;
 
-      const parentElement = isExtension
-        ? targetElement.closest('[id^="component-"]')
-        : targetElement.parentElement;
+      let parentElement;
+
+      if (isExtension) {
+        parentElement = targetElement.closest('[id^="component-"]');
+      } else {
+        parentElement = targetElement.parentElement;
+      }
 
       // Get element and screen dimensions
-      const { offsetWidth: elementWidth, offsetHeight: elementHeight } = targetElement;
-      const { clientWidth: screenWidth, clientHeight: screenHeight } = parentElement;
+      const elementWidth = targetElement.offsetWidth;
+      const elementHeight = targetElement.offsetHeight;
+      // const parentElement = targetElement.parentElement;
+      const screenWidth = parentElement.clientWidth;
+      const screenHeight = parentElement.clientHeight;
 
       // Get element's coordinates relative to the parent element
+      const elementRect = targetElement.getBoundingClientRect();
+      const parentRect = parentElement.getBoundingClientRect();
+      const elementX = elementRect.x - parentRect.x;
 
       // Calculate scale and offsets
       const scaleX = screenWidth / elementWidth;
       const scaleY = screenHeight / elementHeight;
       const scale = Math.min(scaleX, scaleY);
 
-      const [originX, originY] = window.getComputedStyle(targetElement).transformOrigin.split(" ");
+      const transformOrigin =
+        window.getComputedStyle(targetElement).transformOrigin;
+      const [originX, originY] = transformOrigin.split(" ");
       const originXValue = parseFloat(originX);
       const originYValue = parseFloat(originY);
 
-      const offsetX = (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
-      const offsetY = (screenHeight - elementHeight * scale) / 2.5 - originYValue * (1 - scale);
+      const offsetX =
+        (screenWidth - elementWidth * scale) / 2 - originXValue * (1 - scale);
+      const offsetY =
+        (screenHeight - elementHeight * scale) / 2.5 -
+        originYValue * (1 - scale);
 
       // Apply scale and offsets to the element
       targetElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 
       // Update global variables
-      elemData[elemId] = { zoomLevel: scale, panX: offsetX, panY: offsetY };
+      elemData[elemId].zoomLevel = scale;
+      elemData[elemId].panX = offsetX;
+      elemData[elemId].panY = offsetY;
 
       fullScreenMode = false;
       toggleOverlap("off");
@@ -1032,8 +1105,8 @@ onUiLoaded(async () => {
         [hotkeysConfig.canvas_zoom_hotkey_fill]: fillCanvasWithColor,
         [hotkeysConfig.canvas_zoom_hotkey_transparency]: toggleOpacityMode,
         [hotkeysConfig.canvas_zoom_hotkey_undo]: undoLastAction,
-        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, 100, false, hotkeysConfig.canvas_zoom_brush_size_change),
-        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -100, false, hotkeysConfig.canvas_zoom_brush_size_change),
+        [hotkeysConfig.canvas_zoom_dec_brush_size]: () => adjustBrushSize(elemId, 100, false,hotkeysConfig.canvas_zoom_brush_size_change),
+        [hotkeysConfig.canvas_zoom_inc_brush_size]: () => adjustBrushSize(elemId, -100, false,hotkeysConfig.canvas_zoom_brush_size_change),
       };
 
       const action = hotkeyActions[event.code];
@@ -1175,41 +1248,43 @@ onUiLoaded(async () => {
     });
 
     /**
-    * Event listener for wheel event on the target element to handle zoom and brush size adjustment.
-    */
-    targetElement.addEventListener("wheel", ({ deltaY }) => {
+     * Event listener for wheel event on the target element to handle zoom and brush size adjustment.
+     */
+    targetElement.addEventListener("wheel", (e) => {
       const isDefaultCanvas = checkIsDefault(elementIDs, elemId);
 
       if (!isDefaultCanvas || !window.applyZoomAndPan) {
-        changeZoomLevel(deltaY > 0 ? "-" : "+", deltaY);
+        const operation = e.deltaY > 0 ? "-" : "+";
+        changeZoomLevel(operation, e);
       }
 
-      if (!isModifierKey(deltaY, hotkeysConfig.canvas_hotkey_adjust)) return;
+      if (!isModifierKey(e, hotkeysConfig.canvas_hotkey_adjust)) return;
 
-      adjustBrushSize(elemId, deltaY, false, hotkeysConfig.canvas_zoom_brush_size_change);
-      return false;
+      e.preventDefault();
+      adjustBrushSize(elemId, e.deltaY, false, hotkeysConfig.canvas_zoom_brush_size_change);
     });
 
     /**
      * Handles key down events to trigger moving operations on the canvas.
      * @param {KeyboardEvent} event - The keyboard event object.
      */
-    const handleMoveKeyDown = ({ ctrlKey, metaKey, target, code }) => {
+    const handleMoveKeyDown = (e) => {
       const allowedKeys = ['KeyV', 'KeyC', 'F5'];
-      const isCtrlPressed = ctrlKey || metaKey; // Combine Ctrl and Meta (Cmd) keys
-      const isTyping = ['TEXTAREA', 'INPUT'].includes(target.nodeName);
+      const isCtrlPressed = e.ctrlKey || e.metaKey; // Combine Ctrl and Meta (Cmd) keys
+      const isTyping = ['TEXTAREA', 'INPUT'].includes(e.target.nodeName);
 
       const shouldPreventDefault =
-        (isTyping && !hotkeysConfig.canvas_blur_prompt) || (isCtrlPressed && allowedKeys.includes(code));
+        (isTyping && !hotkeysConfig.canvas_blur_prompt) || (isCtrlPressed && allowedKeys.includes(e.code));
 
-      if (shouldPreventDefault || code !== hotkeysConfig.canvas_hotkey_move || !isKeyDownHandlerAttached) {
+      if (shouldPreventDefault || e.code !== hotkeysConfig.canvas_hotkey_move || !isKeyDownHandlerAttached) {
         return;
       }
 
-      event.preventDefault();
+      e.preventDefault();
       document.activeElement.blur();
       isMoving = true;
     };
+
     /**
      * Handles key up events to stop moving operations on the canvas.
      * @param {KeyboardEvent} event - The keyboard event object.
@@ -1305,25 +1380,26 @@ onUiLoaded(async () => {
       }
     }
 
-    /**
-     * Checks if the target element is out of its parent's bounds and resets zoom if necessary.
-     */
-    const checkForOutBox = () => {
+    // Checks for extension
+    function checkForOutBox() {
       const parentElement = targetElement.closest('[id^="component-"]');
-      const isParentSmaller = parentElement.offsetWidth < targetElement.offsetWidth;
-      const { zoomLevel } = elemData[elemId];
-
-      if (isParentSmaller && (!targetElement.isExpanded || zoomLevel === 1)) {
+      if (parentElement.offsetWidth < targetElement.offsetWidth && !targetElement.isExpanded) {
         resetZoom();
-        if (!targetElement.isExpanded) targetElement.isExpanded = true;
+        targetElement.isExpanded = true;
       }
 
-      if (isParentSmaller && targetElement.offsetWidth * zoomLevel > parentElement.offsetWidth && zoomLevel < 1 && !targetElement.isZoomed) {
+      if (parentElement.offsetWidth < targetElement.offsetWidth && elemData[elemId].zoomLevel == 1) {
         resetZoom();
       }
-    };
 
-    isExtension && targetElement.addEventListener("mousemove", checkForOutBox);
+      if (parentElement.offsetWidth < targetElement.offsetWidth && targetElement.offsetWidth * elemData[elemId].zoomLevel > parentElement.offsetWidth && elemData[elemId].zoomLevel < 1 && !targetElement.isZoomed) {
+        resetZoom();
+      }
+    }
+
+    if (isExtension) {
+      targetElement.addEventListener("mousemove", checkForOutBox);
+    }
 
     // Prevents sticking to the mouse
     window.onblur = function () {
@@ -1352,32 +1428,40 @@ onUiLoaded(async () => {
   applyZoomAndPan(elementIDs.inpaint, false);
   applyZoomAndPan(elementIDs.inpaintSketch, false);
 
+  // Make Canvas zoom func global, like in build in extension
+  // Temp disable have bugs :(
+  // if (!window.applyZoomAndPan) {
+  //   window.applyZoomAndPan = applyZoomAndPan
+  // }
+
   /**
    * Adds event listeners to elements for enabling zoom and pan integration.
    * @param {string} id - The id of the main element.
    * @param {Array} elementIDs - An array of element IDs to which the event listeners should be added.
    */
+  // Make the function global so that other extensions can take advantage of this solution
   const applyZoomAndPanIntegration = async (id, elementIDs) => {
-    if (id.toLowerCase() === "none") {
+    const mainEl = document.querySelector(id);
+    if (id.toLocaleLowerCase() === "none") {
       for (const elementID of elementIDs) {
         const el = await waitForElement(elementID);
-        if (!el) return;
+        if (!el) break;
         applyZoomAndPan(elementID);
       }
       return;
     }
 
-    const mainEl = document.querySelector(id);
     if (!mainEl) return;
-
     mainEl.addEventListener("click", async () => {
       for (const elementID of elementIDs) {
         const el = await waitForElement(elementID);
-        if (!el) return;
+        if (!el) break;
         applyZoomAndPan(elementID);
       }
     }, { once: true });
   };
+
+
 
   // Enable Extensions Integration
   const integrateControlNet = hotkeysConfig.canvas_zoom_enable_integration;
@@ -1419,7 +1503,4 @@ onUiLoaded(async () => {
   // if(window.applyZoomAndPanIntegration){
   window.applyZoomAndPanIntegration = applyZoomAndPanIntegration
   // }
-
-
-
 });
