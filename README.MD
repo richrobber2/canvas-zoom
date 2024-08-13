@@ -2,6 +2,16 @@
 
 An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
 
+## ⚠️ Important Notice
+
+With Forge's transition to Gradio version 4+, this extension is no longer functional. This change is likely to affect AUTO1111 in the future as well.
+
+However, don't despair! Canvas Zoom is likely to take on a new form. The original concept of the extension was entirely based on Gradio 3 and solving its issues, which is why the current version is incompatible with Gradio 4+.
+
+Once Gradio 4+ is firmly established and becomes the standard, I plan to start developing a new extension project. This new project will make working with the editor even more convenient and will transfer the main beloved features from the current Canvas Zoom.
+
+## About
+
 Adds the ability to zoom into Inpaint, Sketch, and Inpaint Sketch.
 
 **The extension supports webui version [1.1](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.1.0), [1.2](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.2.0),[1.3](https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases/tag/v1.3.0)**

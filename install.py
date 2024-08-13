@@ -4,58 +4,55 @@ import shutil
 import gradio
 
 # Get the paths
-module_path = os.path.join(sys.path[1],"scripts")
-detect_module_path = os.path.join(sys.path[0], "detect_extension.py")  # assuming the script is in the current directory
-
-# Form the destination path
+module_path = os.path.join(sys.path[1], "scripts")
+detect_module_path = os.path.join(sys.path[0], "detect_extension.py")
 destination_path = os.path.join(module_path, "detect_extension.py")
 
-# Check if the source file exists and is a file (not a directory),
-# and if the file doesn't already exist at the destination,
-# and if the module path is a valid directory
+# Copy the file if needed
 if os.path.isfile(detect_module_path) and not os.path.isfile(destination_path) and os.path.isdir(module_path):
-    # Copy the file
     shutil.copyfile(detect_module_path, destination_path)
 
-
-# Check the version of the gradio, if it is less than 3.28.1 then cancel the installation
-is_right_version = False
-
-# Getting the Gradio version
+# Check gradio version
 current_version = gradio.__version__
+major_version = int(current_version.split('.')[0])
 
-# Converting versions into tuples of numbers for easy comparison
-def version_to_tuple(version_string):
-    return tuple(map(int, version_string.split('.')))
-
-minimum_required_version = "3.28.1"
-second_required_version = "3.32.0"
-
-# Checking the Gradio version
-if version_to_tuple(current_version) < version_to_tuple(minimum_required_version):
-    print("\nPlease update webui to the latest version for the canvas-zoom extension to work properly, supported versions from 1.1 \n")
-elif version_to_tuple(current_version) <= version_to_tuple(second_required_version):
-    source_dir_name = 'v1_1_v1_5_1'
-    is_right_version = True
+if major_version >= 4:
+    print("\n" + "!" * 50)
+    print("WARNING: INCOMPATIBLE GRADIO VERSION DETECTED!")
+    print("!" * 50)
+    print("\nThis version of Gradio (v{}) is not compatible with the extension.".format(current_version))
+    print("Please disable the extension to avoid potential bugs and errors.")
+    print("The extension will not be installed.")
+    print("\n" + "!" * 50 + "\n")
 else:
-    source_dir_name = ''
-    is_right_version = True
+    # Convert versions to tuples for comparison
+    def version_to_tuple(version_string):
+        return tuple(map(int, version_string.split('.')))
 
-if is_right_version:
-    # Moving files with replacement
-    canvasZoomPath = sys.path[0]
-    gradioPath = os.path.dirname(gradio.__file__)
-    
-    source_dir = os.path.join(canvasZoomPath,"dist", source_dir_name, 'templates', 'frontend')
-    if not os.path.exists(source_dir):
-        canvasZoomPath = os.path.dirname(os.path.realpath(__file__))
-        source_dir = os.path.join(canvasZoomPath,"dist", source_dir_name, 'templates', 'frontend')
-    
-    destination_dir = os.path.join(gradioPath, 'templates', 'frontend')
-    
-    # Deleting the existing "templates" folder in the gradio folder, if it exists
-    if os.path.exists(destination_dir):
-        shutil.rmtree(destination_dir)
-    
-    # Moving the "templates" folder from the canvasZoom folder to the gradio folder
-    shutil.copytree(source_dir, destination_dir)
+    minimum_required_version = "3.28.1"
+    second_required_version = "3.32.0"
+
+    if version_to_tuple(current_version) < version_to_tuple(minimum_required_version):
+        print("\nPlease update webui to the latest version for the canvas-zoom extension to work properly. Supported versions are from 1.1 onwards.\n")
+    else:
+        is_right_version = True
+        source_dir_name = 'v1_1_v1_5_1' if version_to_tuple(current_version) <= version_to_tuple(second_required_version) else ''
+
+        if is_right_version:
+            # Move files with replacement
+            canvasZoomPath = sys.path[0]
+            gradioPath = os.path.dirname(gradio.__file__)
+
+            source_dir = os.path.join(canvasZoomPath, "dist", source_dir_name, 'templates', 'frontend')
+            if not os.path.exists(source_dir):
+                canvasZoomPath = os.path.dirname(os.path.realpath(__file__))
+                source_dir = os.path.join(canvasZoomPath, "dist", source_dir_name, 'templates', 'frontend')
+
+            destination_dir = os.path.join(gradioPath, 'templates', 'frontend')
+
+            # Delete existing "templates" folder in the gradio folder, if it exists
+            if os.path.exists(destination_dir):
+                shutil.rmtree(destination_dir)
+
+            # Move the "templates" folder from the canvasZoom folder to the gradio folder
+            shutil.copytree(source_dir, destination_dir)
