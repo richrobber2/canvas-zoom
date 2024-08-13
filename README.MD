@@ -4,7 +4,7 @@ An extension of [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable
 
 ## ⚠️ Important Notice
 
-As of 13.08.2023, this extension is no longer functional with the new version of Forge that uses Gradio 4+. Please note that this change may also affect AUTO1111 in the future.
+As of 13.08.2024, this extension is no longer functional with the new version of Forge that uses Gradio 4+. Please note that this change may also affect AUTO1111 in the future.
 
 However, don't despair! Canvas Zoom is likely to take on a new form. The original concept of the extension was entirely based on Gradio 3 and solving its issues, which is why the current version is incompatible with Gradio 4+.
 
